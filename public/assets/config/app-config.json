@@ -1,0 +1,13 @@
+{
+  "development": {
+    "api": "/MatrizRsk/api",
+    "apiN": "/MatrizApiNode/api",
+    "useProxy": true
+  },
+  "production": {
+    "api": "http://your-production-server:54108/MatrizRsk/api",
+    "apiN": "http://your-production-server:54108/MatrizApiNode/api",
+    "useProxy": false
+  },
+  "text": "Matriz de riesgos, Copyright 2019. <br /> Summa consulting.<br /> Version 2.5.0 <br />Fecha de compilación 2020-11-15 <br />"
+}

@@ -1,0 +1,11 @@
+{
+  "/MatrizRsk": {
+    "target": "http://localhost:54108",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/MatrizRsk": "/MatrizRsk"
+    }
+  }
+}

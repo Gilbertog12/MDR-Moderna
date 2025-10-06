@@ -1,0 +1,266 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fafafa;
+  overflow: hidden;
+}
+
+// Toolbar
+.tree-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  .toolbar-btn {
+    color: white;
+    width: 36px;
+    height: 36px;
+
+    &:hover { background-color: rgba(255, 255, 255, 0.15); }
+    &.active { background-color: rgba(255, 255, 255, 0.25); }
+    &.copied-indicator {
+      background-color: #ff9800;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.95); }
+}
+
+// Loading
+.tree-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+  color: #757575;
+}
+
+// Container
+.tree-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+  background: #fafafa;
+}
+
+// Tree nodes
+.risk-tree {
+  .tree-node {
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    margin: 2px 4px;
+    padding: 2px 0;
+    position: relative; // Para botones absolutos
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    &.node-selected {
+      background-color: #e8f5e9 !important;
+      border-left: 3px solid #4caf50;
+    }
+
+    &.copied-node {
+      background-color: #fff3e0;
+      border-left: 3px solid #f57c00;
+    }
+  }
+}
+
+// Botones con posición absoluta (siempre visibles en el mismo lugar)
+.node-actions-fixed {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  z-index: 1;
+
+  .action-btn {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &.add-btn {
+      color: #4caf50;
+      &:hover { background-color: #e8f5e9; }
+    }
+
+    &.delete-btn {
+      color: #f44336;
+      &:hover { background-color: #ffebee; }
+    }
+
+    &.copy-btn {
+      color: #2196f3;
+      &:hover { background-color: #e3f2fd; }
+    }
+
+    &.paste-btn {
+      color: #ff9800;
+      &:hover { background-color: #fff3e0; }
+    }
+  }
+}
+
+// Contenido con padding para botones fijos
+.node-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding-left: 80px; // Espacio para botones fijos
+  min-height: 28px;
+}
+
+// Expand button
+.expand-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  flex-shrink: 0;
+
+  .expand-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #616161;
+  }
+
+  &:hover .expand-icon {
+    color: #1976d2;
+  }
+
+  &:disabled {
+    opacity: 0.2;
+  }
+}
+
+// Spinner
+.node-spinner {
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+// Prefijo del nivel
+.node-prefix {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin: 0 4px;
+  min-width: 22px;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+// Link del nodo
+.node-link {
+  flex: 1;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #212121;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 4px 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  .status-indicator {
+    font-weight: 600;
+    font-size: 10px;
+    color: #f44336;
+    margin-left: 4px;
+  }
+
+  // Estados
+  &.status-aprobado { color: #2e7d32; }
+  &.status-validacion { color: #f57c00; }
+  &.status-aprobacion { color: #1976d2; }
+  &.status-inactivacion {
+    color: #d32f2f;
+    text-decoration: line-through;
+  }
+  &.status-rechazado { color: #d32f2f; }
+  &.status-creacion { color: #616161; }
+}
+
+// Empty state
+.tree-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #9e9e9e;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+  }
+}
+
+// Scrollbar
+.tree-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tree-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tree-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+
+  &:hover {
+    background: #a8a8a8;
+  }
+}

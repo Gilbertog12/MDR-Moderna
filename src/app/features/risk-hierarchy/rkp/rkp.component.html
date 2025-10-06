@@ -1,0 +1,212 @@
+<div class="rka-container">
+  <!-- Breadcrumbs de Jerarquía -->
+  <div class="hierarchy-breadcrumb" *ngIf="procesoDetail()">
+    <nav class="breadcrumb-nav">
+      <ol class="breadcrumb-list">
+
+        <li class="breadcrumb-item clickable" (click)="goToArea()">
+
+          <span>{{ procesoDetail()?.areaId }} </span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item current">
+
+          <span>{{ procesoDetail()?.procesoId }} </span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Header del Proceso -->
+  <div class="area-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          <span class="area-id" *ngIf="procesoDetail()?.procesoId">{{ procesoDetail()?.procesoId }} - </span>
+          {{ procesoDetail()?.procesoDescripcion || 'Cargando...' }}
+        </h1>
+        <p class="area-extended-description">
+          {{ procesoDetail()?.procesoDescripcionExt }}
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botones del flujo de aprobación -->
+        @if (shouldShowApprovalButtons()) {
+          <div class="approval-buttons">
+            @if (getFlowButton() === 'creador') {
+              <button mat-raised-button (click)="openDashboard()">
+                <mat-icon>dashboard</mat-icon>
+                Dashboard
+              </button>
+            } @else if (getFlowButton() === 'aprobador') {
+              <button mat-raised-button color="primary" (click)="aprobar()">
+                <mat-icon>check_circle</mat-icon>
+                Aprobar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            } @else if (getFlowButton() === 'validador') {
+              <button mat-raised-button color="primary" (click)="validar()">
+                <mat-icon>verified</mat-icon>
+                Validar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Botón Generar Reporte siempre visible -->
+        <div class="standard-buttons">
+          <button mat-raised-button (click)="generateReport()">
+            <mat-icon>assessment</mat-icon>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="info-cards" *ngIf="procesoDetail()">
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Área</div>
+        <div class="card-value">{{ procesoDetail()?.areaId }} {{ procesoDetail()?.areaDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Clasificación</div>
+        <div class="card-value">{{ procesoDetail()?.procesoDescClasificacion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Puro</div>
+        <div class="card-value" [ngClass]="getRiskClass(procesoDetail()?.procesoRiesgoPuro)">
+          {{ procesoDetail()?.procesoRiesgoPuro }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Residual</div>
+        <div class="card-value" [ngClass]="getRiskClass(procesoDetail()?.procesoRiesgoResidual)">
+          {{ procesoDetail()?.procesoRiesgoResidual }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Estado</div>
+        <div class="card-value">
+          <span class="status-badge" [ngClass]="'status-' + procesoDetail()?.procesoStatusId">
+            {{ procesoDetail()?.procesoStatus }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Versión</div>
+        <div class="card-value">{{ procesoDetail()?.procesoVersion }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="content-section">
+    <!-- <h2 class="section-title">Subprocesos - Evaluación de Riesgos</h2> -->
+
+    @if (isLoadingSubprocesses()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando subprocesos...</p>
+      </div>
+    } @else if (subprocesses().length === 0) {
+      <div class="empty-state">
+        <mat-icon>folder_open</mat-icon>
+        <p>No hay subprocesos registrados en este proceso</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="risk-matrix-table">
+          <thead>
+            <!-- Fila 1: Headers principales -->
+            <tr class="main-header">
+              <th rowspan="2" class="sticky-col">Subproceso</th>
+              <th rowspan="2" class="sticky-col-2">Descripción Subproceso</th>
+              <th colspan="2" class="group-header">Seguridad y Salud Ocupacional</th>
+              <th colspan="2" class="group-header">Medio ambiente</th>
+              <th colspan="2" class="group-header">Operacional</th>
+            </tr>
+
+            <!-- Fila 2: Subheaders Puro/Residual -->
+            <tr class="sub-header">
+              <th class="risk-subheader">Puro</th>
+              <th class="risk-subheader">Residual</th>
+              <th class="risk-subheader">Puro</th>
+              <th class="risk-subheader">Residual</th>
+              <th class="risk-subheader">Puro</th>
+              <th class="risk-subheader">Residual</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let subprocess of subprocesses()"
+                [class.pending-delete]="subprocess.pendingDelete === 'Y'"
+                (click)="goToSubprocess(subprocess)"
+                [title]="getStatusTooltip(subprocess)"
+                class="table-row">
+
+              <td class="sticky-col id-cell">
+                {{ subprocess.id }}
+                @if (getStatusIndicator(subprocess)) {
+                  <span class="status-indicator">{{ getStatusIndicator(subprocess) }}</span>
+                }
+              </td>
+              <td class="sticky-col-2 description-cell">{{ subprocess.descripcion }}</td>
+
+              <!-- Seguridad y Salud Ocupacional -->
+              <td class="risk-cell" [ngClass]="getRiskClass(subprocess.subprocesoRiesgoPuroS)">
+                {{ subprocess.subprocesoRiesgoPuroS }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskClass(subprocess.subprocesoRiesgoResidualS)">
+                {{ subprocess.subprocesoRiesgoResidualS }}
+              </td>
+
+              <!-- Medio Ambiente -->
+              <td class="risk-cell" [ngClass]="getRiskClass(subprocess.subprocesoRiesgoPuroM)">
+                {{ subprocess.subprocesoRiesgoPuroM }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskClass(subprocess.subprocesoRiesgoResidualM)">
+                {{ subprocess.subprocesoRiesgoResidualM }}
+              </td>
+
+              <!-- Operacional -->
+              <td class="risk-cell" [ngClass]="getRiskClass(subprocess.subprocesoRiesgoPuroN)">
+                {{ subprocess.subprocesoRiesgoPuroN }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskClass(subprocess.subprocesoRiesgoResidualN)">
+                {{ subprocess.subprocesoRiesgoResidualN }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

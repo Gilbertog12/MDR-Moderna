@@ -1,0 +1,317 @@
+// src/app/features/risk-hierarchy/rka/rka.component.scss
+
+// ============================================================================
+// CONTENEDOR PRINCIPAL
+// ============================================================================
+.rka-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+// ============================================================================
+// HEADER DEL AREA (Seccion azul superior con degradado)
+// ============================================================================
+.area-header {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    .header-left {
+      flex: 1;
+
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 500;
+
+        .area-id {
+          font-weight: 600;
+        }
+      }
+
+      .area-extended-description {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TARJETAS DE INFORMACION (Cards con metricas del area)
+// ============================================================================
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px;
+
+  .info-card {
+    mat-card-content {
+      padding: 16px;
+
+      .card-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      .card-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+
+        &.risk-intolerable {
+          color: #d32f2f;
+        }
+
+        &.risk-tolerable {
+          color: #f57c00;
+        }
+
+        &.risk-insignificant {
+          color: #388e3c;
+        }
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+
+        &.status-001 {
+          background-color: #e3f2fd;
+          color: #1976d2;
+        }
+
+        &.status-004 {
+          background-color: #fff3e0;
+          color: #f57c00;
+        }
+
+        &.status-007 {
+          background-color: #f3e5f5;
+          color: #7b1fa2;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// SECCION DE CONTENIDO (Contiene la tabla de procesos)
+// ============================================================================
+.content-section {
+  background-color: white;
+  margin: 0 20px 20px 20px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  .section-title {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+// ============================================================================
+// WRAPPER DE LA TABLA (Controla scroll)
+// ============================================================================
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 450px);
+}
+
+// ============================================================================
+// TABLA DE MATRIZ DE RIESGOS
+// ============================================================================
+.risk-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+
+    .main-header {
+      th {
+        background-color: #f5f5f5;
+        padding: 12px 8px;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        text-align: center;
+
+        &.group-header {
+          background-color: #e0e0e0;
+          font-size: 12px;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .sub-header {
+      th {
+        background-color: #f5f5f5;
+        padding: 8px;
+        font-weight: 500;
+        font-size: 11px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+    }
+  }
+
+  tbody {
+    .table-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f9f9f9;
+      }
+
+      &.pending-delete {
+        opacity: 0.5;
+        text-decoration: line-through;
+      }
+    }
+
+    td {
+      padding: 10px 8px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+
+      &.id-cell {
+        font-weight: 600;
+        background-color: white;
+      }
+
+      &.description-cell {
+        text-align: left;
+        min-width: 250px;
+        max-width: 350px;
+        background-color: white;
+      }
+
+      &.risk-cell {
+        font-weight: 600;
+        min-width: 120px;
+        text-transform: uppercase;
+
+        &.risk-intolerable {
+          background-color: #e53935;
+          color: white;
+        }
+
+        &.risk-tolerable {
+          background-color: #fdd835;
+          color: #333;
+        }
+
+        &.risk-insignificant {
+          background-color: #43a047;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: white;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .sticky-col-2 {
+    position: sticky;
+    left: 60px;
+    z-index: 5;
+    background-color: white;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// ============================================================================
+// ESTADOS DE CARGA Y VACIO
+// ============================================================================
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  .approval-buttons {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .standard-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}

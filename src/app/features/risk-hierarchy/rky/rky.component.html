@@ -1,0 +1,333 @@
+<!-- src/app/features/risk-hierarchy/rky/rky.component.html -->
+<div class="rka-container">
+  <!-- Breadcrumbs de Jerarquía (8 niveles) -->
+  <div class="hierarchy-breadcrumb" *ngIf="consecuenciaDetail()">
+    <nav class="breadcrumb-nav">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item clickable" (click)="goToArea()">
+          <span>{{ consecuenciaDetail()?.areaId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToProceso()">
+          <span>{{ consecuenciaDetail()?.procesoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToSubproceso()">
+          <span>{{ consecuenciaDetail()?.subprocesoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToActividad()">
+          <span>{{ consecuenciaDetail()?.actividadId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToTarea()">
+          <span>{{ consecuenciaDetail()?.tareaId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToDimension()">
+          <span>{{ consecuenciaDetail()?.dimensionId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToRiesgo()">
+          <span>{{ consecuenciaDetail()?.riesgoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item current">
+          <span>{{ consecuenciaDetail()?.consecuenciaId }}</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Header de la Consecuencia -->
+  <div class="area-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          <span class="area-id" *ngIf="consecuenciaDetail()?.consecuenciaId">{{ consecuenciaDetail()?.consecuenciaId }} - </span>
+          {{ consecuenciaDetail()?.consecuenciaDescripcion || 'Cargando...' }}
+        </h1>
+        <p class="area-extended-description">
+          {{ consecuenciaDetail()?.consecuenciaDescripcionExt }}
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botones del flujo de aprobación -->
+        @if (shouldShowApprovalButtons()) {
+          <div class="approval-buttons">
+            @if (getFlowButton() === 'creador') {
+              <button mat-raised-button (click)="openDashboard()">
+                <mat-icon>dashboard</mat-icon>
+                Dashboard
+              </button>
+            } @else if (getFlowButton() === 'aprobador') {
+              <button mat-raised-button color="primary" (click)="aprobar()">
+                <mat-icon>check_circle</mat-icon>
+                Aprobar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            } @else if (getFlowButton() === 'validador') {
+              <button mat-raised-button color="primary" (click)="validar()">
+                <mat-icon>verified</mat-icon>
+                Validar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Botón Generar Reporte siempre visible -->
+        <div class="standard-buttons">
+          <button mat-raised-button (click)="generateReport()">
+            <mat-icon>assessment</mat-icon>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="info-cards" *ngIf="consecuenciaDetail()">
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Área</div>
+        <div class="card-value">{{ consecuenciaDetail()?.areaId }} - {{ consecuenciaDetail()?.areaDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Proceso</div>
+        <div class="card-value">{{ consecuenciaDetail()?.procesoId }} - {{ consecuenciaDetail()?.procesoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Subproceso</div>
+        <div class="card-value">{{ consecuenciaDetail()?.subprocesoId }} - {{ consecuenciaDetail()?.subprocesoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Actividad</div>
+        <div class="card-value">{{ consecuenciaDetail()?.actividadId }} - {{ consecuenciaDetail()?.actividadDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Tarea</div>
+        <div class="card-value">{{ consecuenciaDetail()?.tareaId }} - {{ consecuenciaDetail()?.tareaDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Dimensión</div>
+        <div class="card-value">{{ consecuenciaDetail()?.dimensionId }} - {{ consecuenciaDetail()?.dimensionDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo</div>
+        <div class="card-value">{{ consecuenciaDetail()?.riesgoId }} - {{ consecuenciaDetail()?.riesgoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Puro</div>
+        <div class="card-value" [ngClass]="getRiskClass(consecuenciaDetail()?.consecuenciaRiesgoPuroDesc)">
+          {{ consecuenciaDetail()?.consecuenciaRiesgoPuroDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Residual</div>
+        <div class="card-value" [ngClass]="getRiskClass(consecuenciaDetail()?.consecuenciaRiesgoResidualDesc)">
+          {{ consecuenciaDetail()?.consecuenciaRiesgoResidualDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Estado</div>
+        <div class="card-value">
+          <span class="status-badge" [ngClass]="'status-' + consecuenciaDetail()?.consecuenciaStatusId">
+            {{ consecuenciaDetail()?.consecuenciaStatus }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Versión</div>
+        <div class="card-value">{{ consecuenciaDetail()?.consecuenciaVersion }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabs de Contenido -->
+  <div class="content-section">
+    <mat-tab-group class="custom-tabs">
+      <!-- Tab 1: Evaluación Riesgo -->
+      <mat-tab label="Evaluación Riesgo">
+        <div class="tab-content">
+          @if (isLoadingConsecuencia()) {
+            <div class="loading-state">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Cargando evaluación de riesgo...</p>
+            </div>
+          } @else if (consecuenciaDetail()) {
+            <div class="risk-evaluation-container">
+              <!-- Columna Riesgo Puro -->
+              <div class="risk-column">
+                <h3 class="risk-column-title">Riesgo puro</h3>
+
+                <div class="risk-row">
+                  <div class="risk-label">Probabilidad</div>
+                  <div class="risk-value-group">
+                    <span class="risk-number">{{ consecuenciaDetail()?.consecuenciaProbabilidadPura }}</span>
+                    <span class="risk-text">{{ consecuenciaDetail()?.consecuenciaProbabilidadPuraDesc }}</span>
+                  </div>
+                </div>
+
+                <div class="risk-row">
+                  <div class="risk-label">Severidad</div>
+                  <div class="risk-value-group">
+                    <span class="risk-number">{{ consecuenciaDetail()?.consecuenciaSeveridadPura }}</span>
+                    <span class="risk-text">{{ consecuenciaDetail()?.consecuenciaSeveridadPuraDesc }}</span>
+                  </div>
+                </div>
+
+                <div class="risk-row">
+                  <div class="risk-label">MR</div>
+                  <div class="risk-value-group">
+                    <span class="risk-number">{{ consecuenciaDetail()?.consecuenciaMRPuro }}</span>
+                    <span class="risk-text">{{ consecuenciaDetail()?.consecuenciaMRPuroDesc }}</span>
+                  </div>
+                </div>
+
+                <div class="risk-row criticality-row">
+                  <div class="risk-label">Criticidad</div>
+                  <div class="risk-value-group">
+                    <span class="criticality-badge" [ngClass]="getRiskClass(consecuenciaDetail()?.consecuenciaCriticidadPura)">
+                      {{ consecuenciaDetail()?.consecuenciaCriticidadPura }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Columna Riesgo Residual -->
+              <div class="risk-column">
+                <h3 class="risk-column-title">Riesgo residual</h3>
+
+                <div class="risk-row">
+                  <div class="risk-label">Probabilidad</div>
+                  <div class="risk-value-group">
+                    <span class="risk-number">{{ consecuenciaDetail()?.consecuenciaProbabilidadResidual }}</span>
+                    <span class="risk-text">{{ consecuenciaDetail()?.consecuenciaProbabilidadResidualDesc }}</span>
+                  </div>
+                </div>
+
+                <div class="risk-row">
+                  <div class="risk-label">Severidad</div>
+                  <div class="risk-value-group">
+                    <span class="risk-number">{{ consecuenciaDetail()?.consecuenciaSeveridadResidual }}</span>
+                    <span class="risk-text">{{ consecuenciaDetail()?.consecuenciaSeveridadResidualDesc }}</span>
+                  </div>
+                </div>
+
+                <div class="risk-row">
+                  <div class="risk-label">MR</div>
+                  <div class="risk-value-group">
+                    <span class="risk-number">{{ consecuenciaDetail()?.consecuenciaMRResidual }}</span>
+                    <span class="risk-text">{{ consecuenciaDetail()?.consecuenciaMRResidualDesc }}</span>
+                  </div>
+                </div>
+
+                <div class="risk-row criticality-row">
+                  <div class="risk-label">Criticidad</div>
+                  <div class="risk-value-group">
+                    <span class="criticality-badge" [ngClass]="getRiskClass(consecuenciaDetail()?.consecuenciaCriticidadResidual)">
+                      {{ consecuenciaDetail()?.consecuenciaCriticidadResidual }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- Tab 2: Controles Blandos -->
+      <mat-tab label="Controles Blandos">
+        <div class="tab-content">
+          <div class="empty-state">
+            <mat-icon>pending_actions</mat-icon>
+            <p>Gestión de controles blandos en desarrollo</p>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab 3: Controles Duros -->
+      <mat-tab label="Controles Duros">
+        <div class="tab-content">
+          <div class="empty-state">
+            <mat-icon>engineering</mat-icon>
+            <p>Gestión de controles duros en desarrollo</p>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab 4: EPF -->
+      <mat-tab label="EPF">
+        <div class="tab-content">
+          <div class="empty-state">
+            <mat-icon>security</mat-icon>
+            <p>Equipos de protección y formación en desarrollo</p>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab 5: Documentos -->
+      <mat-tab label="Documentos">
+        <div class="tab-content">
+          <div class="empty-state">
+            <mat-icon>folder</mat-icon>
+            <p>Gestión de documentos en desarrollo</p>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

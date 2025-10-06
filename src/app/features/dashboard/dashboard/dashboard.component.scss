@@ -1,0 +1,57 @@
+ .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1 {
+      color: #1976d2;
+      margin-bottom: 32px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      text-align: center;
+
+      .card-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: #1976d2;
+        margin-bottom: 8px;
+      }
+
+      h2 {
+        font-size: 16px;
+        color: #666;
+        margin: 8px 0;
+      }
+
+      .stat-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #1976d2;
+        margin: 0;
+      }
+    }
+
+    .info-card {
+      mat-card-title {
+        color: #1976d2;
+      }
+
+      ul {
+        margin-top: 16px;
+
+        li {
+          margin-bottom: 8px;
+          color: #666;
+        }
+      }
+    }

@@ -1,0 +1,254 @@
+<div class="rka-container">
+  <!-- Breadcrumbs de Jerarquía (5 niveles) -->
+  <div class="hierarchy-breadcrumb" *ngIf="tareaDetail()">
+    <nav class="breadcrumb-nav">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item clickable" (click)="goToArea()">
+          <span>{{ tareaDetail()?.areaId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToProceso()">
+          <span>{{ tareaDetail()?.procesoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToSubproceso()">
+          <span>{{ tareaDetail()?.subprocesoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToActividad()">
+          <span>{{ tareaDetail()?.actividadId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item current">
+          <span>{{ tareaDetail()?.tareaId }}</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Header de la Tarea -->
+  <div class="area-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          <span class="area-id" *ngIf="tareaDetail()?.tareaId">{{ tareaDetail()?.tareaId }} - </span>
+          {{ tareaDetail()?.tareaDescripcion || 'Cargando...' }}
+        </h1>
+        <p class="area-extended-description">
+          {{ tareaDetail()?.tareaDescripcionExt }}
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botones del flujo de aprobación -->
+        @if (shouldShowApprovalButtons()) {
+          <div class="approval-buttons">
+            @if (getFlowButton() === 'creador') {
+              <button mat-raised-button (click)="openDashboard()">
+                <mat-icon>dashboard</mat-icon>
+                Dashboard
+              </button>
+            } @else if (getFlowButton() === 'aprobador') {
+              <button mat-raised-button color="primary" (click)="aprobar()">
+                <mat-icon>check_circle</mat-icon>
+                Aprobar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            } @else if (getFlowButton() === 'validador') {
+              <button mat-raised-button color="primary" (click)="validar()">
+                <mat-icon>verified</mat-icon>
+                Validar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Botón Generar Reporte siempre visible -->
+        <div class="standard-buttons">
+          <button mat-raised-button (click)="generateReport()">
+            <mat-icon>assessment</mat-icon>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="info-cards" *ngIf="tareaDetail()">
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Área</div>
+        <div class="card-value">{{ tareaDetail()?.areaId }} - {{ tareaDetail()?.areaDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Proceso</div>
+        <div class="card-value">{{ tareaDetail()?.procesoId }} - {{ tareaDetail()?.procesoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Subproceso</div>
+        <div class="card-value">{{ tareaDetail()?.subprocesoId }} - {{ tareaDetail()?.subprocesoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Actividad</div>
+        <div class="card-value">{{ tareaDetail()?.actividadId }} - {{ tareaDetail()?.actividadDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Clasificación</div>
+        <div class="card-value">{{ tareaDetail()?.tareaDescTipo }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Puro</div>
+        <div class="card-value" [ngClass]="getRiskClass(tareaDetail()?.tareaRiesgoPuroDesc)">
+          {{ tareaDetail()?.tareaRiesgoPuroDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Residual</div>
+        <div class="card-value" [ngClass]="getRiskClass(tareaDetail()?.tareaRiesgoResidualDesc)">
+          {{ tareaDetail()?.tareaRiesgoResidualDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Estado</div>
+        <div class="card-value">
+          <span class="status-badge" [ngClass]="'status-' + tareaDetail()?.tareaStatusId">
+            {{ tareaDetail()?.tareaStatus }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Versión</div>
+        <div class="card-value">{{ tareaDetail()?.tareaVersion }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Contenido principal con Tabs -->
+  <div class="content-section">
+    <mat-tab-group [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)">
+
+      <!-- Tab: Evaluación de Riesgo (Dimensiones) -->
+      <mat-tab label="Evaluación Riesgo">
+        @if (isLoadingDimensiones()) {
+          <div class="loading-state">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Cargando dimensiones...</p>
+          </div>
+        } @else if (dimensiones().length === 0) {
+          <div class="empty-state">
+            <mat-icon>folder_open</mat-icon>
+            <p>No hay dimensiones registradas en esta tarea</p>
+          </div>
+        } @else {
+          <div class="table-wrapper">
+            <table class="dimension-table">
+              <thead>
+                <tr class="main-header">
+                  <th class="sticky-col">Dimensión</th>
+                  <th class="sticky-col-2">Descripción Dimensión</th>
+                  <th class="risk-header">Puro</th>
+                  <th class="risk-header">Residual</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let dimension of dimensiones()"
+                    [class.pending-delete]="dimension.pendingDelete === 'Y'"
+                    (click)="goToDimension(dimension)"
+                    [title]="getStatusTooltip(dimension)"
+                    class="table-row">
+
+                  <td class="sticky-col id-cell">
+                    {{ dimension.id }}
+                    @if (getStatusIndicator(dimension)) {
+                      <span class="status-indicator">{{ getStatusIndicator(dimension) }}</span>
+                    }
+                  </td>
+                  <td class="sticky-col-2 description-cell">{{ dimension.descripcion }}</td>
+
+                  <!-- Riesgos -->
+                  <td class="risk-cell" [ngClass]="getRiskClass(dimension.dimensionRiesgoPuro)">
+                    {{ dimension.dimensionRiesgoPuro }}
+                  </td>
+                  <td class="risk-cell" [ngClass]="getRiskClass(dimension.dimensionRiesgoResidual)">
+                    {{ dimension.dimensionRiesgoResidual }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
+      </mat-tab>
+
+      <!-- Tab: Std. Job (Simplificado) -->
+      <mat-tab label="Std. Job">
+        <div class="tab-content-simple">
+          <div class="info-message">
+            <mat-icon>engineering</mat-icon>
+            <h3>Gestión de Trabajos Estándar</h3>
+            <p>Administración de procedimientos y tareas estándares para esta tarea</p>
+            <p class="subtitle">Esta funcionalidad estará disponible en próximas versiones</p>
+            <button mat-raised-button color="primary" disabled>
+              <mat-icon>add</mat-icon>
+              Añadir Std. Job
+            </button>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab: Detalle -->
+      <mat-tab label="Detalle">
+        <div class="tab-content-simple">
+          <div class="info-message">
+            <mat-icon>analytics</mat-icon>
+            <h3>Detalle de Evaluación</h3>
+            <p>Vista detallada de la evaluación de riesgos por dimensión</p>
+            <p><strong>Dimensiones evaluadas:</strong> Seguridad, Medio Ambiente, Operacional</p>
+            <p class="subtitle">Esta funcionalidad estará disponible en próximas versiones</p>
+          </div>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</div>

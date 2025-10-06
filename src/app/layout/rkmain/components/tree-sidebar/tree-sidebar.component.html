@@ -1,0 +1,145 @@
+<!-- Toolbar superior del árbol -->
+<div class="tree-toolbar">
+  <button
+    mat-icon-button
+    (click)="refreshTree()"
+    matTooltip="Refrescar árbol"
+    class="toolbar-btn">
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+  <button
+    mat-icon-button
+    [class.active]="showApproved()"
+    (click)="toggleShowApproved()"
+    matTooltip="Mostrar/Ocultar aprobados"
+    class="toolbar-btn">
+    <mat-icon>{{ showApproved() ? 'visibility' : 'visibility_off' }}</mat-icon>
+  </button>
+
+  @if (copiedNode()) {
+    <button
+      mat-icon-button
+      (click)="clearCopied()"
+      matTooltip="Limpiar copiado"
+      class="toolbar-btn copied-indicator">
+      <mat-icon>content_paste</mat-icon>
+    </button>
+  }
+</div>
+
+<!-- Loading indicator -->
+@if (isLoading()) {
+  <div class="tree-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Cargando árbol...</span>
+  </div>
+}
+
+<!-- Árbol jerárquico -->
+<div class="tree-container">
+  <cdk-tree
+    [dataSource]="dataSource"
+    [treeControl]="treeControl"
+    class="risk-tree">
+
+    <!-- Template para cada nodo -->
+    <cdk-tree-node
+      *cdkTreeNodeDef="let node"
+      cdkTreeNodePadding
+      [cdkTreeNodePaddingIndent]="14"
+      class="tree-node"
+      [class.node-selected]="selectedNode()?.key === node.key"
+      [class.copied-node]="copiedNode()?.key === node.key"
+      [attr.id]="node.key"
+      #treeNode>
+
+      <!-- Botones de acción (posición absoluta) -->
+      <div class="node-actions-fixed">
+        @if (canShowAddButton(node)) {
+          <button
+            mat-icon-button
+            (click)="addChild(node); $event.stopPropagation()"
+            matTooltip="Agregar hijo"
+            class="action-btn add-btn">
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        }
+
+        @if (canShowDeleteButton(node)) {
+          <button
+            mat-icon-button
+            (click)="deleteNode(node); $event.stopPropagation()"
+            matTooltip="Eliminar"
+            class="action-btn delete-btn">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        }
+
+        @if (canShowCopyButton(node)) {
+          <button
+            mat-icon-button
+            (click)="copyNode(node); $event.stopPropagation()"
+            matTooltip="Copiar jerarquía"
+            class="action-btn copy-btn">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        }
+
+        @if (copiedNode() && canPaste()) {
+          <button
+            mat-icon-button
+            (click)="pasteNode(node); $event.stopPropagation()"
+            matTooltip="Pegar jerarquía"
+            class="action-btn paste-btn">
+            <mat-icon>content_paste</mat-icon>
+          </button>
+        }
+      </div>
+
+      <!-- Contenido del nodo con margen para botones -->
+      <div class="node-content">
+        <!-- Botón de expansión -->
+        <button
+          mat-icon-button
+          cdkTreeNodeToggle
+          [attr.aria-label]="'Toggle ' + node.item"
+          class="expand-btn"
+          [disabled]="!node.expandable"
+          (click)="$event.stopPropagation()">
+          <mat-icon class="expand-icon">
+            {{ getExpandIcon(node) }}
+          </mat-icon>
+        </button>
+
+        <!-- Loading spinner -->
+        @if (node.isLoading) {
+          <mat-spinner diameter="14" class="node-spinner"></mat-spinner>
+        }
+
+        <!-- Prefijo del nivel -->
+        <span class="node-prefix" [style.background-color]="getLevelColor(node)">
+          {{ getLevelPrefix(node) }}
+        </span>
+
+        <!-- Texto del nodo -->
+          <a
+          class="node-link"
+          [ngClass]="getStatusClass(node)"
+          (click)="selectNode(node)"
+          [title]="getStatusTooltip(node)">
+          {{ node.item }}
+          <span class="status-indicator">{{ getStatusIndicator(node) }}</span>
+        </a>
+      </div>
+    </cdk-tree-node>
+  </cdk-tree>
+</div>
+
+<!-- Mensaje vacío -->
+@if (!isLoading() && dataSource.data.length === 0) {
+  <div class="tree-empty">
+    <mat-icon>folder_open</mat-icon>
+    <p>No hay elementos para mostrar</p>
+  </div>
+}

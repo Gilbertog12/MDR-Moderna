@@ -1,0 +1,192 @@
+<div class="rka-container">
+  <!-- Header del Área -->
+  <div class="area-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          <span class="area-id" *ngIf="areaDetail()?.areaId">{{ areaDetail()?.areaId }} - </span>
+          {{ areaDetail()?.description || 'Cargando...' }}
+        </h1>
+        <p class="area-extended-description">
+          {{ areaDetail()?.extendedDescription }}
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botones del flujo de aprobación -->
+        @if (shouldShowApprovalButtons()) {
+          <div class="approval-buttons">
+            @if (getFlowButton() === 'enviar-validar') {
+              <button mat-raised-button color="accent" (click)="enviarAValidar()">
+                <mat-icon>send</mat-icon>
+                Enviar a Validar
+              </button>
+            } @else if (getFlowButton() === 'aprobar') {
+              <button mat-raised-button color="primary" (click)="aprobar()">
+                <mat-icon>check_circle</mat-icon>
+                Aprobar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            } @else if (getFlowButton() === 'validar') {
+              <button mat-raised-button color="primary" (click)="validar()">
+                <mat-icon>verified</mat-icon>
+                Validar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            }
+
+            <!-- Dashboard solo si hay flujo activo -->
+            <button mat-raised-button (click)="openDashboard()">
+              <mat-icon>dashboard</mat-icon>
+              Dashboard
+            </button>
+          </div>
+        }
+
+        <!-- Solo Generar Reporte siempre visible -->
+        <div class="standard-buttons">
+          <button mat-raised-button (click)="generateReport()">
+            <mat-icon>assessment</mat-icon>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="info-cards" *ngIf="areaDetail()">
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Posición</div>
+        <div class="card-value">{{ areaDetail()?.positionDesc }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Clasificación</div>
+        <div class="card-value">{{ areaDetail()?.classificationDesc }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Puro</div>
+        <div class="card-value" [ngClass]="getRiskBadgeClass(areaDetail()?.pureRiskDesc)">
+          {{ areaDetail()?.pureRiskDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Residual</div>
+        <div class="card-value" [ngClass]="getRiskBadgeClass(areaDetail()?.residualRiskDesc)">
+          {{ areaDetail()?.residualRiskDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Estado</div>
+        <div class="card-value">
+          <span class="status-badge" [ngClass]="'status-' + areaDetail()?.statusId">
+            {{ areaDetail()?.status }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Versión</div>
+        <div class="card-value">{{ areaDetail()?.version }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="content-section">
+    <h2 class="section-title">Evaluación de Riesgos</h2>
+
+    @if (isLoadingProcesses()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando procesos...</p>
+      </div>
+    } @else if (processes().length === 0) {
+      <div class="empty-state">
+        <mat-icon>folder_open</mat-icon>
+        <p>No hay procesos registrados en esta área</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="risk-matrix-table">
+          <thead>
+            <!-- Fila 1: Headers principales -->
+            <tr class="main-header">
+              <th rowspan="2" class="sticky-col">ID</th>
+              <th rowspan="2" class="sticky-col-2">Descripción Proceso</th>
+              <th colspan="2" class="group-header">Seguridad y Salud Ocupacional</th>
+              <th colspan="2" class="group-header">Medio ambiente</th>
+              <th colspan="2" class="group-header">Operacional</th>
+            </tr>
+
+            <!-- Fila 2: Subheaders Puro/Residual -->
+            <tr class="sub-header">
+              <th class="risk-subheader">Puro</th>
+              <th class="risk-subheader">Residual</th>
+              <th class="risk-subheader">Puro</th>
+              <th class="risk-subheader">Residual</th>
+              <th class="risk-subheader">Puro</th>
+              <th class="risk-subheader">Residual</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let process of processes()"
+                [class.pending-delete]="process.pendingDelete === 'Y'"
+                (click)="goToProcess(process)"
+                class="table-row">
+
+              <td class="sticky-col id-cell">{{ process.id }}</td>
+              <td class="sticky-col-2 description-cell">{{ process.description }}</td>
+
+              <!-- S y SO -->
+              <td class="risk-cell" [ngClass]="getRiskCellClass(process.pureRisks.safety)">
+                {{ process.pureRisks.safety }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskCellClass(process.residualRisks.safety)">
+                {{ process.residualRisks.safety }}
+              </td>
+
+              <!-- M A -->
+              <td class="risk-cell" [ngClass]="getRiskCellClass(process.pureRisks.environmental)">
+                {{ process.pureRisks.environmental }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskCellClass(process.residualRisks.environmental)">
+                {{ process.residualRisks.environmental }}
+              </td>
+
+              <!-- Operacional -->
+              <td class="risk-cell" [ngClass]="getRiskCellClass(process.pureRisks.operational)">
+                {{ process.pureRisks.operational }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskCellClass(process.residualRisks.operational)">
+                {{ process.residualRisks.operational }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

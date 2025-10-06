@@ -1,0 +1,103 @@
+<div class="rkmain-container">
+  <!-- Header / Toolbar -->
+  <mat-toolbar class="rkmain-toolbar">
+    <div class="toolbar-left">
+      <!-- Botón toggle sidenav -->
+      <button
+        mat-icon-button
+        (click)="toggleSidenav()"
+        matTooltip="Mostrar/Ocultar árbol">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Logo y título -->
+      <button
+        mat-button
+        class="home-btn"
+        (click)="goToDashboard()">
+        <mat-icon>home</mat-icon>
+        <span class="app-title">Matriz de Riesgos</span>
+      </button>
+
+      <!-- Breadcrumbs -->
+      @if (breadcrumbs().length > 0) {
+        <div class="breadcrumbs">
+          <mat-icon class="breadcrumb-icon">chevron_right</mat-icon>
+          @for (crumb of breadcrumbs(); track crumb) {
+            <span class="breadcrumb">{{ crumb }}</span>
+            @if (!$last) {
+              <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <div class="toolbar-right">
+      <!-- Usuario info -->
+      <div class="user-info">
+        <mat-icon class="user-icon">person</mat-icon>
+        <div class="user-details">
+          <span class="user-name">{{ usuario() }}</span>
+          <span class="user-meta">{{ distrito() }} - {{ posicion() }}</span>
+        </div>
+      </div>
+
+      <!-- Notificaciones -->
+      <button
+        mat-icon-button
+        (click)="showNotifications()"
+        matTooltip="Notificaciones"
+        [matBadge]="notificationCount()"
+        [matBadgeHidden]="notificationCount() === 0"
+        matBadgeColor="warn"
+        matBadgeSize="small">
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <!-- Leyenda -->
+      <button
+        mat-icon-button
+        (click)="showLegend()"
+        matTooltip="Leyenda de estados">
+        <mat-icon>help_outline</mat-icon>
+      </button>
+
+      <!-- Ayuda -->
+      <button
+        mat-icon-button
+        (click)="showHelp()"
+        matTooltip="Ayuda">
+        <mat-icon>info</mat-icon>
+      </button>
+
+      <!-- Cerrar sesión -->
+      <button
+        mat-icon-button
+        (click)="logout()"
+        matTooltip="Cerrar sesión"
+        class="logout-btn">
+        <mat-icon>exit_to_app</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Sidenav container -->
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Sidenav (Árbol) -->
+    <mat-sidenav
+      #sidenav
+      mode="side"
+      [opened]="sidenavOpened()"
+      class="tree-sidenav">
+      <app-tree-sidebar></app-tree-sidebar>
+    </mat-sidenav>
+
+    <!-- Contenido principal -->
+    <mat-sidenav-content class="main-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,282 @@
+<!-- src/app/features/risk-hierarchy/rkr/rkr.component.html -->
+<div class="rka-container">
+  <!-- Breadcrumbs de Jerarquía (7 niveles) -->
+  <div class="hierarchy-breadcrumb" *ngIf="riesgoDetail()">
+    <nav class="breadcrumb-nav">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item clickable" (click)="goToArea()">
+          <span>{{ riesgoDetail()?.areaId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToProceso()">
+          <span>{{ riesgoDetail()?.procesoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToSubproceso()">
+          <span>{{ riesgoDetail()?.subprocesoId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToActividad()">
+          <span>{{ riesgoDetail()?.actividadId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToTarea()">
+          <span>{{ riesgoDetail()?.tareaId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item clickable" (click)="goToDimension()">
+          <span>{{ riesgoDetail()?.dimensionId }}</span>
+        </li>
+        <li class="breadcrumb-separator">
+          <mat-icon>chevron_right</mat-icon>
+        </li>
+        <li class="breadcrumb-item current">
+          <span>{{ riesgoDetail()?.riesgoId }}</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Header del Riesgo -->
+  <div class="area-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1>
+          <span class="area-id" *ngIf="riesgoDetail()?.riesgoId">{{ riesgoDetail()?.riesgoId }} - </span>
+          {{ riesgoDetail()?.riesgoDescripcion || 'Cargando...' }}
+        </h1>
+        <p class="area-extended-description">
+          {{ riesgoDetail()?.riesgoDescripcionExt }}
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botones del flujo de aprobación -->
+        @if (shouldShowApprovalButtons()) {
+          <div class="approval-buttons">
+            @if (getFlowButton() === 'creador') {
+              <button mat-raised-button (click)="openDashboard()">
+                <mat-icon>dashboard</mat-icon>
+                Dashboard
+              </button>
+            } @else if (getFlowButton() === 'aprobador') {
+              <button mat-raised-button color="primary" (click)="aprobar()">
+                <mat-icon>check_circle</mat-icon>
+                Aprobar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            } @else if (getFlowButton() === 'validador') {
+              <button mat-raised-button color="primary" (click)="validar()">
+                <mat-icon>verified</mat-icon>
+                Validar
+              </button>
+              <button mat-raised-button color="warn" (click)="rechazar()">
+                <mat-icon>cancel</mat-icon>
+                Rechazar
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Botón Generar Reporte siempre visible -->
+        <div class="standard-buttons">
+          <button mat-raised-button (click)="generateReport()">
+            <mat-icon>assessment</mat-icon>
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="info-cards" *ngIf="riesgoDetail()">
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Área</div>
+        <div class="card-value">{{ riesgoDetail()?.areaId }} - {{ riesgoDetail()?.areaDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Proceso</div>
+        <div class="card-value">{{ riesgoDetail()?.procesoId }} - {{ riesgoDetail()?.procesoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Subproceso</div>
+        <div class="card-value">{{ riesgoDetail()?.subprocesoId }} - {{ riesgoDetail()?.subprocesoDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Actividad</div>
+        <div class="card-value">{{ riesgoDetail()?.actividadId }} - {{ riesgoDetail()?.actividadDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Tarea</div>
+        <div class="card-value">{{ riesgoDetail()?.tareaId }} - {{ riesgoDetail()?.tareaDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Dimensión</div>
+        <div class="card-value">{{ riesgoDetail()?.dimensionId }} - {{ riesgoDetail()?.dimensionDescripcion }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Rama</div>
+        <div class="card-value">{{ riesgoDetail()?.riesgoIdRama }} - {{ riesgoDetail()?.riesgoDescRama }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Familia</div>
+        <div class="card-value">{{ riesgoDetail()?.riesgoIdFamilia }} - {{ riesgoDetail()?.riesgoDescFamilia }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Puro</div>
+        <div class="card-value" [ngClass]="getRiskClass(riesgoDetail()?.riesgoRiesgoPuroDesc)">
+          {{ riesgoDetail()?.riesgoRiesgoPuroDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Riesgo Residual</div>
+        <div class="card-value" [ngClass]="getRiskClass(riesgoDetail()?.riesgoRiesgoResidualDesc)">
+          {{ riesgoDetail()?.riesgoRiesgoResidualDesc }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Estado</div>
+        <div class="card-value">
+          <span class="status-badge" [ngClass]="'status-' + riesgoDetail()?.riesgoStatusId">
+            {{ riesgoDetail()?.riesgoStatus }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="card-label">Versión</div>
+        <div class="card-value">{{ riesgoDetail()?.riesgoVersion }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabla de Consecuencias con 3 Categorías -->
+  <div class="content-section">
+    @if (isLoadingConsecuencias()) {
+      <div class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando consecuencias...</p>
+      </div>
+    } @else if (consecuencias().length === 0) {
+      <div class="empty-state">
+        <mat-icon>folder_open</mat-icon>
+        <p>No hay consecuencias registradas en este riesgo</p>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="risk-table">
+          <thead>
+            <!-- Fila 1: Categorías principales -->
+            <tr class="category-header">
+              <th class="sticky-col" rowspan="2">Consecuencia</th>
+              <th class="sticky-col-2" rowspan="2">Descripción Consecuencia</th>
+              <th colspan="2" class="category-seguridad">Seguridad y Salud Ocupacional</th>
+              <th colspan="2" class="category-ambiente">Medio Ambiente</th>
+              <th colspan="2" class="category-operacional">Operacional</th>
+            </tr>
+            <!-- Fila 2: Puro/Residual -->
+            <tr class="subcategory-header">
+              <th class="risk-header">Puro</th>
+              <th class="risk-header">Residual</th>
+              <th class="risk-header">Puro</th>
+              <th class="risk-header">Residual</th>
+              <th class="risk-header">Puro</th>
+              <th class="risk-header">Residual</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let consecuencia of consecuencias()"
+                [class.pending-delete]="consecuencia.pendingDelete === 'Y'"
+                (click)="onConsecuenciaClick(consecuencia)"
+                [title]="getStatusTooltip(consecuencia)"
+                class="table-row">
+
+              <!-- ID de la Consecuencia con indicador de estado -->
+              <td class="sticky-col id-cell">
+                {{ consecuencia.id }}
+                @if (getStatusIndicator(consecuencia)) {
+                  <span class="status-indicator">{{ getStatusIndicator(consecuencia) }}</span>
+                }
+              </td>
+
+              <!-- Descripción de la Consecuencia -->
+              <td class="sticky-col-2 description-cell">{{ consecuencia.descripcion }}</td>
+
+              <!-- Seguridad y Salud -->
+              <td class="risk-cell" [ngClass]="getRiskClass(consecuencia.consecuenciaRiesgoPuroS)">
+                {{ consecuencia.consecuenciaRiesgoPuroS }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskClass(consecuencia.consecuenciaRiesgoResidualS)">
+                {{ consecuencia.consecuenciaRiesgoResidualS }}
+              </td>
+
+              <!-- Medio Ambiente -->
+              <td class="risk-cell" [ngClass]="getRiskClass(consecuencia.consecuenciaRiesgoPuroM)">
+                {{ consecuencia.consecuenciaRiesgoPuroM }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskClass(consecuencia.consecuenciaRiesgoResidualM)">
+                {{ consecuencia.consecuenciaRiesgoResidualM }}
+              </td>
+
+              <!-- Operacional -->
+              <td class="risk-cell" [ngClass]="getRiskClass(consecuencia.consecuenciaRiesgoPuroN)">
+                {{ consecuencia.consecuenciaRiesgoPuroN }}
+              </td>
+              <td class="risk-cell" [ngClass]="getRiskClass(consecuencia.consecuenciaRiesgoResidualN)">
+                {{ consecuencia.consecuenciaRiesgoResidualN }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

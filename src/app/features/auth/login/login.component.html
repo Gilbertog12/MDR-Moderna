@@ -1,0 +1,78 @@
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <!-- Header -->
+      <div class="login-header">
+        <div class="logo-section">
+          <img src="/assets/images/logo_collahuasi.png" alt="Collahuasi" class="logo">
+        </div>
+        <div class="title-section">
+          <span class="app-name">Matriz de Riesgos</span>
+          <span class="environment">{{ ambiente }}</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Usuario -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuario</mat-label>
+          <input matInput type="text" formControlName="username" autocomplete="username">
+          <mat-icon matSuffix>person_outline</mat-icon>
+          @if(loginForm.get('username')?.hasError('required')){
+
+            <mat-error >
+              El usuario es requerido
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Contraseña -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+            autocomplete="current-password">
+          <mat-icon matSuffix>lock_outline</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Mostrar contraseña'" class="toggle-password">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (loginForm.get('password')?.hasError('required')) {
+
+            <mat-error >
+              La contraseña es requerida
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Remember me -->
+        <div class="remember-section">
+          <mat-checkbox formControlName="rememberMe">
+            Recordarme
+          </mat-checkbox>
+        </div>
+
+        <!-- Footer con help y botón -->
+        <div class="form-footer">
+          <button type="button" mat-icon-button class="help-button" (click)="showHelp()" matTooltip="Ayuda">
+            <mat-icon>help_outline</mat-icon>
+          </button>
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid" class="submit-button">
+            Entrar
+          </button>
+        </div>
+
+        <!-- Error message -->
+         @if(errorMessage){
+
+           <div class="error-message" >
+             <mat-icon>error_outline</mat-icon>
+             <span>{{ errorMessage }}</span>
+           </div>
+         }
+      </form>
+    </div>
+  </div>
+</div>

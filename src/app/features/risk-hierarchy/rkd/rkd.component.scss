@@ -1,0 +1,558 @@
+// src/app/features/risk-hierarchy/rkd/rkd.component.scss
+// COMPONENTE RKD - DIMENSIÓN (NIVEL 6)
+// Tabla compleja con 3 categorías de riesgo: Seguridad, Medio Ambiente, Operacional
+
+// ============================================================================
+// BREADCRUMBS DE JERARQUÍA (6 NIVELES)
+// ============================================================================
+.hierarchy-breadcrumb {
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 24px;
+
+  .breadcrumb-nav {
+    .breadcrumb-list {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .breadcrumb-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #666;
+        font-size: 14px;
+
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
+
+        &.clickable {
+          cursor: pointer;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: #1976d2;
+          }
+        }
+
+        &.current {
+          color: #1976d2;
+          font-weight: 500;
+        }
+
+        .breadcrumb-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+
+          @media (max-width: 768px) {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+
+      .breadcrumb-separator {
+        color: #ccc;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+
+          @media (max-width: 768px) {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// CONTENEDOR PRINCIPAL
+// ============================================================================
+.rka-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+// ============================================================================
+// HEADER DE LA DIMENSIÓN (Sección azul superior con degradado)
+// ============================================================================
+.area-header {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .header-left {
+      flex: 1;
+
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 500;
+
+        @media (max-width: 768px) {
+          font-size: 20px;
+        }
+
+        .area-id {
+          font-weight: 600;
+        }
+      }
+
+      .area-extended-description {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TARJETAS DE INFORMACIÓN (Cards con métricas de la dimensión)
+// ============================================================================
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .info-card {
+    mat-card-content {
+      padding: 16px;
+
+      .card-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      .card-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+
+        @media (max-width: 768px) {
+          font-size: 16px;
+        }
+
+        &.risk-intolerable {
+          color: #d32f2f;
+        }
+
+        &.risk-tolerable {
+          color: #f57c00;
+        }
+
+        &.risk-insignificant {
+          color: #388e3c;
+        }
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+
+        &.status-001,
+        &.status-002,
+        &.status-003,
+        &.status-006 {
+          background-color: #e3f2fd;
+          color: #1976d2;
+        }
+
+        &.status-004 {
+          background-color: #fff3e0;
+          color: #f57c00;
+        }
+
+        &.status-007 {
+          background-color: #f3e5f5;
+          color: #7b1fa2;
+        }
+
+        &.status-008 {
+          color: #388e3c;
+        }
+
+        &.status-000 {
+          background-color: #ffebee;
+          color: #c62828;
+        }
+      }
+    }
+  }
+}
+
+// ============================================================================
+// SECCIÓN DE CONTENIDO (Sin tabs, solo tabla)
+// ============================================================================
+.content-section {
+  background-color: white;
+  margin: 0 20px 20px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    margin: 0 16px 16px 16px;
+  }
+}
+
+// ============================================================================
+// WRAPPER DE LA TABLA (Controla scroll)
+// ============================================================================
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 520px);
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    max-height: calc(100vh - 580px);
+  }
+}
+
+// ============================================================================
+// TABLA DE RIESGOS CON 3 CATEGORÍAS (Específica para RKD)
+// ============================================================================
+.risk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+
+    .category-header {
+      th {
+        background-color: #f5f5f5;
+        padding: 12px 8px;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 12px;
+        text-transform: uppercase;
+
+        &.category-seguridad {
+          background-color: #e3f2fd;
+          color: #1565c0;
+        }
+
+        &.category-ambiente {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+        }
+
+        &.category-operacional {
+          background-color: #fff3e0;
+          color: #e65100;
+        }
+      }
+    }
+
+    .subcategory-header {
+      th {
+        background-color: #fafafa;
+        padding: 10px 8px;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #666;
+      }
+    }
+  }
+
+  tbody {
+    .table-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f9f9f9;
+      }
+
+      &.pending-delete {
+        opacity: 0.5;
+        text-decoration: line-through;
+      }
+    }
+
+    td {
+      padding: 10px 8px;
+      border: 1px solid #e0e0e0;
+      text-align: center;
+
+      &.id-cell {
+        font-weight: 600;
+        background-color: white;
+
+        .status-indicator {
+          color: #f44336;
+          font-size: 11px;
+          margin-left: 4px;
+        }
+      }
+
+      &.description-cell {
+        text-align: left;
+        min-width: 250px;
+        max-width: 400px;
+        background-color: white;
+      }
+
+      &.risk-cell {
+        font-weight: 600;
+        min-width: 120px;
+        text-transform: uppercase;
+        padding: 14px 8px;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+
+        &.risk-intolerable {
+          background-color: #e53935;
+          color: white;
+          font-weight: 700;
+        }
+
+        &.risk-tolerable {
+          background-color: #fdd835;
+          color: #333;
+          font-weight: 700;
+        }
+
+        &.risk-insignificant {
+          background-color: #43a047;
+          color: white;
+          font-weight: 700;
+        }
+
+        // Celdas vacías
+        &:empty,
+        &:has(> :empty) {
+          background-color: #f5f5f5;
+        }
+      }
+    }
+  }
+
+  // Columnas sticky para ID y Descripción
+  .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: white;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .sticky-col-2 {
+    position: sticky;
+    left: 80px; // Ajustado para el ancho del ID
+    z-index: 5;
+    background-color: white;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// ============================================================================
+// ESTADOS DE CARGA Y VACÍO
+// ============================================================================
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// ============================================================================
+// BOTONES DE ACCIÓN EN EL HEADER
+// ============================================================================
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .approval-buttons {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+
+    @media (max-width: 768px) {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .standard-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE ESPECÍFICO PARA 6 NIVELES
+// ============================================================================
+@media (max-width: 480px) {
+  .hierarchy-breadcrumb {
+    .breadcrumb-nav .breadcrumb-list {
+      gap: 4px;
+
+      .breadcrumb-item {
+        font-size: 11px;
+      }
+
+      .breadcrumb-separator mat-icon {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+
+  .info-cards {
+    .info-card mat-card-content .card-value {
+      font-size: 14px;
+    }
+  }
+
+  .risk-table {
+    font-size: 11px;
+
+    thead {
+      .category-header th {
+        font-size: 10px;
+        padding: 8px 4px;
+      }
+
+      .subcategory-header th {
+        font-size: 9px;
+        padding: 6px 4px;
+      }
+    }
+
+    tbody td {
+      padding: 8px 4px;
+
+      &.description-cell {
+        min-width: 180px;
+      }
+
+      &.risk-cell {
+        min-width: 90px;
+        font-size: 10px;
+        padding: 10px 4px;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// MEJORAS ADICIONALES PARA LA TABLA COMPLEJA
+// ============================================================================
+.risk-table {
+  // Asegurar que la tabla no se desborde
+  table-layout: fixed;
+
+  @media (max-width: 1200px) {
+    table-layout: auto;
+  }
+
+  // Mejor contraste para headers de categorías
+  thead {
+    .category-header th {
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #ddd;
+    }
+  }
+
+  // Hover más suave
+  tbody tr:hover td {
+    box-shadow: inset 0 0 0 1px rgba(25, 118, 210, 0.1);
+  }
+}
