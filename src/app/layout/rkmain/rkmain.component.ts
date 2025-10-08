@@ -1,37 +1,33 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { filter } from 'rxjs/operators';
 import { TreeSidebarComponent } from './components/tree-sidebar/tree-sidebar.component';
+// import { AppHeaderComponent } from './components/app-header/app-header.component';
+import { AppHeaderComponent } from './components/header/header.component';
 
 @Component({
   selector: 'app-rkmain',
+  standalone: true,
   imports: [
-        CommonModule,
+    CommonModule,
     RouterOutlet,
     MatSidenavModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatBadgeModule,
-    MatTooltipModule,
-    TreeSidebarComponent
+    TreeSidebarComponent,
+    AppHeaderComponent
   ],
   templateUrl: './rkmain.component.html',
   styleUrl: './rkmain.component.scss'
 })
 export class RkmainComponent implements OnInit {
 
-   private router = inject(Router);
+  private router = inject(Router);
 
   // Estado
   sidenavOpened = signal<boolean>(true);
+  sidenavMode = signal<'side' | 'over'>('side');
+  isMobile = signal<boolean>(false);
   currentRoute = signal<string>('');
   breadcrumbs = signal<string[]>([]);
   notificationCount = signal<number>(0);
@@ -41,13 +37,50 @@ export class RkmainComponent implements OnInit {
   distrito = signal<string>('');
   posicion = signal<string>('');
 
+  // Breakpoints
+  private readonly MOBILE_BREAKPOINT = 768;
+  private readonly DESKTOP_LARGE_BREAKPOINT = 1920;
+
   ngOnInit(): void {
     this.loadUserInfo();
     this.setupRouteListener();
     this.loadNotifications();
+    this.checkScreenSize();
   }
 
-   /**
+  /**
+   * Detecta cambios en el tamaño de la ventana
+   */
+  @HostListener('window:resize')
+  onResize(): void {
+    this.checkScreenSize();
+  }
+
+  /**
+   * Verifica el tamaño de pantalla y ajusta el sidenav
+   */
+  private checkScreenSize(): void {
+    const width = window.innerWidth;
+    const wasMobile = this.isMobile();
+
+    this.isMobile.set(width < this.MOBILE_BREAKPOINT);
+
+    if (width < this.MOBILE_BREAKPOINT) {
+      // Mobile: modo overlay, cerrado por defecto
+      this.sidenavMode.set('over');
+      if (!wasMobile) {
+        this.sidenavOpened.set(false);
+      }
+    } else {
+      // Desktop/Tablet: modo side, abierto por defecto
+      this.sidenavMode.set('side');
+      if (wasMobile) {
+        this.sidenavOpened.set(true);
+      }
+    }
+  }
+
+  /**
    * Carga información del usuario desde localStorage
    */
   private loadUserInfo(): void {
@@ -65,9 +98,15 @@ export class RkmainComponent implements OnInit {
       .subscribe((event: NavigationEnd) => {
         this.currentRoute.set(event.urlAfterRedirects);
         this.updateBreadcrumbs(event.urlAfterRedirects);
+
+        // Cerrar sidenav en móvil al navegar
+        if (this.isMobile()) {
+          this.sidenavOpened.set(false);
+        }
       });
   }
-   /**
+
+  /**
    * Actualiza el breadcrumb según la ruta actual
    */
   private updateBreadcrumbs(url: string): void {
@@ -148,5 +187,4 @@ export class RkmainComponent implements OnInit {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
-
 }

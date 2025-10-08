@@ -128,6 +128,7 @@
         <p>No hay procesos registrados en esta área</p>
       </div>
     } @else {
+      <!-- VISTA DESKTOP/TABLET: Tabla -->
       <div class="table-wrapper">
         <table class="risk-matrix-table">
           <thead>
@@ -186,6 +187,82 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- VISTA MOBILE: Cards -->
+        <div class="mobile-cards-container">
+          @for (process of processes(); track process.id) {
+            <div class="table-row"
+                 [class.pending-delete]="process.pendingDelete === 'Y'"
+                 (click)="goToProcess(process)">
+
+              <!-- Header del card -->
+              <div class="mobile-card-header">
+                <span class="id-cell">{{ process.id }}</span>
+                <span class="description-cell">{{ process.description }}</span>
+              </div>
+
+              <!-- Grid de riesgos -->
+              <div class="mobile-risks-grid">
+                <!-- Seguridad y Salud Ocupacional -->
+                <div class="risk-dimension">
+                  <span class="dimension-title">Seguridad y Salud Ocupacional</span>
+                  <div class="risk-values">
+                    <div class="risk-item">
+                      <div class="risk-label">Puro</div>
+                      <span class="risk-badge" [ngClass]="getRiskCellClass(process.pureRisks.safety)">
+                        {{ process.pureRisks.safety || '-' }}
+                      </span>
+                    </div>
+                    <div class="risk-item">
+                      <div class="risk-label">Residual</div>
+                      <span class="risk-badge" [ngClass]="getRiskCellClass(process.residualRisks.safety)">
+                        {{ process.residualRisks.safety || '-' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Medio Ambiente -->
+                <div class="risk-dimension">
+                  <span class="dimension-title">Medio Ambiente</span>
+                  <div class="risk-values">
+                    <div class="risk-item">
+                      <div class="risk-label">Puro</div>
+                      <span class="risk-badge" [ngClass]="getRiskCellClass(process.pureRisks.environmental)">
+                        {{ process.pureRisks.environmental || '-' }}
+                      </span>
+                    </div>
+                    <div class="risk-item">
+                      <div class="risk-label">Residual</div>
+                      <span class="risk-badge" [ngClass]="getRiskCellClass(process.residualRisks.environmental)">
+                        {{ process.residualRisks.environmental || '-' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Operacional -->
+                <div class="risk-dimension">
+                  <span class="dimension-title">Operacional</span>
+                  <div class="risk-values">
+                    <div class="risk-item">
+                      <div class="risk-label">Puro</div>
+                      <span class="risk-badge" [ngClass]="getRiskCellClass(process.pureRisks.operational)">
+                        {{ process.pureRisks.operational || '-' }}
+                      </span>
+                    </div>
+                    <div class="risk-item">
+                      <div class="risk-label">Residual</div>
+                      <span class="risk-badge" [ngClass]="getRiskCellClass(process.residualRisks.operational)">
+                        {{ process.residualRisks.operational || '-' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>

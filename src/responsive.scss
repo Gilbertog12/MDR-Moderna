@@ -1,0 +1,568 @@
+// src/styles/_responsive.scss
+// ESTILOS GLOBALES RESPONSIVE PARA TODOS LOS COMPONENTES DE JERARQUÍA
+
+// ============================================
+// BREAKPOINTS
+// ============================================
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1200px;
+$breakpoint-xl: 1440px;
+
+// ============================================
+// MIXINS RESPONSIVE
+// ============================================
+@mixin mobile {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$breakpoint-sm + 1px}) and (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$breakpoint-md + 1px}) {
+    @content;
+  }
+}
+
+@mixin mobile-only {
+  @media (max-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+// ============================================
+// BREADCRUMBS RESPONSIVE (TODOS LOS NIVELES)
+// ============================================
+.hierarchy-breadcrumb {
+  .breadcrumb-nav {
+    @include mobile {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+
+      &::-webkit-scrollbar {
+        height: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 2px;
+      }
+    }
+
+    .breadcrumb-list {
+      @include mobile {
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+      }
+
+      .breadcrumb-item {
+        @include mobile {
+          font-size: 11px;
+          min-width: fit-content;
+        }
+
+        @include mobile-only {
+          font-size: 10px;
+        }
+      }
+
+      .breadcrumb-separator {
+        mat-icon {
+          @include mobile {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+          }
+
+          @include mobile-only {
+            font-size: 12px;
+            width: 12px;
+            height: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// HEADER RESPONSIVE (TODOS LOS COMPONENTES)
+// ============================================
+.area-header {
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include mobile-only {
+    padding: 12px;
+  }
+
+  .header-content {
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .header-left {
+      h1 {
+        @include mobile {
+          font-size: 18px;
+        }
+
+        @include mobile-only {
+          font-size: 16px;
+        }
+      }
+
+      .area-extended-description {
+        @include mobile {
+          font-size: 12px;
+        }
+
+        @include mobile-only {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      }
+    }
+
+    .header-actions {
+      @include mobile {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .approval-buttons,
+      .standard-buttons {
+        @include mobile {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+      }
+
+      button {
+        @include mobile {
+          font-size: 13px;
+          padding: 8px 12px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+          }
+        }
+
+        @include mobile-only {
+          font-size: 12px;
+          padding: 6px 10px;
+
+          .button-text {
+            display: none;
+          }
+
+          mat-icon {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// INFO CARDS RESPONSIVE
+// ============================================
+.info-cards {
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  @include mobile-only {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .info-card {
+    mat-card-content {
+      @include mobile {
+        padding: 12px;
+      }
+
+      .card-label {
+        @include mobile {
+          font-size: 11px;
+        }
+      }
+
+      .card-value {
+        @include mobile {
+          font-size: 15px;
+        }
+
+        @include mobile-only {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// TABLAS COMPLEJAS RESPONSIVE
+// ============================================
+.table-wrapper {
+  @include mobile {
+    padding: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 3px;
+    }
+  }
+}
+
+.risk-table {
+  @include mobile {
+    font-size: 11px;
+    min-width: 800px; // Forzar scroll horizontal
+  }
+
+  thead {
+    .category-header th,
+    .subcategory-header th {
+      @include mobile {
+        font-size: 10px;
+        padding: 8px 4px;
+      }
+
+      @include mobile-only {
+        font-size: 9px;
+        padding: 6px 2px;
+      }
+    }
+  }
+
+  tbody {
+    td {
+      @include mobile {
+        padding: 8px 4px;
+      }
+
+      @include mobile-only {
+        padding: 6px 2px;
+      }
+
+      &.description-cell {
+        @include mobile {
+          min-width: 180px;
+          max-width: 250px;
+          font-size: 11px;
+        }
+      }
+
+      &.risk-cell {
+        @include mobile {
+          min-width: 90px;
+          font-size: 10px;
+          padding: 10px 4px;
+        }
+
+        @include mobile-only {
+          min-width: 80px;
+          font-size: 9px;
+          padding: 8px 2px;
+        }
+      }
+    }
+  }
+
+  // Ajustar columnas sticky en móvil
+  .sticky-col {
+    @include mobile {
+      left: 0;
+      min-width: 60px;
+    }
+  }
+
+  .sticky-col-2 {
+    @include mobile {
+      left: 60px;
+      min-width: 150px;
+    }
+  }
+}
+
+// ============================================
+// TABS RESPONSIVE
+// ============================================
+.content-section {
+  @include mobile {
+    margin: 0 12px 12px 12px;
+  }
+
+  @include mobile-only {
+    margin: 0 8px 8px 8px;
+  }
+
+  .custom-tabs,
+  mat-tab-group {
+    ::ng-deep {
+      .mat-mdc-tab-labels {
+        @include mobile {
+          .mat-mdc-tab {
+            min-width: 80px;
+            padding: 0 12px;
+
+            .mdc-tab__text-label {
+              font-size: 12px;
+            }
+          }
+        }
+
+        @include mobile-only {
+          .mat-mdc-tab {
+            min-width: 60px;
+            padding: 0 8px;
+
+            .mdc-tab__text-label {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .tab-content {
+    @include mobile {
+      padding: 16px;
+    }
+
+    @include mobile-only {
+      padding: 12px;
+    }
+  }
+}
+
+// ============================================
+// EVALUACIÓN DE RIESGO RESPONSIVE (RKY)
+// ============================================
+.risk-evaluation-container {
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .risk-column {
+    @include mobile {
+      padding: 16px;
+    }
+
+    @include mobile-only {
+      padding: 12px;
+    }
+
+    .risk-column-title {
+      @include mobile {
+        font-size: 16px;
+        margin-bottom: 16px;
+      }
+
+      @include mobile-only {
+        font-size: 14px;
+      }
+    }
+
+    .risk-row {
+      @include mobile {
+        grid-template-columns: 100px 40px 1fr;
+        gap: 12px;
+        padding: 12px 16px;
+      }
+
+      @include mobile-only {
+        grid-template-columns: 80px 35px 1fr;
+        gap: 8px;
+        padding: 10px 12px;
+      }
+
+      &.criticality-row {
+        @include mobile {
+          grid-template-columns: 100px 1fr;
+          padding: 16px;
+        }
+
+        @include mobile-only {
+          grid-template-columns: 80px 1fr;
+          padding: 12px;
+        }
+
+        .criticality-badge {
+          @include mobile {
+            font-size: 12px;
+            padding: 8px 16px;
+            min-width: 120px;
+          }
+
+          @include mobile-only {
+            font-size: 11px;
+            padding: 6px 12px;
+            min-width: 100px;
+          }
+        }
+      }
+
+      .risk-label {
+        @include mobile {
+          font-size: 12px;
+        }
+
+        @include mobile-only {
+          font-size: 11px;
+        }
+      }
+
+      .risk-value-group {
+        .risk-number {
+          @include mobile {
+            font-size: 20px;
+          }
+
+          @include mobile-only {
+            font-size: 18px;
+          }
+        }
+
+        .risk-text {
+          @include mobile {
+            font-size: 13px;
+          }
+
+          @include mobile-only {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// ESTADOS VACÍOS Y LOADING
+// ============================================
+.loading-state,
+.empty-state {
+  @include mobile {
+    padding: 40px 16px;
+  }
+
+  mat-icon {
+    @include mobile {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  p {
+    @include mobile {
+      font-size: 13px;
+    }
+  }
+}
+
+// ============================================
+// TOOLTIPS EN MÓVIL
+// ============================================
+::ng-deep {
+  .mat-mdc-tooltip {
+    @include mobile {
+      font-size: 12px;
+    }
+  }
+}
+
+// ============================================
+// MEJORAS PARA SCROLL HORIZONTAL
+// ============================================
+.horizontal-scroll {
+  @include mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+}
+
+// ============================================
+// UTILIDADES GENERALES
+// ============================================
+
+// Ocultar en móvil
+.hide-on-mobile {
+  @include mobile {
+    display: none !important;
+  }
+}
+
+// Mostrar solo en móvil
+.show-on-mobile {
+  display: none !important;
+
+  @include mobile {
+    display: block !important;
+  }
+}
+
+// Texto truncado responsive
+.truncate-mobile {
+  @include mobile {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Stack vertical en móvil
+.stack-mobile {
+  @include mobile {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}

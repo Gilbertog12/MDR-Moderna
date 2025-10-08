@@ -1,1 +1,81 @@
-<p>header works!</p>
+<mat-toolbar class="app-header-toolbar">
+  <div class="toolbar-left">
+    <!-- Botón toggle sidenav -->
+    <button
+      mat-icon-button
+      (click)="onToggleMenu()"
+      matTooltip="Mostrar/Ocultar árbol">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <!-- Logo y título -->
+    <button
+      mat-button
+      class="home-btn"
+      (click)="onNavigateHome()">
+      <mat-icon>home</mat-icon>
+      <span class="app-title">Matriz de Riesgos</span>
+    </button>
+
+    <!-- Breadcrumbs -->
+    @if (breadcrumbs().length > 0) {
+      <div class="breadcrumbs">
+        <mat-icon class="breadcrumb-icon">chevron_right</mat-icon>
+        @for (crumb of breadcrumbs(); track crumb) {
+          <span class="breadcrumb">{{ crumb }}</span>
+          @if (!$last) {
+            <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <div class="toolbar-right">
+    <!-- Usuario info -->
+    <div class="user-info">
+      <mat-icon class="user-icon">person</mat-icon>
+      <div class="user-details">
+        <span class="user-name">{{ usuario() }}</span>
+        <span class="user-meta">{{ distrito() }} - {{ posicion() }}</span>
+      </div>
+    </div>
+
+    <!-- Notificaciones -->
+    <button
+      mat-icon-button
+      (click)="onNotifications()"
+      matTooltip="Notificaciones"
+      [matBadge]="notificationCount()"
+      [matBadgeHidden]="notificationCount() === 0"
+      matBadgeColor="warn"
+      matBadgeSize="small">
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+    <!-- Leyenda -->
+    <button
+      mat-icon-button
+      (click)="onLegend()"
+      matTooltip="Leyenda de estados">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+
+    <!-- Ayuda -->
+    <button
+      mat-icon-button
+      (click)="onHelp()"
+      matTooltip="Ayuda">
+      <mat-icon>info</mat-icon>
+    </button>
+
+    <!-- Cerrar sesión -->
+    <button
+      mat-icon-button
+      (click)="onLogout()"
+      matTooltip="Cerrar sesión"
+      class="logout-btn">
+      <mat-icon>exit_to_app</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>

@@ -1,0 +1,93 @@
+ <h2 mat-dialog-title>{{ data.title }}</h2>
+
+    <mat-dialog-content class="dialog-content">
+      <!-- Chips de items seleccionados -->
+      @if (selectedItems().length > 0) {
+        <mat-chip-set class="selected-chips">
+          @for (item of selectedItems(); track item.id) {
+            <mat-chip [removable]="true" (removed)="removeSelection(item)">
+              {{ item.descripcion }}
+              <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip>
+          }
+        </mat-chip-set>
+      }
+
+      <!-- Búsqueda -->
+      <mat-form-field class="search-field">
+        <mat-label>Buscar</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchTerm"
+          (keyup.enter)="applyFilter()"
+          placeholder="Código o descripción"
+          autocomplete="off"
+        >
+        <button mat-icon-button matSuffix (click)="applyFilter()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Loading bar -->
+      @if (isLoading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      <!-- Tabla de items disponibles -->
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="items-table">
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                [(ngModel)]="row.selected"
+                (change)="toggleSelection(row)"
+              ></mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>Código</th>
+            <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+          </ng-container>
+
+          <!-- Descripcion Column -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let row">{{ row.descripcion }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <mat-paginator
+          [pageSizeOptions]="[10]"
+          [pageSize]="10"
+          (page)="onPageChange()"
+          showFirstLastButtons
+        ></mat-paginator>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      @if (data.showNewEntityButton) {
+        <button mat-stroked-button (click)="requestNewEntity()">
+          Nueva Entidad
+        </button>
+      }
+      <button mat-button (click)="cancel()">Cancelar</button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="selectedItems().length === 0"
+        (click)="save()"
+      >
+        <mat-icon>save</mat-icon>
+        Guardar
+      </button>
+    </mat-dialog-actions>

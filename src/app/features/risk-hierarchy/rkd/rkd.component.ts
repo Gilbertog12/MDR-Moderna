@@ -527,15 +527,20 @@ export class RkdComponent implements OnInit {
    * Navega al riesgo (RKR - Nivel 7)
    */
   goToRiesgo(riesgo: RiesgoWithCategories): void {
-    const dimension = this.dimensionDetail();
-    if (!dimension || !riesgo.canNavigate) return;
+    console.log(riesgo.id);
+     if (riesgo.canNavigate) {
+      this.router.navigate([
+        '/rkmain/rkr',
+        this.areaId(),
+        this.procesoId(),
+        this.subprocesoId(),
+        this.actividadId(),
+        this.tareaId(),
+        this.dimensionId(),
+        riesgo.id
+      ]);
+    }
 
-    // TODO: Implementar navegación a RKR cuando esté listo
-    // this.router.navigate(['/rkmain/rkr', dimension.areaId, dimension.procesoId, dimension.subprocesoId,
-    //                       dimension.actividadId, dimension.tareaId, dimension.dimensionId, riesgo.id]);
-
-    console.log('Navegación a RKR pendiente de implementar:', riesgo);
-    this.alertService.toast('info', 'RKR (Riesgo) en desarrollo');
   }
 
   // ============================================

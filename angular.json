@@ -92,6 +92,7 @@
             ],
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
+              "../../shared/scss/hierarchy-shared.scss",
               "src/styles.css"
             ],
             "scripts": []

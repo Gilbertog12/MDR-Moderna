@@ -1,0 +1,183 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+    <mat-dialog-content>
+      <mat-stepper [linear]="true" #stepper>
+        <!-- Paso 1: Selección de consecuencias -->
+        <mat-step label="Seleccionar Consecuencias">
+          <!-- Chips de items seleccionados -->
+          @if (selectedItems().length > 0) {
+            <mat-chip-set class="selected-chips">
+              @for (item of selectedItems(); track item.id) {
+                <mat-chip [removable]="true" (removed)="removeSelection(item)">
+                  {{ item.descripcion }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+              }
+            </mat-chip-set>
+          }
+
+          <!-- Búsqueda -->
+          <mat-form-field class="search-field">
+            <mat-label>Buscar</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="applyFilter()"
+              placeholder="Código o descripción"
+              autocomplete="off"
+            >
+            <button mat-icon-button matSuffix (click)="applyFilter()">
+              <mat-icon>search</mat-icon>
+            </button>
+          </mat-form-field>
+
+          @if (isLoading()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+
+          <!-- Tabla -->
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSource">
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let row">
+                  <mat-checkbox
+                    [(ngModel)]="row.selected"
+                    (change)="toggleSelection(row)"
+                  ></mat-checkbox>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>Código</th>
+                <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef>Descripción</th>
+                <td mat-cell *matCellDef="let row">{{ row.descripcion }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            <mat-paginator
+              [pageSizeOptions]="[10]"
+              [pageSize]="10"
+              (page)="onPageChange()"
+            ></mat-paginator>
+          </div>
+
+          <div class="step-actions">
+            @if (data.showNewEntityButton) {
+              <button mat-stroked-button (click)="requestNewEntity()">
+                Nueva Entidad
+              </button>
+            }
+            <button
+              mat-raised-button
+              color="primary"
+              [disabled]="selectedItems().length === 0"
+              (click)="goToRiskEvaluation()"
+            >
+              Siguiente: Evaluar Riesgos
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-step>
+
+        <!-- Paso 2: Evaluación de riesgos -->
+        <mat-step label="Evaluar Riesgos">
+          <div class="risk-evaluation">
+            <div class="risk-section">
+              <h3>Riesgo Puro</h3>
+              <div class="risk-fields">
+                <mat-form-field>
+                  <mat-label>Probabilidad</mat-label>
+                  <mat-select
+                    [formControl]="probabilityPureControl"
+                    (selectionChange)="calculateCriticality()"
+                  >
+                    @for (item of probabilityList(); track item.id) {
+                      <mat-option [value]="item.id">
+                        {{ item.descripcion }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                  @if (probabilityPureControl.hasError('required')) {
+                    <mat-error>Campo requerido</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Severidad</mat-label>
+                  <mat-select
+                    [formControl]="severityPureControl"
+                    (selectionChange)="calculateCriticality()"
+                  >
+                    @for (item of severityList(); track item.id) {
+                      <mat-option [value]="item.id">
+                        {{ item.descripcion }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                  @if (severityPureControl.hasError('required')) {
+                    <mat-error>Campo requerido</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="risk-section">
+              <h3>Riesgo Residual</h3>
+              <div class="risk-fields">
+                <mat-form-field>
+                  <mat-label>Probabilidad</mat-label>
+                  <mat-select disabled>
+                    <mat-option>-</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Severidad</mat-label>
+                  <mat-select disabled>
+                    <mat-option>-</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            @if (criticalityLevel()) {
+              <div class="criticality-display">
+                <div
+                  class="criticality-box"
+                  [style.background-color]="criticalityLevel()?.color"
+                >
+                  Criticidad: {{ criticalityLevel()?.id }}
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="step-actions">
+            <button mat-button (click)="stepper.previous()">
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <button mat-button (click)="cancel()">Cancelar</button>
+            <button
+              mat-raised-button
+              color="primary"
+              [disabled]="!isRiskEvaluationValid()"
+              (click)="save()"
+            >
+              <mat-icon>save</mat-icon>
+              Guardar
+            </button>
+          </div>
+        </mat-step>
+      </mat-stepper>
+    </mat-dialog-content>

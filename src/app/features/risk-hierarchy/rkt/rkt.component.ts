@@ -271,7 +271,7 @@ export class RktComponent implements OnInit {
               estado: atts[5]?.value || '',
               orderItem: atts[6]?.value || '',
               pendingDelete: atts[7]?.value || 'N',
-              canNavigate: false // Las dimensiones no tienen navegación siguiente
+              canNavigate: true // Las dimensiones no tienen navegación siguiente
             });
           }
         });
@@ -485,9 +485,19 @@ export class RktComponent implements OnInit {
    * Click en dimensión (no navega, solo información)
    */
   goToDimension(dimension: DimensionWithRisk): void {
-    // Las dimensiones no tienen navegación en el legacy
-    // Podríamos mostrar más detalles o información adicional
-    console.log('Dimensión seleccionada:', dimension);
+
+    console.log(dimension)
+    if (dimension.canNavigate) {
+      this.router.navigate([
+        '/rkmain/rkd',
+        this.areaId(),
+        this.procesoId(),
+        this.subprocesoId(),
+        this.actividadId(),
+        this.tareaId(),
+        dimension.id
+      ]);
+    }
   }
 
   // ============================================

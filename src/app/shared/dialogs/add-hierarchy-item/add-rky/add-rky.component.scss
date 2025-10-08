@@ -1,0 +1,75 @@
+ mat-dialog-content {
+      min-height: 500px;
+      width: 750px;
+      padding: 0 !important;
+    }
+
+    mat-stepper {
+      height: 100%;
+    }
+
+    .selected-chips {
+      margin: 16px;
+      padding: 8px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .search-field {
+      width: calc(100% - 32px);
+      margin: 16px;
+    }
+
+    .table-container {
+      max-height: 300px;
+      overflow: auto;
+      margin: 0 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+    }
+
+    .step-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .risk-evaluation {
+      padding: 16px;
+    }
+
+    .risk-section {
+      margin-bottom: 24px;
+    }
+
+    .risk-section h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1976d2;
+    }
+
+    .risk-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .criticality-display {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .criticality-box {
+      padding: 16px 32px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      font-size: 18px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }

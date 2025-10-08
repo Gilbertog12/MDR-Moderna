@@ -1,0 +1,240 @@
+// Variables
+$toolbar-height: 64px;
+$toolbar-height-mobile: 56px;
+
+// Breakpoints
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 1200px;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+// Toolbar
+.app-header-toolbar {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+  min-height: $toolbar-height;
+  height: $toolbar-height;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+
+  // Tablet
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    padding: 0 12px;
+    gap: 12px;
+  }
+
+  // Mobile
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    min-height: $toolbar-height-mobile;
+    height: $toolbar-height-mobile;
+    padding: 0 8px;
+    gap: 8px;
+  }
+}
+
+// Toolbar left
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    gap: 4px;
+  }
+}
+
+// Home button
+.home-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white !important;
+  font-size: 16px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .app-title {
+    white-space: nowrap;
+
+    // Ocultar texto en tablet pequeño
+    @media (max-width: 900px) {
+      display: none;
+    }
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    min-width: auto;
+    padding: 0 8px;
+  }
+}
+
+// Breadcrumbs
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .breadcrumb-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    flex-shrink: 0;
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      display: none;
+    }
+  }
+
+  .breadcrumb {
+    font-size: 14px;
+    opacity: 0.95;
+    flex-shrink: 0;
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      font-size: 12px;
+    }
+  }
+
+  .breadcrumb-separator {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.5;
+    flex-shrink: 0;
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  // Ocultar breadcrumbs en móvil muy pequeño
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+// Toolbar right
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    gap: 4px;
+  }
+
+  // Ocultar algunos botones en móvil
+  button[matTooltip="Ayuda"],
+  button[matTooltip="Leyenda de estados"] {
+    @media (max-width: 640px) {
+      display: none;
+    }
+  }
+}
+
+// User info
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    gap: 8px;
+    padding: 6px 10px;
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    background: transparent;
+    padding: 0;
+    gap: 4px;
+  }
+
+  .user-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    // Ocultar detalles en móvil
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      display: none;
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .user-meta {
+      font-size: 11px;
+      opacity: 0.8;
+      line-height: 1.2;
+    }
+  }
+}
+
+// Logout button
+.logout-btn {
+  @media (max-width: 480px) {
+    mat-icon {
+      color: #ff5252 !important;
+    }
+  }
+}

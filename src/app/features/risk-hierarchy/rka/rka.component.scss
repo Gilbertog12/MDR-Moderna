@@ -1,4 +1,13 @@
 // src/app/features/risk-hierarchy/rka/rka.component.scss
+// VERSIÓN CON ESTILOS DIRECTOS (Sin imports para evitar problemas)
+
+// ============================================================================
+// VARIABLES
+// ============================================================================
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 1200px;
+$breakpoint-desktop-large: 1920px;
+$breakpoint-small-mobile: 480px;
 
 // ============================================================================
 // CONTENEDOR PRINCIPAL
@@ -8,10 +17,13 @@
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 // ============================================================================
-// HEADER DEL AREA (Seccion azul superior con degradado)
+// HEADER CON DEGRADADO
 // ============================================================================
 .area-header {
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -19,19 +31,47 @@
   padding: 24px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    padding: 20px;
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    padding: 16px;
+  }
+
   .header-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
 
     .header-left {
       flex: 1;
+      min-width: 0;
 
       h1 {
         margin: 0 0 8px 0;
         font-size: 24px;
         font-weight: 500;
+        word-wrap: break-word;
+
+        @media (max-width: #{$breakpoint-tablet - 1px}) {
+          font-size: 22px;
+        }
+
+        @media (max-width: #{$breakpoint-mobile - 1px}) {
+          font-size: 20px;
+        }
+
+        @media (max-width: $breakpoint-small-mobile) {
+          font-size: 18px;
+        }
 
         .area-id {
           font-weight: 600;
@@ -42,16 +82,67 @@
         margin: 0;
         opacity: 0.9;
         font-size: 14px;
+        line-height: 1.5;
+
+        @media (max-width: #{$breakpoint-mobile - 1px}) {
+          font-size: 13px;
+        }
+
+        @media (max-width: $breakpoint-small-mobile) {
+          font-size: 12px;
+        }
       }
     }
 
     .header-actions {
       display: flex;
       gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+
+      @media (max-width: #{$breakpoint-mobile - 1px}) {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+
+      .approval-buttons {
+        display: flex;
+        gap: 8px;
+        padding-right: 12px;
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+
+        @media (max-width: #{$breakpoint-mobile - 1px}) {
+          border-right: none;
+          padding-right: 0;
+          width: 100%;
+        }
+      }
+
+      .standard-buttons {
+        display: flex;
+        gap: 8px;
+
+        @media (max-width: #{$breakpoint-mobile - 1px}) {
+          width: 100%;
+        }
+
+        button {
+          @media (max-width: #{$breakpoint-mobile - 1px}) {
+            flex: 1;
+          }
+        }
+      }
 
       button {
+        white-space: nowrap;
+
         mat-icon {
           margin-right: 8px;
+
+          @media (max-width: $breakpoint-small-mobile) {
+            margin-right: 4px;
+          }
         }
       }
     }
@@ -59,17 +150,60 @@
 }
 
 // ============================================================================
-// TARJETAS DE INFORMACION (Cards con metricas del area)
+// INFO CARDS
 // ============================================================================
 .info-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
   padding: 20px;
 
+  @media (min-width: $breakpoint-desktop-large) {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    padding: 20px 24px 16px 24px;
+  }
+
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    padding: 18px;
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 16px;
+  }
+
+  @media (max-width: $breakpoint-small-mobile) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+
   .info-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
     mat-card-content {
       padding: 16px;
+
+      @media (min-width: $breakpoint-desktop-large) {
+        padding: 14px;
+      }
+
+      @media (max-width: #{$breakpoint-mobile - 1px}) {
+        padding: 14px;
+      }
+
+      @media (max-width: $breakpoint-small-mobile) {
+        padding: 12px;
+      }
 
       .card-label {
         font-size: 12px;
@@ -77,23 +211,46 @@
         margin-bottom: 8px;
         text-transform: uppercase;
         font-weight: 500;
+        letter-spacing: 0.5px;
+
+        @media (max-width: $breakpoint-small-mobile) {
+          font-size: 11px;
+          margin-bottom: 6px;
+        }
       }
 
       .card-value {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
         color: #333;
+        line-height: 1.3;
+        word-wrap: break-word;
+
+        @media (min-width: $breakpoint-desktop-large) {
+          font-size: 15px;
+        }
+
+        @media (max-width: #{$breakpoint-mobile - 1px}) {
+          font-size: 15px;
+        }
+
+        @media (max-width: $breakpoint-small-mobile) {
+          font-size: 14px;
+        }
 
         &.risk-intolerable {
           color: #d32f2f;
+          font-weight: 700;
         }
 
         &.risk-tolerable {
-          color: #f57c00;
+          color: #000000;
+          font-weight: 700;
         }
 
         &.risk-insignificant {
           color: #388e3c;
+          font-weight: 700;
         }
       }
 
@@ -104,7 +261,10 @@
         font-size: 12px;
         font-weight: 600;
 
-        &.status-001 {
+        &.status-001,
+        &.status-002,
+        &.status-003,
+        &.status-006 {
           background-color: #e3f2fd;
           color: #1976d2;
         }
@@ -118,88 +278,232 @@
           background-color: #f3e5f5;
           color: #7b1fa2;
         }
+
+        &.status-008 {
+          color: #388e3c;
+        }
+
+        &.status-000 {
+          background-color: #ffebee;
+          color: #c62828;
+        }
       }
     }
   }
 }
 
 // ============================================================================
-// SECCION DE CONTENIDO (Contiene la tabla de procesos)
+// SECCIÓN DE CONTENIDO
 // ============================================================================
 .content-section {
   background-color: white;
   margin: 0 20px 20px 20px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+
+  @media (min-width: $breakpoint-desktop-large) {
+    margin: 0 24px 24px 24px;
+    padding: 28px;
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    margin: 0 16px 16px 16px;
+    padding: 18px;
+    border-radius: 8px;
+  }
+
+  @media (max-width: $breakpoint-small-mobile) {
+    margin: 0 12px 12px 12px;
+    padding: 14px;
+  }
 
   .section-title {
-    margin: 0 0 20px 0;
-    font-size: 18px;
-    font-weight: 500;
-    color: #333;
+    margin: 0 0 24px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #212529;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #1976d2;
+    letter-spacing: 0.3px;
+
+    @media (min-width: $breakpoint-desktop-large) {
+      margin: 0 0 20px 0;
+      font-size: 22px;
+      padding-bottom: 14px;
+    }
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      font-size: 18px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom-width: 2px;
+    }
+
+    @media (max-width: $breakpoint-small-mobile) {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
   }
 }
 
 // ============================================================================
-// WRAPPER DE LA TABLA (Controla scroll)
+// WRAPPER DE LA TABLA
 // ============================================================================
 .table-wrapper {
   overflow-x: auto;
   overflow-y: auto;
-  max-height: calc(100vh - 450px);
+  max-height: calc(100vh - 520px);
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+
+  @media (min-width: $breakpoint-desktop-large) {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    max-height: calc(100vh - 500px);
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    max-height: none;
+    overflow-x: visible;
+    overflow-y: visible;
+    border: none;
+    border-radius: 0;
+  }
+
+  &::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #adb5bd 0%, #868e96 100%);
+    border-radius: 5px;
+    border: 2px solid #f8f9fa;
+
+    &:hover {
+      background: linear-gradient(135deg, #868e96 0%, #6c757d 100%);
+    }
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #f8f9fa;
+  }
 }
 
 // ============================================================================
-// TABLA DE MATRIZ DE RIESGOS
+// TABLA - MOBILE CARDS
+// ============================================================================
+@media (max-width: #{$breakpoint-mobile - 1px}) {
+  .risk-matrix-table {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-mobile) {
+  .mobile-cards-container {
+    display: none !important;
+  }
+}
+
+.mobile-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: $breakpoint-small-mobile) {
+    gap: 12px;
+  }
+}
+
+// ============================================================================
+// TABLA DE MATRIZ DE RIESGOS - ¡ESTILOS CRÍTICOS AQUÍ!
 // ============================================================================
 .risk-matrix-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 13px;
+  min-width: 900px;
+
+  @media (min-width: $breakpoint-desktop-large) {
+    min-width: 100%;
+    font-size: 12px;
+  }
+
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    font-size: 12px;
+    min-width: 850px;
+  }
+
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    display: none;
+  }
 
   thead {
     position: sticky;
     top: 0;
     z-index: 10;
     background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 
-    .main-header {
-      th {
-        background-color: #f5f5f5;
-        padding: 12px 8px;
-        font-weight: 600;
-        border: 1px solid #ddd;
-        text-align: center;
+    .main-header th {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 14px 10px;
+      font-weight: 700;
+      border: 1px solid #dee2e6;
+      text-align: center;
+      white-space: nowrap;
+      font-size: 13px;
+      color: #495057;
+      letter-spacing: 0.3px;
 
-        &.group-header {
-          background-color: #e0e0e0;
-          font-size: 12px;
-          text-transform: uppercase;
-        }
+      &.group-header {
+        background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+        color: white;
+        font-size: 12px;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 12px 10px;
+        border-color: #343a40;
       }
     }
 
-    .sub-header {
-      th {
-        background-color: #f5f5f5;
-        padding: 8px;
-        font-weight: 500;
-        font-size: 11px;
-        border: 1px solid #ddd;
-        text-align: center;
-      }
+    .sub-header th {
+      background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+      padding: 10px 8px;
+      font-weight: 600;
+      font-size: 11px;
+      border: 1px solid #dee2e6;
+      text-align: center;
+      color: #495057;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
   }
 
   tbody {
     .table-row {
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: all 0.2s ease;
 
       &:hover {
-        background-color: #f9f9f9;
+        background-color: #f8f9fa;
+
+        td {
+          border-color: #adb5bd;
+        }
       }
 
       &.pending-delete {
@@ -209,40 +513,72 @@
     }
 
     td {
-      padding: 10px 8px;
+      padding: 12px 10px;
       border: 1px solid #e0e0e0;
       text-align: center;
+      transition: all 0.2s ease;
 
       &.id-cell {
-        font-weight: 600;
-        background-color: white;
+        font-weight: 700;
+        background-color: #f8f9fa;
+        color: #1976d2;
+        font-size: 14px;
+        border-right: 2px solid #dee2e6;
       }
 
       &.description-cell {
         text-align: left;
-        min-width: 250px;
-        max-width: 350px;
-        background-color: white;
+        min-width: 280px;
+        max-width: 400px;
+        background-color: #ffffff;
+        font-weight: 500;
+        color: #212529;
+        line-height: 1.4;
+        padding: 12px 14px;
+        border-right: 2px solid #dee2e6;
       }
 
+      // ========================================
+      // ESTILOS DE RIESGO - ¡LO MÁS IMPORTANTE!
+      // ========================================
       &.risk-cell {
-        font-weight: 600;
-        min-width: 120px;
+        font-weight: 700;
+        min-width: 130px;
         text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        padding: 12px 10px;
 
+        // INTOLERABLE - ROJO
         &.risk-intolerable {
-          background-color: #e53935;
-          color: white;
+          background: linear-gradient(135deg, #e53935 0%, #c62828 100%) !important;
+          color: white !important;
+          border-color: #c62828;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
+        // TOLERABLE - AMARILLO CON TEXTO NEGRO
         &.risk-tolerable {
-          background-color: #fdd835;
-          color: #333;
+          background: linear-gradient(135deg, #fdd835 0%, #fbc02d 100%) !important;
+          color: #000000 !important;
+          border-color: #f9a825;
+          font-weight: 900 !important;
+          text-shadow: 0 0.5px 0.5px rgba(255, 255, 255, 0.5) !important;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
+        // INSIGNIFICANTE - VERDE
         &.risk-insignificant {
-          background-color: #43a047;
-          color: white;
+          background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%) !important;
+          color: white !important;
+          border-color: #2e7d32;
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        &:empty::after {
+          content: '-';
+          color: #adb5bd;
+          font-weight: 400;
         }
       }
     }
@@ -251,22 +587,31 @@
   .sticky-col {
     position: sticky;
     left: 0;
-    z-index: 5;
-    background-color: white;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    z-index: 8;
+    background-color: #f8f9fa;
+    box-shadow: 3px 0 6px rgba(0, 0, 0, 0.08);
+    border-right: 2px solid #dee2e6 !important;
   }
 
   .sticky-col-2 {
     position: sticky;
-    left: 60px;
-    z-index: 5;
+    left: 70px;
+    z-index: 8;
     background-color: white;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 3px 0 6px rgba(0, 0, 0, 0.08);
+    border-right: 2px solid #dee2e6 !important;
+  }
+
+  thead {
+    .sticky-col,
+    .sticky-col-2 {
+      z-index: 11;
+    }
   }
 }
 
 // ============================================================================
-// ESTADOS DE CARGA Y VACIO
+// ESTADOS VACÍOS
 // ============================================================================
 .loading-state,
 .empty-state {
@@ -277,41 +622,26 @@
   padding: 60px 20px;
   color: #666;
 
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    padding: 40px 16px;
+  }
+
   mat-icon {
     font-size: 48px;
     width: 48px;
     height: 48px;
     margin-bottom: 16px;
     opacity: 0.5;
+
+    @media (max-width: #{$breakpoint-mobile - 1px}) {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+    }
   }
 
   p {
     margin: 0;
     font-size: 14px;
-  }
-}
-
-.header-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-
-  .approval-buttons {
-    display: flex;
-    gap: 8px;
-    margin-right: 16px;
-    padding-right: 16px;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .standard-buttons {
-    display: flex;
-    gap: 12px;
-  }
-
-  button {
-    mat-icon {
-      margin-right: 8px;
-    }
   }
 }
