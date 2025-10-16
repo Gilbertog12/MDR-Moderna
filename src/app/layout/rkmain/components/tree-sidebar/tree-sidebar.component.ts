@@ -1,40 +1,43 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, ViewChildren, ElementRef, QueryList, Renderer2, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, signal, inject, ViewChildren, ElementRef, QueryList, Renderer2, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
 import { CdkTreeModule, FlatTreeControl } from '@angular/cdk/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { Subject, takeUntil, filter } from 'rxjs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TreeDataSource } from './tree-data-source';
-import { TreeNode, LEVEL_CONFIG } from './tree-node.interface';
+import { TreeNode, LEVEL_CONFIG, HierarchyLevel } from './tree-node.interface';
 import { TreeNodeMapper } from './tree-node.mapper';
-import { AlertService } from '../../../../shared/services/alert.service';
 import { HierarchyService } from '../../services/hierarchy.service';
+import { AlertService } from '../../../../shared/services/alert.service';
+import { AddHierarchyItemComponent } from '../../../../shared/dialogs/add-hierarchy-item/add-hierarchy-item/add-hierarchy-item.component';
+import { AddRkyComponent } from '../../../../shared/dialogs/add-hierarchy-item/add-rky/add-rky.component';
+
+
 @Component({
   selector: 'app-tree-sidebar',
+  standalone: true,
   imports: [
-     CommonModule,
+    CommonModule,
     CdkTreeModule,
     MatIconModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDialogModule
   ],
   templateUrl: './tree-sidebar.component.html',
-  styleUrl: './tree-sidebar.component.scss'
+  styleUrls: ['./tree-sidebar.component.scss']
 })
-export class TreeSidebarComponent {
-
-   // Servicios
+export class TreeSidebarComponent implements OnInit, AfterViewChecked {
+  // Servicios
   private router = inject(Router);
+  private hierarchyService = inject(HierarchyService);
   private alertService = inject(AlertService);
   private renderer = inject(Renderer2);
-  private hierarchyService = inject(HierarchyService);
-
-  // Destrucción
-  private destroy$ = new Subject<void>();
+  private dialog = inject(MatDialog);
 
   // Tree control y data source
   treeControl!: FlatTreeControl<TreeNode>;
@@ -45,35 +48,19 @@ export class TreeSidebarComponent {
   copiedNode = signal<TreeNode | null>(null);
   isLoading = signal<boolean>(false);
   showApproved = signal<boolean>(false);
-  currentRoute = signal<string>('');
 
   // Referencias para highlight
   @ViewChildren('treeNode', { read: ElementRef }) treeNodes!: QueryList<ElementRef>;
   private hasListener: ElementRef[] = [];
   private oldHighlight?: ElementRef;
 
-  // Computed
-  canPaste = computed(() => {
-    const copied = this.copiedNode();
-    const selected = this.selectedNode();
-    if (!copied || !selected) return false;
-    return TreeNodeMapper.canPasteInNode(selected, copied);
-  });
-
-  ngOnInit(): void {
+  ngOnInit() {
     this.initializeTree();
-    this.loadTree();
-    this.subscribeToRouteChanges();
+    this.loadInitialData();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  ngAfterViewChecked(): void {
+  ngAfterViewChecked() {
     this.setupNodeListeners();
-    this.highlightActiveNode();
   }
 
   /**
@@ -85,262 +72,213 @@ export class TreeSidebarComponent {
       node => node.expandable
     );
 
-    this.dataSource = new TreeDataSource(this.treeControl, this.hierarchyService);
+    this.dataSource = new TreeDataSource(
+      this.treeControl,
+      this.hierarchyService
+    );
+  }
 
+  /**
+   * Carga los datos iniciales del árbol
+   */
+  private loadInitialData(): void {
+    this.isLoading.set(true);
+    this.dataSource.loadRootLevel(this.showApproved());
+
+    // Suscribirse al observable de loading del dataSource
     this.dataSource.loading$.subscribe(loading => {
       this.isLoading.set(loading);
     });
   }
 
   /**
-   * ✅ NUEVA: Escucha cambios de ruta para sincronizar el árbol
+   * Navega al detalle del nodo
    */
-  private subscribeToRouteChanges(): void {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntil(this.destroy$)
-    ).subscribe((event: NavigationEnd) => {
-      const url = event.urlAfterRedirects;
-      this.currentRoute.set(url);
+  navigateToNode(node: TreeNode): void {
+    this.selectedNode.set(node);
 
-      // Extraer la ruta sin /rkmain
-      const route = url.replace('/rkmain/', '');
+    // Construir la ruta usando el mapper
+    const route = TreeNodeMapper.buildRoute(node.key, node.level as HierarchyLevel);
+    // console.log(route);
+    // Guardar contexto en localStorage
+    localStorage.setItem('currentNode', JSON.stringify({
+      key: node.key,
+      level: node.level,
+      descripcion: node.descripcion
+    }));
 
-      // Buscar y expandir el nodo activo
-      setTimeout(() => {
-        this.expandAndSelectNodeByRoute(route);
-      }, 300);
-    });
-  }
-
-  /**
-   * ✅ NUEVA: Expande y selecciona el nodo según la ruta actual
-   */
-  private expandAndSelectNodeByRoute(route: string): void {
-    if (!route || route === '/rkmain') return;
-
-    // Buscar el nodo en el dataSource
-    const node = this.dataSource.data.find(n => n.route === route);
-
-    if (node) {
-      this.selectedNode.set(node);
-      this.expandParents(node);
-
-      // Actualizar localStorage
-      localStorage.setItem('keySelected', node.key);
-      localStorage.setItem('versionSelected', node.version);
-      localStorage.setItem('statusSelected', node.status);
-    } else {
-      // Si no está cargado, intentar expandir padres para cargarlo
-      this.loadNodeByRoute(route);
-    }
-  }
-
-  /**
-   * ✅ NUEVA: Carga un nodo que no está visible expandiendo sus padres
-   */
-  private async loadNodeByRoute(route: string): Promise<void> {
-    // Extraer el nivel y construir la key desde la ruta
-    const parts = route.split('/');
-    const levelPrefix = parts[0]; // rka, rkp, rks, etc.
-
-    // Encontrar el nivel
-    const level = Object.entries(LEVEL_CONFIG).find(
-      ([_, config]) => config.route === levelPrefix
-    )?.[0];
-
-    if (!level) return;
-
-    const levelNum = parseInt(level);
-
-    // Si es nivel 1, ya debería estar visible
-    if (levelNum === 1) return;
-
-    // Construir la key del padre
-    const parentKey = this.buildParentKey(parts.slice(1), levelNum);
-    const parentNode = this.dataSource.findNodeByKey(parentKey);
-
-    if (parentNode && !this.treeControl.isExpanded(parentNode)) {
-      this.treeControl.expand(parentNode);
-
-      // Esperar a que se carguen los hijos
-      setTimeout(() => {
-        this.expandAndSelectNodeByRoute(route);
-      }, 500);
-    }
-  }
-
-  /**
-   * ✅ NUEVA: Construye la key del padre desde los segmentos de ruta
-   */
-  private buildParentKey(segments: string[], level: number): string {
-    let key = '';
-
-    for (let i = 0; i < level - 1; i++) {
-      key += segments[i] || '';
-    }
-
-    return key;
-  }
-
-  /**
-   * ✅ NUEVA: Expande todos los padres de un nodo
-   */
-  private expandParents(node: TreeNode): void {
-    const parent = this.dataSource.getParent(node);
-    if (parent) {
-      if (!this.treeControl.isExpanded(parent)) {
-        this.treeControl.expand(parent);
-      }
-      this.expandParents(parent);
-    }
-  }
-
-  /**
-   * ✅ MEJORADA: Resalta el nodo activo según la ruta
-   */
-  private highlightActiveNode(): void {
-    const selected = this.selectedNode();
-    if (!selected) return;
-
-    const nodeElement = this.treeNodes.find(
-      el => el.nativeElement.getAttribute('id') === selected.key
-    );
-
-    if (nodeElement && nodeElement !== this.oldHighlight) {
-      this.updateHighlight(nodeElement);
-    }
-  }
-
-  /**
-   * Carga el árbol inicial
-   */
-  loadTree(): void {
-    this.dataSource.loadRootLevel(this.showApproved());
-
-    // Después de cargar, sincronizar con la ruta actual
-    setTimeout(() => {
-      const currentUrl = this.router.url.replace('/rkmain/', '');
-      if (currentUrl && currentUrl !== '/rkmain') {
-        this.expandAndSelectNodeByRoute(currentUrl);
-      }
-    }, 500);
-  }
-
-  /**
-   * Alterna mostrar aprobados
-   */
-  toggleShowApproved(): void {
-    this.showApproved.set(!this.showApproved());
-    this.loadTree();
+    // Navegar
+    console.log(this.router.navigate([ route]));
   }
 
   /**
    * Refresca el árbol completo
    */
-  refreshTree(): void {
-    const currentSelected = this.selectedNode();
-    this.copiedNode.set(null);
-    this.loadTree();
+  async refreshTree(): Promise<void> {
+    const result = await this.alertService.confirm({
+      title: 'Refrescar Árbol',
+      text: '¿Desea recargar el árbol completo?',
+      icon: 'question'
+    });
 
-    // Mantener selección si existe
-    if (currentSelected) {
-      setTimeout(() => {
-        this.expandAndSelectNodeByRoute(currentSelected.route);
-      }, 500);
+    if (result.isConfirmed) {
+      this.isLoading.set(true);
+      this.dataSource.loadRootLevel(this.showApproved());
+      this.alertService.toast('success', 'Árbol actualizado');
     }
   }
 
   /**
-   * Refresca solo el nodo padre del seleccionado
+   * Refresca un nodo específico
    */
-  refreshParent(): void {
-    const selected = this.selectedNode();
-    if (!selected) {
-      this.refreshTree();
-      return;
-    }
-
-    const parent = this.dataSource.getParent(selected);
-    if (parent) {
-      this.dataSource.refreshNode(parent);
-    } else {
-      this.refreshTree();
-    }
-  }
-
-  /**
-   * ✅ MEJORADA: Selecciona un nodo y navega a su detalle
-   */
-  selectNode(node: TreeNode): void {
-    console.log('🔹 Seleccionando nodo:', node.item, '- Ruta:', node.route);
-
-    this.selectedNode.set(node);
-
-    // Guardar en localStorage
-    localStorage.setItem('keySelected', node.key);
-    localStorage.setItem('versionSelected', node.version);
-    localStorage.setItem('statusSelected', node.status);
-
-    // Navegar con array de segmentos
-    const routeParts = node.route.split('/');
-    this.router.navigate(['/rkmain', ...routeParts]);
-  }
-
-  /**
-   * Expande/colapsa un nodo
-   */
-  toggleNode(node: TreeNode): void {
-    if (this.treeControl.isExpanded(node)) {
-      this.treeControl.collapse(node);
-    } else {
-      this.treeControl.expand(node);
-    }
+  refreshNode(node: TreeNode): void {
+    this.dataSource.refreshNode(node);
   }
 
   /**
    * Agrega un hijo al nodo seleccionado
    */
   async addChild(node: TreeNode): Promise<void> {
+    // Validar permisos y estado del nodo
     if (!TreeNodeMapper.canAddChildren(node)) {
-      await this.alertService.error(
-        'No se pueden agregar elementos en este estado',
-        'El nodo debe estar en estado de Creación o Aprobado'
+      await this.alertService.warning(
+        'No permitido',
+        'El nodo debe estar en estado de Creación o Aprobado para agregar elementos'
       );
       return;
     }
 
     this.selectedNode.set(node);
 
-    const levelConfig = LEVEL_CONFIG[node.level as keyof typeof LEVEL_CONFIG];
-    console.log(`Agregar hijo a ${levelConfig?.name}: ${node.key}`);
+    // Determinar el siguiente nivel
+    const nextLevel = (node.level + 1) as HierarchyLevel;
+    const nextLevelConfig = LEVEL_CONFIG[nextLevel];
 
-    await this.alertService.info(
-      `Agregar ${LEVEL_CONFIG[(node.level + 1) as keyof typeof LEVEL_CONFIG]?.name}`,
-      `Funcionalidad pendiente de implementar`
-    );
-  }
-
-  /**
-   * Elimina un nodo
-   */
-  async deleteNode(node: TreeNode): Promise<void> {
-    if (node.displayDeleteIcon === 'N') {
+    if (!nextLevelConfig) {
+      await this.alertService.error('Error', 'Nivel no válido');
       return;
     }
 
-    const levelConfig = LEVEL_CONFIG[node.level as keyof typeof LEVEL_CONFIG];
-
-    const result = await this.alertService.confirmDelete(
-      `¿Desea eliminar este ${levelConfig?.name}? Esta acción eliminará todos sus hijos.`
-    );
-
-    if (result.isConfirmed) {
-      console.log('Eliminar nodo:', node.key);
-      // TODO: Implementar eliminación
-      await this.alertService.success('Nodo eliminado', 'El elemento ha sido eliminado correctamente');
-      this.refreshParent();
+    // Si es RKY (Consecuencias), usar el modal especial
+    if (nextLevel === 8) {
+      this.openAddRkyDialog(node, nextLevelConfig.name);
+    } else {
+      // Para RKA-RKR, usar el modal genérico
+      this.openAddGenericDialog(node, nextLevel, nextLevelConfig.name);
     }
+  }
+
+  /**
+   * Abre modal genérico para RKA-RKR
+   */
+  private openAddGenericDialog(
+    parentNode: TreeNode,
+    level: number,
+    levelName: string
+  ): void {
+    const dialogRef = this.dialog.open(AddHierarchyItemComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: false,
+      panelClass: 'modern-dialog-container',
+      data: {
+        title: `Agregar ${levelName}`,
+        level: this.getLevelCode(level),
+        parentKeys: this.extractParentKeys(parentNode),
+        showNewEntityButton: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Refrescar el nodo padre para mostrar los nuevos hijos
+        this.refreshNode(parentNode);
+        this.alertService.toast('success', `${levelName} agregado correctamente`);
+      }
+    });
+  }
+
+  /**
+   * Abre modal especial para RKY (Consecuencias)
+   */
+  private openAddRkyDialog(parentNode: TreeNode, levelName: string): void {
+    const parentKeys = this.extractParentKeys(parentNode);
+
+  console.log('🎯 Abriendo AddRkyComponent');
+  console.log('📊 Parent Keys:', parentKeys);
+
+  const dialogRef = this.dialog.open(AddRkyComponent, {
+    width: '90vw',           // ⭐ 90% del ancho de viewport
+    maxWidth: '1400px',      // ⭐ Máximo 1400px
+    height: '85vh',          // ⭐ CRÍTICO: 85% de altura
+    maxHeight: '900px',      // ⭐ Máximo 900px
+    minHeight: '600px',      // ⭐ Mínimo 600px
+    panelClass: 'rky-dialog', // ⭐ Clase CSS personalizada
+    disableClose: false,     // Permitir cerrar con ESC
+    autoFocus: false,        // No hacer autofocus automático
+    data: {
+      title: `Agregar ${levelName}`,
+      // ✅ Pasar los IDs directamente en data (spread operator)
+      ...parentKeys,
+      showNewEntityButton: true
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      console.log('✅ Consecuencias agregadas exitosamente');
+      this.refreshNode(parentNode);
+      this.alertService.toast('success', `${levelName} agregado correctamente`);
+    } else {
+      console.log('❌ Modal cancelado');
+    }
+  });
+  }
+
+  /**
+   * Convierte número de nivel a código (RKA, RKP, etc.)
+   */
+  private getLevelCode(level: number): string {
+    const codes: Record<number, string> = {
+      1: 'RKA',
+      2: 'RKP',
+      3: 'RKS',
+      4: 'RKC',
+      5: 'RKT',
+      6: 'RKD',
+      7: 'RKR',
+      8: 'RKY'
+    };
+    return codes[level] || 'RKA';
+  }
+
+  /**
+   * Extrae las keys del padre para enviar al modal
+   */
+  private extractParentKeys(node: TreeNode): any {
+     // Usar el método del servicio para extraer IDs
+  const ids = this.hierarchyService.extractIdsFromKey(node.key, node.level as HierarchyLevel);
+
+  console.log('🔍 extractParentKeys para node:', node.key);
+  console.log('📊 IDs extraídos:', ids);
+  console.log('📊 Nivel del nodo:', node.level);
+
+  const keys: any = {};
+
+  // OPCIÓN 1: Si extractIdsFromKey() retorna IDs ya individuales
+  // (lo más probable según el patrón del backend legacy)
+  if (ids.length >= 1) keys.areaId = ids[0];           // Solo el ID del área
+  if (ids.length >= 2) keys.procesoId = ids[1];        // Solo el ID del proceso
+  if (ids.length >= 3) keys.subprocesoId = ids[2];     // Solo el ID del subproceso
+  if (ids.length >= 4) keys.actividadId = ids[3];      // Solo el ID de la actividad
+  if (ids.length >= 5) keys.tareaId = ids[4];          // Solo el ID de la tarea
+  if (ids.length >= 6) keys.dimensionId = ids[5];      // Solo el ID de la dimensión
+  if (ids.length >= 7) keys.riesgoId = ids[6];         // Solo el ID del riesgo
+
+  console.log('✅ Keys extraídas:', keys);
+
+  return keys;
   }
 
   /**
@@ -348,11 +286,15 @@ export class TreeSidebarComponent {
    */
   copyNode(node: TreeNode): void {
     if (!TreeNodeMapper.canCopyNode(node)) {
+      this.alertService.warning(
+        'No se puede copiar',
+        'Este nodo no puede ser copiado'
+      );
       return;
     }
 
     this.copiedNode.set(node);
-    this.alertService.toast('success', 'Jerarquía copiada');
+    this.alertService.toast('success', 'Nodo copiado al portapapeles');
   }
 
   /**
@@ -360,25 +302,83 @@ export class TreeSidebarComponent {
    */
   async pasteNode(targetNode: TreeNode): Promise<void> {
     const copied = this.copiedNode();
-    if (!copied || !TreeNodeMapper.canPasteInNode(targetNode, copied)) {
-      await this.alertService.error(
-        'Acción no válida',
-        'Asegúrese de pegar el item en su nivel correspondiente'
+
+    if (!copied) {
+      await this.alertService.warning(
+        'Sin nodos copiados',
+        'No hay ningún nodo en el portapapeles'
       );
       return;
     }
 
     const result = await this.alertService.confirm({
-      title: 'Copiar/Pegar',
-      text: '¿Seguro que desea copiar este item?',
+      title: 'Pegar Nodo',
+      text: `¿Desea pegar "${copied.descripcion}" en "${targetNode.descripcion}"?`,
       icon: 'question'
     });
 
     if (result.isConfirmed) {
-      console.log('Pegar nodo:', copied.key, 'en:', targetNode.key);
-      // TODO: Implementar copiar/pegar
-      this.copiedNode.set(null);
-      this.dataSource.refreshNode(targetNode);
+      this.isLoading.set(true);
+
+      // Llamar al servicio para copiar
+      this.hierarchyService.copyNode(targetNode.key, copied.key).subscribe({
+        next: async () => {
+          this.isLoading.set(false);
+          this.copiedNode.set(null);
+          this.refreshNode(targetNode);
+          await this.alertService.success('Éxito', 'Nodo pegado correctamente');
+        },
+        error: async (error) => {
+          this.isLoading.set(false);
+          await this.alertService.error('Error', 'No se pudo pegar el nodo');
+        }
+      });
+    }
+  }
+
+  /**
+   * Elimina un nodo
+   */
+  async deleteNode(node: TreeNode): Promise<void> {
+    if (!this.canShowDeleteButton(node)) {
+      await this.alertService.warning(
+        'No permitido',
+        'Este nodo no puede ser eliminado'
+      );
+      return;
+    }
+
+    const result = await this.alertService.confirm({
+      title: 'Eliminar Nodo',
+      text: `¿Está seguro de eliminar "${node.descripcion}"? Esta acción no se puede deshacer.`,
+      icon: 'warning'
+    });
+
+    if (result.isConfirmed) {
+      this.isLoading.set(true);
+
+      // Extraer IDs para la petición
+      const ids = this.hierarchyService.extractIdsFromKey(node.key, node.level as HierarchyLevel);
+
+      // Llamar al servicio para eliminar
+      this.hierarchyService.deleteNode(node.level as HierarchyLevel, ids, node.version, node.status).subscribe({
+        next: async () => {
+          this.isLoading.set(false);
+          await this.alertService.success(
+            'Eliminado',
+            'El nodo se eliminó correctamente'
+          );
+          // Refrescar el árbol
+          this.loadInitialData();
+        },
+        error: async (error) => {
+          this.isLoading.set(false);
+          await this.alertService.error(
+            'Error',
+            error.message || 'No se pudo eliminar el nodo'
+          );
+        }
+      });
     }
   }
 
@@ -387,6 +387,15 @@ export class TreeSidebarComponent {
    */
   clearCopied(): void {
     this.copiedNode.set(null);
+    this.alertService.toast('info', 'Portapapeles limpio');
+  }
+
+  /**
+   * Toggle mostrar aprobados
+   */
+  toggleShowApproved(): void {
+    this.showApproved.update(v => !v);
+    this.loadInitialData();
   }
 
   // ============================================
@@ -402,7 +411,6 @@ export class TreeSidebarComponent {
   getExpandIcon(node: TreeNode): string {
     if (node.level === 8) return 'remove';
     if (node.hijo === 'N') return 'remove';
-
     return this.treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right';
   }
 
@@ -419,7 +427,9 @@ export class TreeSidebarComponent {
   }
 
   canShowAddButton(node: TreeNode): boolean {
-    return node.level < 8 && node.permiso.startsWith('Y');
+    return node.level < 8 &&
+           node.permiso.startsWith('Y') &&
+           TreeNodeMapper.canAddChildren(node);
   }
 
   canShowDeleteButton(node: TreeNode): boolean {
@@ -430,8 +440,39 @@ export class TreeSidebarComponent {
     return TreeNodeMapper.canCopyNode(node) && node.level > 1;
   }
 
+  canShowPasteButton(): boolean {
+    return this.copiedNode() !== null;
+  }
+
+  canPaste(): boolean {
+    return this.copiedNode() !== null;
+  }
+
+  getLevelPrefix(node: TreeNode): string {
+    const config = LEVEL_CONFIG[node.level as keyof typeof LEVEL_CONFIG];
+    return config?.prefix || '';
+  }
+
+  getLevelColor(node: TreeNode): string {
+    const colors: Record<number, string> = {
+      1: '#1976d2', // Azul - Área
+      2: '#388e3c', // Verde - Proceso
+      3: '#f57c00', // Naranja - Subproceso
+      4: '#7b1fa2', // Púrpura - Actividad
+      5: '#c2185b', // Rosa - Tarea
+      6: '#0097a7', // Cyan - Dimensión
+      7: '#d32f2f', // Rojo - Riesgo
+      8: '#5d4037'  // Marrón - Consecuencia
+    };
+    return colors[node.level] || '#757575';
+  }
+
+  selectNode(node: TreeNode): void {
+    this.navigateToNode(node);
+  }
+
   getNodePadding(node: TreeNode): string {
-    return `${node.level * 20}px`;
+    return `${node.level * 12}px`;
   }
 
   // ============================================
@@ -464,50 +505,4 @@ export class TreeSidebarComponent {
     this.renderer.addClass(newHighlight.nativeElement, 'node-selected');
     this.oldHighlight = newHighlight;
   }
-
-  getPaddingIndent(node: TreeNode): number {
-   switch (node.level) {
-    case 1: return 0;   // Sin padding en raíz
-    case 2: return 8;   // +8px
-    case 3: return 16;  // +8px
-    case 4: return 24;  // +8px
-    case 5: return 32;  // +8px
-    case 6: return 40;  // +8px
-    case 7: return 48;  // +8px
-    case 8: return 56;  // +8px
-    default: return 0;
-  }
-  }
-
-  getLevelPrefix(node: TreeNode): string {
-  const prefixes: Record<number, string> = {
-    1: 'AR',  // Área
-    2: 'PR',  // Proceso
-    3: 'SP',  // Subproceso
-    4: 'AC',  // Actividad
-    5: 'TA',  // Tarea
-    6: 'DM',  // Dimensión
-    7: 'RG',  // Riesgo
-    8: 'CS'   // Consecuencia
-  };
-  return prefixes[node.level] || '';
-}
-
-/**
- * ✅ NUEVO: Color del prefijo según el nivel
- */
-getLevelColor(node: TreeNode): string {
-  const colors: Record<number, string> = {
-    1: '#4caf50',  // Verde - Área
-    2: '#2196f3',  // Azul - Proceso
-    3: '#9c27b0',  // Púrpura - Subproceso
-    4: '#ff9800',  // Naranja - Actividad
-    5: '#00bcd4',  // Cyan - Tarea
-    6: '#795548',  // Marrón - Dimensión
-    7: '#f44336',  // Rojo - Riesgo
-    8: '#607d8b'   // Gris - Consecuencia
-  };
-  return colors[node.level] || '#9e9e9e';
-}
-
 }

@@ -1,33 +1,494 @@
+// ==================== VARIABLES ====================
+$primary-color: #007bff;
+$success-color: #28a745;
+$accent-color: #17a2b8;
+$grey-light: #f8f9fa;
+$grey-medium: #dee2e6;
+$grey-dark: #495057;
+$border-radius: 8px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+
+// ==================== HEADER CON BOTÓN CREAR NUEVA ====================
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  color: white;
+  border-bottom: 3px solid darken($primary-color, 15%);
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex: 1;
+
+    .header-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+      color: rgba(255, 255, 255, 0.95);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .header-text {
+      h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .subtitle {
+        margin: 4px 0 0 0;
+        font-size: 13px;
+        opacity: 0.9;
+        font-weight: 400;
+      }
+    }
+  }
+
+  // ✅ ESTILOS DEL BOTÓN CREAR NUEVA
+  .new-entity-button {
+    background: $success-color !important;
+    color: white !important;
+    font-weight: 600;
+    padding: 0 20px;
+    min-width: 140px;
+
+    mat-icon {
+      margin-right: 4px;
+      font-size: 20px;
+    }
+
+    &:hover:not(:disabled) {
+      background: darken($success-color, 8%) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:disabled {
+      background: lighten($primary-color, 30%) !important;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    // Animación al hacer clic
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+
+  .close-button {
+    color: white;
+
+    mat-icon {
+      font-size: 24px;
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+}
+
+// ==================== BARRA DE BÚSQUEDA ====================
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: white;
+  border-bottom: 1px solid $grey-medium;
+
+  .search-field {
+    flex: 1;
+    max-width: 400px;
+
+    mat-icon[matPrefix] {
+      color: $primary-color;
+    }
+  }
+
+  .stats {
+    .stat-badge {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      background: $grey-light;
+      border-radius: $border-radius;
+      font-size: 13px;
+      font-weight: 600;
+      color: $grey-dark;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+// ==================== CONTENIDO PRINCIPAL ====================
 .dialog-content {
-      min-height: 400px;
-      max-height: 600px;
-      width: 700px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  height: 500px;
+  background: $grey-light;
+  overflow: hidden;
+
+  .items-column,
+  .selected-column {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: $spacing-md;
+      background: $grey-light;
+      border-bottom: 1px solid $grey-medium;
+
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+
+        .count-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 24px;
+          height: 24px;
+          padding: 0 8px;
+          background: $primary-color;
+          color: white;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+      }
+
+      .actions {
+        display: flex;
+        gap: $spacing-sm;
+      }
+    }
+  }
+
+  // Lista de items (scroll normal, no virtual)
+  .items-list-simple {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-md;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid $grey-light;
+
+      &:hover {
+        background: lighten($primary-color, 48%);
+      }
+
+      &.selected {
+        background: lighten($primary-color, 45%);
+        border-left: 3px solid $primary-color;
+      }
+
+      .item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .item-code {
+          font-weight: 600;
+          color: $primary-color;
+          font-size: 13px;
+        }
+
+        .item-description {
+          color: $grey-dark;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  // Estado vacío
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: $spacing-lg * 2;
+    color: $grey-dark;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: $grey-medium;
+      margin-bottom: $spacing-md;
+      animation: float 3s ease-in-out infinite;
     }
 
-    .selected-chips {
-      margin-bottom: 16px;
-      padding: 8px;
-      background: #f5f5f5;
-      border-radius: 4px;
+    p {
+      margin: 0 0 $spacing-sm 0;
+      font-size: 16px;
+      font-weight: 500;
     }
 
-    .search-field {
+    span {
+      font-size: 13px;
+      color: lighten($grey-dark, 20%);
+      margin-bottom: $spacing-md;
+    }
+
+    // ✅ BOTÓN CREAR PRIMERA ENTIDAD
+    .create-first-button {
+      margin-top: $spacing-md;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: white;
+        margin-right: 4px;
+        animation: none;
+      }
+    }
+  }
+
+  // Estado de carga
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: $spacing-md;
+
+    p {
+      color: $grey-dark;
+      font-size: 14px;
+    }
+  }
+
+  // Cargar más
+  .load-more {
+    padding: $spacing-md;
+    text-align: center;
+    border-top: 1px solid $grey-medium;
+
+    mat-progress-bar {
+      margin-bottom: $spacing-sm;
+    }
+
+    p {
+      margin: 0;
+      color: $grey-dark;
+      font-size: 13px;
+    }
+  }
+
+  // Lista de seleccionados
+  .selected-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-sm;
+
+    .selected-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: $spacing-md;
+      margin-bottom: $spacing-sm;
+      background: $grey-light;
+      border-radius: $border-radius;
+      border-left: 3px solid $success-color;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: darken($grey-light, 5%);
+        transform: translateX(4px);
+      }
+
+      .item-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .item-code {
+          font-weight: 600;
+          color: $success-color;
+          font-size: 13px;
+        }
+
+        .item-description {
+          color: $grey-dark;
+          font-size: 14px;
+        }
+      }
+
+      button {
+        mat-icon {
+          color: $grey-dark;
+        }
+
+        &:hover mat-icon {
+          color: red;
+        }
+      }
+    }
+  }
+
+  // Estado sin selección
+  .empty-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: $spacing-lg * 2;
+    color: $grey-dark;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: $grey-medium;
+      margin-bottom: $spacing-md;
+    }
+
+    p {
+      margin: 0 0 $spacing-sm 0;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 12px;
+      color: lighten($grey-dark, 20%);
+      text-align: center;
+    }
+  }
+}
+
+// ==================== FOOTER ====================
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  background: white;
+  border-top: 1px solid $grey-medium;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+
+  .actions-left {
+    .info-badge {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      background: lighten($accent-color, 48%);
+      border-radius: $border-radius;
+      font-size: 14px;
+      color: $grey-dark;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: $accent-color;
+      }
+    }
+  }
+
+  .actions-right {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    button {
+      mat-icon {
+        margin-right: 4px;
+      }
+
+      mat-spinner {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+// ==================== ANIMACIONES ====================
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// ==================== RESPONSIVE ====================
+@media (max-width: 768px) {
+  .dialog-content {
+    grid-template-columns: 1fr;
+    height: 600px;
+
+    .selected-column {
+      display: none;
+    }
+  }
+
+  .dialog-header {
+    flex-wrap: wrap;
+
+    .new-entity-button {
+      order: 3;
       width: 100%;
-      margin-bottom: 16px;
+      margin-top: $spacing-sm;
     }
-
-    .table-container {
-      max-height: 350px;
-      overflow: auto;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-    }
-
-    .items-table {
-      width: 100%;
-    }
-
-    mat-dialog-actions {
-      gap: 8px;
-      padding: 16px 24px;
-    }
+  }
+}

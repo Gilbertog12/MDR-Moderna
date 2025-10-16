@@ -1,0 +1,231 @@
+<div class="select-severidad-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>priority_high</mat-icon>
+      {{ data.title }}
+    </h2>
+    <button mat-icon-button (click)="cancel()" class="close-btn" matTooltip="Cerrar (ESC)">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <mat-icon>info</mat-icon>
+      <div class="banner-content">
+        <p>Seleccione el nivel de severidad que mejor describa el impacto potencial del riesgo en diferentes dimensiones</p>
+        <!-- Shortcuts Info -->
+        <div class="shortcuts-hint">
+          <span class="shortcut-item">
+            <kbd>1-5</kbd> Selección rápida
+          </span>
+          <span class="shortcut-item">
+            <kbd>↑↓</kbd> Navegar
+          </span>
+          <span class="shortcut-item">
+            <kbd>Enter</kbd> Confirmar
+          </span>
+          <span class="shortcut-item">
+            <kbd>ESC</kbd> Cancelar
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando datos de severidad...</p>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container" *ngIf="!isLoading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataList()" class="severidad-table">
+
+          <!-- Select Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef style="width: 50px;">
+              <mat-icon>done</mat-icon>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                [checked]="row.selected"
+                (change)="toggleSelection(row)"
+                color="primary"
+                [class.pulse-check]="row.selected">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef style="width: 70px;">Nivel</th>
+            <td mat-cell *matCellDef="let row">
+              <div
+                class="level-badge"
+                [style.background-color]="getLevelColor(row.id)"
+                [matTooltip]="'Presiona ' + row.id + ' para seleccionar'">
+                {{ row.id }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Descripción Column -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 130px;">Descripción</th>
+            <td mat-cell *matCellDef="let row" class="description-cell">
+              <strong>{{ row.descripcion }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Daños a las Personas Column -->
+          <ng-container matColumnDef="danosPersonas">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 200px;">
+              <div class="column-header">
+                <mat-icon class="icon-personas">{{ getCategoryIcon('danosPersonas') }}</mat-icon>
+                <span>Daños a Personas<br><small>Seguridad/Salud</small></span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="impact-cell">
+              <div class="impact-content">
+                {{ row.danosPersonas }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Medio Ambiente Column -->
+          <ng-container matColumnDef="medioAmbiente">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 180px;">
+              <div class="column-header">
+                <mat-icon class="icon-ambiente">{{ getCategoryIcon('medioAmbiente') }}</mat-icon>
+                <span>Medio Ambiente</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="impact-cell">
+              <div class="impact-content">
+                {{ row.medioAmbiente }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Interrupción Operación Column -->
+          <ng-container matColumnDef="interrupcionOperacion">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 210px;">
+              <div class="column-header">
+                <mat-icon class="icon-operacion">{{ getCategoryIcon('interrupcionOperacion') }}</mat-icon>
+                <span>Interrupción Operación<br><small>Daño Material (IO/DM)</small></span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="impact-cell">
+              <div class="impact-content">
+                {{ row.interrupcionOperacion }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Reputación Social Column -->
+          <ng-container matColumnDef="reputacionSocial">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 200px;">
+              <div class="column-header">
+                <mat-icon class="icon-social">{{ getCategoryIcon('reputacionSocial') }}</mat-icon>
+                <span>Reputación Social<br><small>y Comunidades (RS/C)</small></span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="impact-cell">
+              <div class="impact-content">
+                {{ row.reputacionSocial }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Legal Column -->
+          <ng-container matColumnDef="legal">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 180px;">
+              <div class="column-header">
+                <mat-icon class="icon-legal">{{ getCategoryIcon('legal') }}</mat-icon>
+                <span>Legal</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="impact-cell">
+              <div class="impact-content">
+                {{ row.legal }}
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayColumns; let i = index"
+            [attr.data-index]="i"
+            (click)="toggleSelection(row)"
+            (dblclick)="onRowDoubleClick(row)"
+            (mouseenter)="onRowMouseEnter(i)"
+            (mouseleave)="onRowMouseLeave()"
+            [class.selected-row]="row.selected"
+            [class.hovered-row]="isRowHovered(i)"
+            [matTooltip]="'Doble-click para seleccionar y confirmar'"
+            matTooltipPosition="above"
+            matTooltipShowDelay="1000">
+          </tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="dataList().length === 0">
+        <mat-icon>search_off</mat-icon>
+        <p>No se encontraron datos de severidad</p>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" *ngIf="!isLoading() && dataList().length > 0">
+      <div class="legend-title">
+        <mat-icon>palette</mat-icon>
+        <span>Leyenda de niveles:</span>
+      </div>
+      <div class="legend-items">
+        <div class="legend-item" *ngFor="let level of [
+          {id: 1, label: 'Insignificante', color: '#4caf50'},
+          {id: 2, label: 'Menor', color: '#8bc34a'},
+          {id: 3, label: 'Moderado', color: '#ffeb3b'},
+          {id: 4, label: 'Mayor', color: '#ff9800'},
+          {id: 5, label: 'Catastrófico', color: '#f44336'}
+        ]">
+          <div class="color-box" [style.background]="level.color"></div>
+          <span>{{ level.label }} ({{ level.id }})</span>
+          <kbd>{{ level.id }}</kbd>
+        </div>
+      </div>
+    </div>
+
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="cancel()">
+      <mat-icon>close</mat-icon>
+      {{ data.button_close }}
+    </button>
+
+    <div class="spacer"></div>
+
+    <div class="selection-info" *ngIf="selectedId()">
+      <mat-icon class="pulse-icon">check_circle</mat-icon>
+      <span>Nivel {{ selectedId() }} seleccionado</span>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="confirm()"
+      [disabled]="!selectedId()"
+      matTooltip="Presiona Enter">
+      <mat-icon>check</mat-icon>
+      {{ data.button_confirm }}
+    </button>
+  </mat-dialog-actions>
+</div>

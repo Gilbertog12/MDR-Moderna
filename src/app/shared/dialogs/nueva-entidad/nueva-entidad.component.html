@@ -1,0 +1,339 @@
+<div class="modern-dialog-entity">
+  <!-- ==================== HEADER ==================== -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ currentEntityType()?.icon }}</mat-icon>
+      <div class="header-text">
+        <h2 mat-dialog-title>{{ data.titulo }}</h2>
+        <p class="subtitle">Creación masiva de {{ currentEntityType()?.label }}s</p>
+      </div>
+    </div>
+    <button
+      class="close-button"
+      mat-icon-button
+      (click)="close()"
+      [disabled]="isProcessing()"
+      matTooltip="Cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ==================== BARRA DE PROGRESO (durante procesamiento) ==================== -->
+  @if (isProcessing()) {
+    <div class="progress-bar-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressPercentage()">
+      </mat-progress-bar>
+      <div class="progress-info">
+        <span>{{ processedCount() }} de {{ totalCount() }} procesados</span>
+        <span>{{ progressPercentage() }}%</span>
+      </div>
+    </div>
+  }
+
+  <!-- ==================== CONTENIDO ==================== -->
+  <mat-dialog-content class="dialog-content">
+
+    <!-- FORMULARIO DE ENTRADA -->
+    <div class="form-section">
+      <div class="section-title">
+        <mat-icon>edit_note</mat-icon>
+        <span>Nueva {{ currentEntityType()?.label }}</span>
+      </div>
+
+      <!-- ✨ KEYDOWN.ENTER para agregar -->
+      <form
+        [formGroup]="entityForm"
+        (ngSubmit)="addEntity()"
+        (keydown.enter)="$event.preventDefault(); addEntity()"
+        autocomplete="off">
+        <div class="form-grid">
+
+          <!-- DESCRIPCIÓN -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción *</mat-label>
+            <input
+              matInput
+              formControlName="description"
+              [placeholder]="currentEntityType()?.fields?.[0]?.placeholder ?? 'Ingrese la descripción'"
+              maxlength="50"
+              [readonly]="isProcessing()"
+              #descriptionInput>
+            <mat-icon matPrefix>description</mat-icon>
+            <!-- ✨ CONTADOR VISUAL CON ADVERTENCIA -->
+            <mat-hint align="end">
+              <span [class.near-limit]="isDescriptionNearLimit()">
+                {{ getDescriptionLength() }} / 50
+              </span>
+            </mat-hint>
+            @if (isFieldInvalid('description')) {
+              <mat-error>{{ getFieldError('description') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- TEXTO EXTENDIDO - ✨ AUTO-EXPANDIBLE -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Texto Extendido</mat-label>
+            <textarea
+              matInput
+              formControlName="extendedText"
+              [placeholder]="currentEntityType()?.fields?.[1]?.placeholder ?? 'Información adicional'"
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="3"
+              cdkAutosizeMaxRows="6"
+              maxlength="500"
+              [readonly]="isProcessing()">
+            </textarea>
+            <mat-icon matPrefix>notes</mat-icon>
+            <mat-hint>Opcional - Máximo 500 caracteres</mat-hint>
+          </mat-form-field>
+
+        </div>
+
+        <!-- BOTONES DE FORMULARIO -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            mat-raised-button
+            color="primary"
+            [disabled]="!canAddEntity()">
+            <mat-icon>add</mat-icon>
+            Agregar a la lista
+          </button>
+
+          @if (entities().length > 0) {
+            <button
+              type="button"
+              mat-stroked-button
+              color="warn"
+              (click)="clearAll()"
+              [disabled]="isProcessing()">
+              <mat-icon>delete_sweep</mat-icon>
+              Limpiar todo
+            </button>
+          }
+
+          <span class="hint-text">
+            <mat-icon>info</mat-icon>
+            Presiona <kbd>Enter</kbd> para agregar rápidamente
+          </span>
+        </div>
+      </form>
+    </div>
+
+    <!-- TABLA DE ENTIDADES -->
+    <div class="table-section">
+      <div class="section-title">
+        <mat-icon
+          [matBadge]="entities().length"
+          matBadgeColor="accent"
+          [matBadgeHidden]="entities().length === 0">
+          list
+        </mat-icon>
+        <span>{{ currentEntityType()?.label }}s en cola</span>
+
+        @if (entities().length > 0 && !isProcessing()) {
+          <span class="pending-badge">
+            {{ pendingCount() }} pendiente(s)
+          </span>
+        }
+      </div>
+
+      @if (entities().length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>No hay {{ currentEntityType()?.label }}s en la lista</p>
+          <span>Completa el formulario y presiona <kbd>Enter</kbd> o haz clic en "Agregar a la lista"</span>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table class="entities-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Descripción</th>
+                <th>Texto Extendido</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entity of entities(); track entity.timestamp) {
+                <tr
+                  [class.processing]="entity.status === 'processing'"
+                  [class.error]="entity.status === 'error'"
+                  [class.success]="entity.status === 'success'"
+                  [class.pending]="entity.status === 'pending'"
+                  [class.newly-added]="isNewlyAdded($index)">
+
+                  <!-- NÚMERO -->
+                  <td class="number-cell">
+                    <div class="number-badge">
+                      {{ $index + 1 }}
+                    </div>
+                  </td>
+
+                  <!-- DESCRIPCIÓN -->
+                  <td class="description-cell">
+                    <div class="cell-content">
+                      <mat-icon>{{ currentEntityType()?.icon }}</mat-icon>
+                      <span>{{ entity.description }}</span>
+                    </div>
+                  </td>
+
+                  <!-- TEXTO EXTENDIDO -->
+                  <td class="extended-text-cell">
+                    @if (entity.extendedText) {
+                      <span
+                        [matTooltip]="entity.extendedText"
+                        matTooltipPosition="above"
+                        matTooltipShowDelay="300">
+                        {{ entity.extendedText.length > 50 ? entity.extendedText.substring(0, 50) + '...' : entity.extendedText }}
+                      </span>
+                    } @else {
+                      <span class="no-data">Sin texto extendido</span>
+                    }
+                  </td>
+
+                  <!-- ESTADO -->
+                  <td class="status-cell">
+                    @if (entity.status === 'processing') {
+                      <div class="status-badge processing">
+                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                        <span>Procesando...</span>
+                      </div>
+                    } @else if (entity.status === 'success') {
+                      <div class="status-badge success">
+                        <mat-icon>check_circle</mat-icon>
+                        <span>Exitoso</span>
+                      </div>
+                      @if (entity.mensaje) {
+                        <div class="status-message success-message">{{ entity.mensaje }}</div>
+                      }
+                    } @else if (entity.status === 'error') {
+                      <div class="status-badge error">
+                        <mat-icon>error</mat-icon>
+                        <span>Error</span>
+                      </div>
+                      <!-- ✨ MOSTRAR ERROR CLARAMENTE -->
+                      @if (entity.mensaje) {
+                        <div class="status-message error-message">
+                          <mat-icon>info</mat-icon>
+                          {{ entity.mensaje }}
+                        </div>
+                      }
+                    } @else {
+                      <div class="status-badge pending">
+                        <mat-icon>schedule</mat-icon>
+                        <span>Pendiente</span>
+                      </div>
+                    }
+                  </td>
+
+                  <!-- ACCIONES -->
+                  <td class="actions-cell">
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="removeEntity($index)"
+                      [disabled]="isProcessing()"
+                      matTooltip="Eliminar"
+                      matTooltipPosition="left">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RESUMEN -->
+        @if (successCount() > 0 || errorCount() > 0) {
+          <div class="summary-bar">
+            @if (successCount() > 0) {
+              <div class="summary-item success">
+                <mat-icon>check_circle</mat-icon>
+                <span>{{ successCount() }} exitosa(s)</span>
+              </div>
+            }
+            @if (errorCount() > 0) {
+              <div class="summary-item error">
+                <mat-icon>error</mat-icon>
+                <span>{{ errorCount() }} con error(es)</span>
+              </div>
+            }
+            @if (pendingCount() > 0) {
+              <div class="summary-item pending">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ pendingCount() }} pendiente(s)</span>
+              </div>
+            }
+            <div class="summary-item total">
+              <mat-icon>analytics</mat-icon>
+              <span>{{ totalCount() }} total</span>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+  </mat-dialog-content>
+
+  <!-- ==================== FOOTER ==================== -->
+  <mat-dialog-actions class="dialog-actions">
+    <div class="actions-left">
+      @if (pendingCount() > 0 && !isProcessing()) {
+        <div class="info-badge">
+          <mat-icon>info</mat-icon>
+          <span>
+            <strong>{{ pendingCount() }}</strong>
+            {{ currentEntityType()?.label }}(s) lista(s) para guardar
+          </span>
+        </div>
+      }
+      @if (isProcessing()) {
+        <div class="info-badge processing">
+          <mat-icon class="spinning">sync</mat-icon>
+          <span>
+            Procesando... <strong>{{ progressPercentage() }}%</strong>
+          </span>
+        </div>
+      }
+      @if (successCount() > 0 && !isProcessing()) {
+        <div class="info-badge success">
+          <mat-icon>check_circle</mat-icon>
+          <span>
+            <strong>{{ successCount() }}</strong> creada(s) exitosamente
+          </span>
+        </div>
+      }
+    </div>
+
+    <div class="actions-right">
+      <button
+        mat-button
+        (click)="close()"
+        [disabled]="isProcessing()">
+        <mat-icon>close</mat-icon>
+        {{ successCount() > 0 ? 'Cerrar' : 'Cancelar' }}
+      </button>
+
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="saveAll()"
+        [disabled]="!canSave()">
+        @if (isProcessing()) {
+          <mat-icon class="spinning">sync</mat-icon>
+          Procesando...
+        } @else {
+          <mat-icon>save</mat-icon>
+          Guardar Todo ({{ pendingCount() }})
+        }
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

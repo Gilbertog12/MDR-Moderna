@@ -185,7 +185,7 @@ export class HierarchyService {
    */
   private getHeaders(): HttpHeaders {
   const token = localStorage.getItem('tk') || ''; // ✅ Cambiar 'token' por 'tk'
-  console.log(token)
+  // console.log(token)
   return new HttpHeaders({
     'Content-Type': 'application/json',
     'Authorization': `bearer ${token}` // ✅ Minúscula 'bearer' como en legacy

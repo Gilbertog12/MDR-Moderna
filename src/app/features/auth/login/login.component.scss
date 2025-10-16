@@ -6,6 +6,8 @@ $border-color: #e0e0e0;
 $text-primary: #333333;
 $text-secondary: #666666;
 $error-color: #f44336;
+$base-path: "/MDR/";
+$image_path: "../assets/images/";
 
 // === Login Page ===
 .login-page {
@@ -13,7 +15,7 @@ $error-color: #f44336;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/assets/images/mining-background.png');
+  background-image: url("../../../../assets/images/mining-background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

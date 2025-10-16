@@ -1,0 +1,188 @@
+<div class="select-probabilidad-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>show_chart</mat-icon>
+      {{ data.title }}
+    </h2>
+    <button mat-icon-button (click)="cancel()" class="close-btn" matTooltip="Cerrar (ESC)">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <mat-icon>info</mat-icon>
+      <div class="banner-content">
+        <p>Seleccione el nivel de probabilidad que mejor describa la frecuencia de ocurrencia del riesgo</p>
+        <!-- ✨ SHORTCUTS INFO -->
+        <div class="shortcuts-hint">
+          <span class="shortcut-item">
+            <kbd>1-5</kbd> Selección rápida
+          </span>
+          <span class="shortcut-item">
+            <kbd>↑↓</kbd> Navegar
+          </span>
+          <span class="shortcut-item">
+            <kbd>Enter</kbd> Confirmar
+          </span>
+          <span class="shortcut-item">
+            <kbd>ESC</kbd> Cancelar
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando datos de probabilidad...</p>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container" *ngIf="!isLoading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataList()" class="probabilidad-table">
+
+          <!-- Select Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef style="width: 60px;">
+              <mat-icon>done</mat-icon>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                [checked]="row.selected"
+                (change)="toggleSelection(row)"
+                color="primary"
+                [class.pulse-check]="row.selected">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef style="width: 80px;">Nivel</th>
+            <td mat-cell *matCellDef="let row">
+              <div
+                class="level-badge"
+                [style.background-color]="getLevelColor(row.id)"
+                [matTooltip]="'Presiona ' + row.id + ' para seleccionar'">
+                {{ row.id }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Descripción Column -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 180px;">Descripción</th>
+            <td mat-cell *matCellDef="let row" class="description-cell">
+              <strong>{{ row.descripcion }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Valoración Column -->
+          <ng-container matColumnDef="valoracion">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 150px;">Valoración</th>
+            <td mat-cell *matCellDef="let row" class="valoracion-cell">
+              {{ row.valoracion }}
+            </td>
+          </ng-container>
+
+          <!-- Cualitativo Column -->
+          <ng-container matColumnDef="cualitativo">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 200px;">
+              <div class="column-header">
+                <mat-icon>analytics</mat-icon>
+                <span>Cualitativo</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="cualitativo-cell">
+              <span class="info-text">{{ row.cualitativo }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Cuantitativo Column -->
+          <ng-container matColumnDef="cuantitativo">
+            <th mat-header-cell *matHeaderCellDef style="min-width: 200px;">
+              <div class="column-header">
+                <mat-icon>calculate</mat-icon>
+                <span>Cuantitativo</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" class="cuantitativo-cell">
+              <span class="info-text">{{ row.cuantitativo }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayColumns; sticky: true"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayColumns; let i = index"
+            [attr.data-index]="i"
+            (click)="toggleSelection(row)"
+            (dblclick)="onRowDoubleClick(row)"
+            (mouseenter)="onRowMouseEnter(i)"
+            (mouseleave)="onRowMouseLeave()"
+            [class.selected-row]="row.selected"
+            [class.hovered-row]="isRowHovered(i)"
+            [matTooltip]="'Doble-click para seleccionar y confirmar'"
+            matTooltipPosition="above"
+            matTooltipShowDelay="1000">
+          </tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="dataList().length === 0">
+        <mat-icon>search_off</mat-icon>
+        <p>No se encontraron datos de probabilidad</p>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" *ngIf="!isLoading() && dataList().length > 0">
+      <div class="legend-title">
+        <mat-icon>palette</mat-icon>
+        <span>Leyenda de niveles:</span>
+      </div>
+      <div class="legend-items">
+        <div class="legend-item" *ngFor="let level of [
+          {id: 1, label: 'Rara', color: '#4caf50'},
+          {id: 2, label: 'Posible', color: '#8bc34a'},
+          {id: 3, label: 'Probable', color: '#ffeb3b'},
+          {id: 4, label: 'Casi Segura', color: '#ff9800'},
+          {id: 5, label: 'Segura', color: '#f44336'}
+        ]">
+          <div class="color-box" [style.background]="level.color"></div>
+          <span>{{ level.label }} ({{ level.id }})</span>
+          <kbd>{{ level.id }}</kbd>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="cancel()">
+      <mat-icon>close</mat-icon>
+      {{ data.button_close }}
+    </button>
+
+    <div class="spacer"></div>
+
+    <div class="selection-info" *ngIf="selectedId()">
+      <mat-icon class="pulse-icon">check_circle</mat-icon>
+      <span>Nivel {{ selectedId() }} seleccionado</span>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="confirm()"
+      [disabled]="!selectedId()"
+      matTooltip="Presiona Enter">
+      <mat-icon>check</mat-icon>
+      {{ data.button_confirm }}
+    </button>
+  </mat-dialog-actions>
+</div>

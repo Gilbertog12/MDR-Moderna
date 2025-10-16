@@ -161,7 +161,7 @@ export class TreeNodeMapper {
         break;
     }
 
-    return `${config.route}/${parts.join('/')}`;
+    return `/rkmain/${config.route}/${parts.join('/')}`;
   }
 
   /**
