@@ -1,0 +1,246 @@
+<!-- components/risk-form/risk-form.component.html -->
+<div class="risk-form-container">
+
+  <div class="risk-panels-grid">
+
+    <!-- Panel Riesgo Puro -->
+    <mat-card class="risk-panel pure-risk" appearance="outlined">
+
+      <mat-card-header class="panel-header">
+        <mat-icon class="header-icon">warning_amber</mat-icon>
+        <mat-card-title>Riesgo Puro</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content class="panel-content">
+
+        <!-- Probabilidad -->
+        <div class="risk-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">trending_up</mat-icon>
+            Probabilidad
+          </label>
+
+          <div class="field-content">
+            <div class="value-group">
+              <input
+                type="text"
+                [value]="pureRisk().probability.id"
+                readonly
+                class="value-input id-input"
+                [title]="pureRisk().probability.desc">
+
+              <div class="value-description">
+                {{ pureRisk().probability.desc }}
+              </div>
+            </div>
+
+            <button
+              *ngIf="showEditButtons()"
+              mat-icon-button
+              class="edit-button"
+              (click)="handleEdit('probability', 'pure')"
+              matTooltip="Editar probabilidad"
+              matTooltipPosition="left">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <!-- Severidad -->
+        <div class="risk-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">priority_high</mat-icon>
+            Severidad
+          </label>
+
+          <div class="field-content">
+            <div class="value-group">
+              <input
+                type="text"
+                [value]="pureRisk().severity.id"
+                readonly
+                class="value-input id-input"
+                [title]="pureRisk().severity.desc">
+
+              <div class="value-description">
+                {{ pureRisk().severity.desc }}
+              </div>
+            </div>
+
+            <button
+              *ngIf="showEditButtons()"
+              mat-icon-button
+              class="edit-button"
+              (click)="handleEdit('severity', 'pure')"
+              matTooltip="Editar severidad"
+              matTooltipPosition="left">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <!-- MR (Matriz de Riesgo) -->
+        <div class="risk-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">grid_on</mat-icon>
+            MR (Matriz de Riesgo)
+          </label>
+
+          <div class="field-content">
+            <input
+              type="text"
+              [value]="pureRisk().mr"
+              readonly
+              class="value-input mr-input"
+              title="Matriz de Riesgo">
+          </div>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <!-- Criticidad -->
+        <div class="risk-field criticality-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">emergency</mat-icon>
+            Criticidad
+          </label>
+
+          <div class="criticality-display">
+            <div
+              class="criticality-badge"
+              [ngClass]="getCriticalityClass(pureRisk().criticality)"
+              [ngStyle]="{'background-color': pureRisk().criticalityColor}">
+              {{ pureRisk().criticality || 'Sin evaluar' }}
+            </div>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Panel Riesgo Residual -->
+    <mat-card class="risk-panel residual-risk" appearance="outlined">
+
+      <mat-card-header class="panel-header">
+        <mat-icon class="header-icon">verified_user</mat-icon>
+        <mat-card-title>Riesgo Residual</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content class="panel-content">
+
+        <!-- Probabilidad -->
+        <div class="risk-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">trending_up</mat-icon>
+            Probabilidad
+          </label>
+
+          <div class="field-content">
+            <div class="value-group">
+              <input
+                type="text"
+                [value]="residualRisk().probability.id"
+                readonly
+                class="value-input id-input"
+                [title]="residualRisk().probability.desc">
+
+              <div class="value-description">
+                {{ residualRisk().probability.desc }}
+              </div>
+            </div>
+
+            <button
+              *ngIf="showEditButtons()"
+              mat-icon-button
+              class="edit-button"
+              (click)="handleEdit('probability', 'residual')"
+              matTooltip="Editar probabilidad"
+              matTooltipPosition="left">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <!-- Severidad -->
+        <div class="risk-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">priority_high</mat-icon>
+            Severidad
+          </label>
+
+          <div class="field-content">
+            <div class="value-group">
+              <input
+                type="text"
+                [value]="residualRisk().severity.id"
+                readonly
+                class="value-input id-input"
+                [title]="residualRisk().severity.desc">
+
+              <div class="value-description">
+                {{ residualRisk().severity.desc }}
+              </div>
+            </div>
+
+            <button
+              *ngIf="showEditButtons()"
+              mat-icon-button
+              class="edit-button"
+              (click)="handleEdit('severity', 'residual')"
+              matTooltip="Editar severidad"
+              matTooltipPosition="left">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <!-- MR (Matriz de Riesgo) -->
+        <div class="risk-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">grid_on</mat-icon>
+            MR (Matriz de Riesgo)
+          </label>
+
+          <div class="field-content">
+            <input
+              type="text"
+              [value]="residualRisk().mr"
+              readonly
+              class="value-input mr-input"
+              title="Matriz de Riesgo">
+          </div>
+        </div>
+
+        <div class="field-divider"></div>
+
+        <!-- Criticidad -->
+        <div class="risk-field criticality-field">
+          <label class="field-label">
+            <mat-icon class="label-icon">emergency</mat-icon>
+            Criticidad
+          </label>
+
+          <div class="criticality-display">
+            <div
+              class="criticality-badge"
+              [ngClass]="getCriticalityClass(residualRisk().criticality)"
+              [ngStyle]="{'background-color': residualRisk().criticalityColor}">
+              {{ residualRisk().criticality || 'Sin evaluar' }}
+            </div>
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>

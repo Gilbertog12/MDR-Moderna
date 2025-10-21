@@ -1,0 +1,155 @@
+<div class="notificaciones-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">notifications_active</mat-icon>
+      <div class="header-text">
+        <h2 mat-dialog-title>Notificaciones</h2>
+        <p class="subtitle">Estado de Procesos de Validación</p>
+      </div>
+    </div>
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="cancelar()"
+      matTooltip="Cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content class="dialog-content">
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Cargando notificaciones...</p>
+      </div>
+    } @else if (notificaciones().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">notifications_none</mat-icon>
+        <h3>No hay notificaciones</h3>
+        <p>No se encontraron notificaciones en este momento</p>
+      </div>
+    } @else {
+      <!-- Actions Bar -->
+      <div class="actions-bar">
+        <div class="selection-info">
+          <mat-checkbox
+            [checked]="allSelected()"
+            [indeterminate]="someSelected()"
+            (click)="$event.stopPropagation(); toggleAllRows()"
+            color="primary">
+          </mat-checkbox>
+          @if (hasSelection()) {
+            <span class="selection-text">
+              {{ selection.selected.length }} seleccionada(s)
+            </span>
+          } @else {
+            <span class="selection-text">Seleccionar todas</span>
+          }
+        </div>
+
+        <button
+          mat-stroked-button
+          (click)="actualizar()"
+          [disabled]="loading()"
+          class="refresh-btn">
+          <mat-icon>refresh</mat-icon>
+          Actualizar
+        </button>
+      </div>
+
+      <!-- Table Container -->
+      <div class="table-container">
+        <table class="notifications-table">
+          <thead>
+            <tr>
+              <th class="col-check">
+                <mat-checkbox
+                  [checked]="allSelected()"
+                  [indeterminate]="someSelected()"
+                  (click)="$event.stopPropagation(); toggleAllRows()"
+                  color="primary"
+                  matTooltip="Seleccionar todas">
+                </mat-checkbox>
+              </th>
+              <th class="col-usuario">Usuario</th>
+              <th class="col-fecha">Fecha y Hora</th>
+              <th class="col-jerarquia">Jerarquía</th>
+              <th class="col-estado">Estado</th>
+              <th class="col-accion">Acción</th>
+              <th class="col-items">Items</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (notif of notificaciones(); track notif.keyValue) {
+              <tr
+                [class.selected]="isSelected(notif)"
+                [class.disabled]="notif.habilitado"
+                [class]="getStatusClass(notif.comentario) + '-row'">
+
+                <td class="col-check" (click)="$event.stopPropagation()">
+                  <mat-checkbox
+                    [checked]="isSelected(notif)"
+                    [disabled]="notif.habilitado"
+                    (change)="toggleRow(notif)"
+                    color="primary"
+                    [matTooltip]="notif.habilitado ? 'Solo puedes eliminar tus propias notificaciones' : ''">
+                  </mat-checkbox>
+                </td>
+
+                <td class="col-usuario">
+                  <div class="user-cell">
+                    <mat-icon class="user-icon">account_circle</mat-icon>
+                    <span>{{ notif.usuario }}</span>
+                  </div>
+                </td>
+
+                <td class="col-fecha">{{ notif.fecha }}</td>
+
+                <td class="col-jerarquia">
+                  <span class="jerarquia-badge">{{ notif.jerarquia }}</span>
+                </td>
+
+                <td class="col-estado">
+                  <mat-chip
+                    [class]="getStatusClass(notif.comentario)"
+                    [highlighted]="true">
+                    <mat-icon class="status-icon">{{ getStatusIcon(notif.comentario) }}</mat-icon>
+                    {{ getStatusText(notif.comentario) }}
+                  </mat-chip>
+                </td>
+
+                <td class="col-accion">{{ notif.estado }}</td>
+
+                <td class="col-items">
+                  <span class="items-badge">{{ notif.noItems }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button
+      mat-button
+      (click)="cancelar()"
+      class="action-btn">
+      Cancelar
+    </button>
+
+    <button
+      mat-raised-button
+      color="warn"
+      (click)="confirmarEliminacion()"
+      [disabled]="!hasSelection() || loading()"
+      class="action-btn delete-btn">
+      <mat-icon>delete</mat-icon>
+      {{ data.button_confirm || 'Eliminar Seleccionadas' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -232,4 +232,41 @@ export class HierarchyService {
   executeGenericAction(body: any): Observable<any> {
   return this.http.post<any>(this.apiUrl, body, { headers: this.getHeaders() });
 }
+
+/**
+ * Obtiene la lista de notificaciones del usuario
+ */
+getNotificaciones(): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'NOTIFICACION_LIST' }
+  ];
+
+  return this.http.post<any>(
+    this.apiUrl,
+    { atts },
+    { headers: this.getHeaders() }
+  );
+}
+
+
+
+
+/**
+ * Elimina las notificaciones seleccionadas
+ * @param keys - String con los IDs de las notificaciones separados por coma
+ */
+deleteNotificaciones(keys: string): Observable<any> {
+   const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'NOTIFICATION_DELETE' },
+    { name: 'keyValue', value: keys } // 👈 Cambiar 'keys' por 'keyValue'
+  ];
+
+  return this.http.post<any>(
+    this.apiUrl,
+    { atts },
+    { headers: this.getHeaders() }
+  );
+}
 }

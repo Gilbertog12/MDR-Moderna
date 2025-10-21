@@ -1,0 +1,205 @@
+<!-- components/risk-summary/risk-summary.component.html -->
+<div class="risk-summary-container">
+
+  <!-- Header con estadísticas globales -->
+  <div class="summary-header">
+    <div class="header-card total-items">
+      <mat-icon class="card-icon">assessment</mat-icon>
+      <div class="card-content">
+        <span class="card-label">Total Items</span>
+        <span class="card-value">{{ totalItems() }}</span>
+      </div>
+    </div>
+
+    <div class="header-card risk-overview pure">
+      <mat-icon class="card-icon">warning_amber</mat-icon>
+      <div class="card-content">
+        <span class="card-label">Riesgo Puro</span>
+        <div class="risk-chips">
+          <mat-chip class="risk-chip low" *ngIf="overallStats().pure.low > 0">
+            Bajo: {{ overallStats().pure.low }}
+          </mat-chip>
+          <mat-chip class="risk-chip medium" *ngIf="overallStats().pure.medium > 0">
+            Medio: {{ overallStats().pure.medium }}
+          </mat-chip>
+          <mat-chip class="risk-chip high" *ngIf="overallStats().pure.high > 0">
+            Alto: {{ overallStats().pure.high }}
+          </mat-chip>
+          <mat-chip class="risk-chip critical" *ngIf="overallStats().pure.critical > 0">
+            Crítico: {{ overallStats().pure.critical }}
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-card risk-overview residual">
+      <mat-icon class="card-icon">verified_user</mat-icon>
+      <div class="card-content">
+        <span class="card-label">Riesgo Residual</span>
+        <div class="risk-chips">
+          <mat-chip class="risk-chip low" *ngIf="overallStats().residual.low > 0">
+            Bajo: {{ overallStats().residual.low }}
+          </mat-chip>
+          <mat-chip class="risk-chip medium" *ngIf="overallStats().residual.medium > 0">
+            Medio: {{ overallStats().residual.medium }}
+          </mat-chip>
+          <mat-chip class="risk-chip high" *ngIf="overallStats().residual.high > 0">
+            Alto: {{ overallStats().residual.high }}
+          </mat-chip>
+          <mat-chip class="risk-chip critical" *ngIf="overallStats().residual.critical > 0">
+            Crítico: {{ overallStats().residual.critical }}
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla detallada por dimensión -->
+  <div class="summary-table-container">
+    <table mat-table [dataSource]="summaryData()" class="summary-table">
+
+      <!-- Columna Dimensión -->
+      <ng-container matColumnDef="dimension">
+        <th mat-header-cell *matHeaderCellDef>Dimensión</th>
+        <td mat-cell *matCellDef="let row" class="dimension-cell">
+          <mat-icon
+            class="dimension-icon"
+            [style.color]="getDimensionColor(row.dimension)">
+            {{ getDimensionIcon(row.dimension) }}
+          </mat-icon>
+          <span class="dimension-label">{{ row.dimension }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Columna Total Items -->
+      <ng-container matColumnDef="totalItems">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let row" class="total-cell">
+          {{ row.totalItems }}
+        </td>
+      </ng-container>
+
+      <!-- Headers de grupo -->
+      <ng-container matColumnDef="pure-header">
+        <th mat-header-cell *matHeaderCellDef colspan="4" class="group-header pure">
+          <mat-icon>warning_amber</mat-icon>
+          Riesgo Puro
+        </th>
+      </ng-container>
+
+      <ng-container matColumnDef="residual-header">
+        <th mat-header-cell *matHeaderCellDef colspan="4" class="group-header residual">
+          <mat-icon>verified_user</mat-icon>
+          Riesgo Residual
+        </th>
+      </ng-container>
+
+      <!-- Columnas Riesgo Puro -->
+      <ng-container matColumnDef="pureLow">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Bajo</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell low">
+          <div class="risk-value">
+            <span class="value">{{ row.pureRisk.low }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.pureRisk.low, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pureMedium">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Medio</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell medium">
+          <div class="risk-value">
+            <span class="value">{{ row.pureRisk.medium }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.pureRisk.medium, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pureHigh">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Alto</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell high">
+          <div class="risk-value">
+            <span class="value">{{ row.pureRisk.high }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.pureRisk.high, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pureCritical">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Crítico</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell critical">
+          <div class="risk-value">
+            <span class="value">{{ row.pureRisk.critical }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.pureRisk.critical, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Columnas Riesgo Residual -->
+      <ng-container matColumnDef="residualLow">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Bajo</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell low">
+          <div class="risk-value">
+            <span class="value">{{ row.residualRisk.low }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.residualRisk.low, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="residualMedium">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Medio</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell medium">
+          <div class="risk-value">
+            <span class="value">{{ row.residualRisk.medium }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.residualRisk.medium, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="residualHigh">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Alto</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell high">
+          <div class="risk-value">
+            <span class="value">{{ row.residualRisk.high }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.residualRisk.high, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="residualCritical">
+        <th mat-header-cell *matHeaderCellDef class="risk-header">Crítico</th>
+        <td mat-cell *matCellDef="let row" class="risk-cell critical">
+          <div class="risk-value">
+            <span class="value">{{ row.residualRisk.critical }}</span>
+            <span class="percentage">
+              {{ getRiskPercentage(row.residualRisk.critical, row.totalItems) }}%
+            </span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Rows -->
+      <tr mat-header-row *matHeaderRowDef="['pure-header', 'residual-header']"
+          class="group-header-row"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"
+          class="column-header-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns();"
+          class="data-row"></tr>
+    </table>
+  </div>
+
+</div>

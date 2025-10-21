@@ -1,0 +1,139 @@
+  <h2 mat-dialog-title>
+      <mat-icon>account_circle</mat-icon>
+      Cambiar Posición
+    </h2>
+
+    <mat-dialog-content>
+      @if (positions().length === 0) {
+        <div class="no-data">
+          <mat-icon>info</mat-icon>
+          <p>No hay posiciones disponibles</p>
+        </div>
+      } @else {
+        <div class="content">
+          <!-- Posición Actual -->
+          <div class="current-position">
+            <h3>Posición Actual</h3>
+            <div class="position-card current">
+              <div class="position-header">
+                <mat-icon>location_on</mat-icon>
+                <span class="district">{{ currentUserInfo()?.distrito }}</span>
+              </div>
+              <div class="position-details">
+                <span class="position-name">{{ currentUserInfo()?.posicion }}</span>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Selección de Nueva Posición -->
+          <div class="new-position">
+            <h3>Seleccionar Nueva Posición</h3>
+
+            <form [formGroup]="changePositionForm">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Distrito</mat-label>
+                <mat-select formControlName="district">
+                  @for (district of uniqueDistricts(); track district) {
+                    <mat-option [value]="district">
+                      {{ district }}
+                    </mat-option>
+                  }
+                </mat-select>
+                <mat-icon matPrefix>business</mat-icon>
+              </mat-form-field>
+
+              @if (changePositionForm.get('district')?.value) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Posición</mat-label>
+                  <mat-select formControlName="position">
+                    @for (pos of filteredPositions(); track pos.positionCode) {
+                      <mat-option [value]="pos">
+                        <div class="option-content">
+                          <span class="option-code">{{ pos.positionCode }}</span>
+                          <span class="option-desc">{{ pos.positionDesc }}</span>
+                        </div>
+                      </mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matPrefix>work</mat-icon>
+                </mat-form-field>
+              }
+
+              @if (changePositionForm.get('position')?.value; as position) {
+                <div class="position-card preview">
+                  <div class="position-header">
+                    <mat-icon>preview</mat-icon>
+                    <span>Vista Previa</span>
+                  </div>
+                  <div class="position-details">
+                    <div class="detail-row">
+                      <span class="label">Código:</span>
+                      <span class="value">{{ position.positionCode }}</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="label">Posición:</span>
+                      <span class="value">{{ position.positionDesc }}</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="label">Distrito:</span>
+                      <span class="value">{{ position.districtDesc }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Formulario de contraseña -->
+                <div class="password-form">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Contraseña</mat-label>
+                    <input
+                      matInput
+                      [type]="hidePassword() ? 'password' : 'text'"
+                      formControlName="password"
+                      placeholder="Ingrese su contraseña para confirmar">
+                    <button
+                      mat-icon-button
+                      matSuffix
+                      type="button"
+                      (click)="togglePasswordVisibility()">
+                      <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                    <mat-icon matPrefix>lock</mat-icon>
+                    @if (changePositionForm.get('password')?.hasError('required') && changePositionForm.get('password')?.touched) {
+                      <mat-error>La contraseña es requerida</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <div class="info-message">
+                    <mat-icon>info</mat-icon>
+                    <p>Se cerrará la sesión actual y se iniciará sesión con la nueva posición</p>
+                  </div>
+                </div>
+              }
+            </form>
+          </div>
+        </div>
+      }
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button
+        mat-button
+        [mat-dialog-close]="false">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="onSave()">
+        @if (isSaving()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>login</mat-icon>
+        }
+        Cambiar y Reiniciar Sesión
+      </button>
+    </mat-dialog-actions>

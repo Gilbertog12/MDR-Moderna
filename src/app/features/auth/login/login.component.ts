@@ -66,38 +66,39 @@ export class LoginComponent implements OnInit{
   }
 
   onSubmit() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
+   if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
+  }
 
+  // this.isLoading = true;
+  this.errorMessage = '';
 
-    this.errorMessage = '';
+  const { username, password } = this.loginForm.value;
 
-    const { username, password, rememberMe } = this.loginForm.value;
-
-    if (rememberMe) {
-      localStorage.setItem('remembered_user', username);
-    } else {
-      localStorage.removeItem('remembered_user');
-    }
-
-    this.AuthService.loginWithCredentials(username, password).subscribe({
+  // El AuthService ahora maneja todo:
+  // 1. Obtiene districts y positions
+  // 2. Guarda availablePositions en localStorage
+  // 3. Hace login con primer distrito/posición
+  // 4. Obtiene y guarda el perfil
+  this.AuthService.loginWithCredentials(username, password)
+    .subscribe({
       next: (response) => {
-
-
+        console.log('Login exitoso:', response);
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/rkmain';
         this.router.navigateByUrl(returnUrl);
       },
       error: (error) => {
-
-        this.errorMessage = error.message || 'Error al iniciar sesión';
+        // this.isLoading = false;
+        this.errorMessage = error?.error?.error_description || 'Error al iniciar sesión';
 
         setTimeout(() => {
           this.errorMessage = '';
         }, 5000);
       },
-
+      complete: () => {
+        // this.isLoading = false;
+      }
     });
   }
 

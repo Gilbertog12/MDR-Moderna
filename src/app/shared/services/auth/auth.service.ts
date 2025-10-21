@@ -111,80 +111,86 @@ getPositionsList(username: string, password: string): Observable<Position[]> {
 
    // forkJoin ejecuta ambas peticiones EN PARALELO
   loginWithCredentials(username: string, password: string) {
-    return forkJoin({
-      districts: this.getDistrictsList(username, password),
-      positions: this.getPositionsList(username, password)
-    }).pipe(
-      switchMap(credentials => {
-        // Validar que existan datos
-        if (!credentials.districts?.length || !credentials.positions?.length) {
-          throw new Error('No se encontraron credenciales');
-        }
+   return forkJoin({
+    districts: this.getDistrictsList(username, password),
+    positions: this.getPositionsList(username, password)
+  }).pipe(
+    switchMap(credentials => {
+      // Validar que existan datos
+      if (!credentials.districts?.length || !credentials.positions?.length) {
+        throw new Error('No se encontraron credenciales');
+      }
 
-        // Usar el primer distrito y posición
-        const district = credentials.districts[0].name;
-        const position = credentials.positions[0].name;
+      // Guardar las posiciones y distritos disponibles para el modal de cambio
+      this.saveAvailableCredentials(credentials.districts, credentials.positions);
 
+      // Usar el primer distrito y posición
+      const district = credentials.districts[0].name;
+      const position = credentials.positions[0].name;
 
+      // Guardar info del usuario
+      localStorage.setItem('Usuario', username.toUpperCase());
+      localStorage.setItem('Distrito', district);
+      localStorage.setItem('Posicion', position);
 
-        // Hacer login con los datos obtenidos
-        let body = new HttpParams()
-          .append('grant_type', 'password')
-          .append('username', username)
-          .append('password', password)
-          .append('district', district)
-          .append('position', position);
+      // Hacer login con los datos obtenidos
+      let body = new HttpParams()
+        .append('grant_type', 'password')
+        .append('username', username)
+        .append('password', password)
+        .append('district', district)
+        .append('position', position);
 
-        let headers = new HttpHeaders()
-          .append('Content-Type', 'application/x-www-form-urlencoded');
+      let headers = new HttpHeaders()
+        .append('Content-Type', 'application/x-www-form-urlencoded');
 
-        return from(this.getApiUrl()).pipe(
-          switchMap(url => this.http.post<any>(url, body.toString(), { headers }))
-        );
-      }),
-      map( response => {
-         localStorage.setItem('tk', response.access_token);
+      return from(this.getApiUrl()).pipe(
+        switchMap(url => this.http.post<any>(url, body.toString(), { headers }))
+      );
+    }),
+    map(response => {
+      localStorage.setItem('tk', response.access_token);
 
-        // AGREGAR: Guardar permisos del usuario
-        // Estos valores deberían venir en la respuesta del backend
-        // o ser determinados por la posición/distrito del usuario
-        this.saveUserPermissions(response);
-      }),
-      catchError(error => {
-        console.error('Error en login:', error);
-        return throwError(() => error);
-      })
-    );
+      // Guardar permisos del usuario
+      this.saveUserPermissions(response);
+
+      // Obtener y guardar perfil del usuario
+      const username = localStorage.getItem('Usuario');
+      if (username) {
+        this.fetchAndSaveUserProfile(username);
+      }
+
+      return response;
+    }),
+    catchError(error => {
+      console.error('Error en login:', error);
+      return throwError(() => error);
+    })
+  );
   }
 
-  private saveUserPermissions(loginResponse: any): void {
-  // Determinar permisos basado en la respuesta del login
-  // Esto depende de cómo tu backend envíe los permisos
+  /**
+ * Guarda las credenciales disponibles para el modal de cambio de posición
+ */
+private saveAvailableCredentials(districts: District[], positions: Position[]): void {
+  const availablePositions: any[] = [];
 
-  // Opción 1: Si vienen en la respuesta
-  if (loginResponse.permissions) {
-    localStorage.setItem('allow', loginResponse.permissions);
-  }
+  // Crear combinaciones de distrito + posición
+  districts.forEach(district => {
+    positions.forEach(position => {
+      availablePositions.push({
+        positionCode: position.value,
+        positionDesc: position.name,
+        district: district.value,
+        districtDesc: district.name
+      });
+    });
+  });
 
-  // Opción 2: Si se determinan por posición (temporal)
-  const position = localStorage.getItem('Posicion') || '';
-  let permissions = '';
-
-  if (position.includes('ADMIN')) {
-    permissions = 'administrador';
-  } else if (position.includes('VALID')) {
-    permissions = 'validacion';
-  } else if (position.includes('APROB')) {
-    permissions = 'aprobacion';
-  } else {
-    permissions = 'creacion';
-  }
-
-  localStorage.setItem('allow', permissions);
-  localStorage.setItem('canAdd', 'Y'); // O determinar basado en permisos
-
-
+  // Guardar en localStorage para el UserInfoService
+  localStorage.setItem('availablePositions', JSON.stringify(availablePositions));
 }
+
 
   getPositions(username: string, pwd: string) {
     let body = new HttpParams()
@@ -236,5 +242,172 @@ getPositionsList(username: string, password: string): Observable<Position[]> {
   }
 
   return '';
+}
+
+// ====================================
+// AGREGAR ESTOS MÉTODOS A TU AUTH.SERVICE.TS
+// ====================================
+
+/**
+ * Obtiene districts y positions en paralelo (útil para el modal de cambio)
+ */
+getDistrictsAndPositions(username: string, password: string): Observable<{districts: District[], positions: Position[]}> {
+  return forkJoin({
+    districts: this.getDistrictsList(username, password),
+    positions: this.getPositionsList(username, password)
+  });
+}
+
+/**
+ * Login con distrito y posición específicos (para cambio de posición)
+ * Similar a loginWithCredentials pero con parámetros explícitos
+ */
+loginWithCredentialsAndPosition(
+  username: string,
+  password: string,
+  district: string,
+  position: string
+): Observable<any> {
+  let body = new HttpParams()
+    .append('grant_type', 'password')
+    .append('username', username)
+    .append('password', password)
+    .append('district', district)
+    .append('position', position);
+
+  let headers = new HttpHeaders()
+    .append('Content-Type', 'application/x-www-form-urlencoded');
+
+  return from(this.getApiUrl()).pipe(
+    switchMap(url => this.http.post<any>(url, body.toString(), { headers })),
+    map(response => {
+      if (response && response.access_token) {
+        // Guardar token
+        localStorage.setItem('tk', response.access_token);
+
+        // Actualizar distrito y posición
+        localStorage.setItem('Distrito', district);
+        localStorage.setItem('Posicion', position);
+        localStorage.setItem('Usuario', username);
+
+        // Guardar permisos actualizados
+        this.saveUserPermissions(response);
+
+        // Obtener perfil actualizado
+        this.fetchAndSaveUserProfile(username);
+      }
+      return response;
+    }),
+    catchError(error => {
+      console.error('Error en login con posición:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+/**
+ * Obtiene el perfil del usuario y lo guarda en localStorage
+ * Llama al action SESSION para obtener el PerfilRkj actualizado
+ */
+private fetchAndSaveUserProfile(username: string): void {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'SESSION' }
+  ];
+
+  const token = localStorage.getItem('tk') || '';
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `bearer ${token}`
+  });
+
+  this.http.post<ApiResponse>('/MatrizRsk/api/values/generic', { atts }, { headers })
+    .subscribe({
+      next: (response) => {
+        if (response.success && response.data?.[0]?.atts) {
+          // Buscar el perfil en los atributos
+          // Ajusta estos índices según la respuesta real de tu backend
+          const perfilAttr = response.data[0].atts.find(att =>
+            att.name === 'perfilRkj' || att.name === 'perfil'
+          );
+
+          if (perfilAttr) {
+            localStorage.setItem('PerfilRkj', perfilAttr.value);
+          } else {
+            // Si no viene el perfil, extraerlo de otros atributos
+            // Formato esperado: adm, apr, con, cre, val
+            const adm = response.data[0].atts[1]?.value || 'N';
+            const apr = response.data[0].atts[2]?.value || 'N';
+            const con = response.data[0].atts[3]?.value || 'N';
+            const cre = response.data[0].atts[4]?.value || 'N';
+            const val = response.data[0].atts[5]?.value || 'N';
+
+            const perfilRkj = `${adm}${apr}${con}${cre}${val}`;
+            localStorage.setItem('PerfilRkj', perfilRkj);
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error obteniendo perfil:', error);
+        // Usar un perfil por defecto si falla
+        localStorage.setItem('PerfilRkj', 'NNNNN');
+      }
+    });
+}
+
+/**
+ * Actualiza la función saveUserPermissions para también guardar el PerfilRkj
+ * si viene en la respuesta del login
+ */
+private saveUserPermissions(loginResponse: any): void {
+  // Si el perfil viene en la respuesta del login, guardarlo
+  if (loginResponse.perfilRkj) {
+    localStorage.setItem('PerfilRkj', loginResponse.perfilRkj);
+  }
+
+  // Determinar permisos basado en la respuesta del login
+  if (loginResponse.permissions) {
+    localStorage.setItem('allow', loginResponse.permissions);
+  } else {
+    // Opción 2: Si se determinan por posición (temporal)
+    const position = localStorage.getItem('Posicion') || '';
+    let permissions = '';
+
+    if (position.includes('ADMIN')) {
+      permissions = 'administrador';
+    } else if (position.includes('VALID')) {
+      permissions = 'validacion';
+    } else if (position.includes('APROB')) {
+      permissions = 'aprobacion';
+    } else {
+      permissions = 'creacion';
+    }
+
+    localStorage.setItem('allow', permissions);
+  }
+
+  localStorage.setItem('canAdd', loginResponse.canAdd || 'Y');
+}
+
+/**
+ * Método para logout (si no lo tienes)
+ */
+logout(): void {
+  // Limpiar localStorage
+  localStorage.removeItem('tk');
+  localStorage.removeItem('Usuario');
+  localStorage.removeItem('Posicion');
+  localStorage.removeItem('Distrito');
+  localStorage.removeItem('PerfilRkj');
+  localStorage.removeItem('allow');
+  localStorage.removeItem('canAdd');
+  localStorage.removeItem('availablePositions');
+
+  // Redirigir al login
+  // Si tienes Router inyectado, usar:
+  // this.router.navigate(['/login']);
+
+  // O simplemente:
+  window.location.href = '/login';
 }
 }

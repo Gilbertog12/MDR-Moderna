@@ -1,0 +1,130 @@
+@import './variables';
+
+// ============================================
+// TABS ESTANDARIZADOS - REUTILIZABLE
+// ============================================
+
+.tabs-container {
+  margin-top: $spacing-xl;
+  background: $bg-white;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+
+  ::ng-deep {
+    .mat-mdc-tab-labels {
+      background: $tab-bg;
+      padding: 0;
+
+      .mat-mdc-tab {
+        color: $tab-inactive-color;
+        font-weight: $tab-font-weight;
+        text-transform: none;
+        letter-spacing: $letter-spacing-tight;
+        font-size: $tab-font-size;
+        min-width: $tab-min-width;
+        height: $tab-height;
+        transition: all $transition-slow;
+        opacity: 1;
+
+        // Tab activo - MUY VISIBLE
+        &.mdc-tab--active {
+          color: $tab-active-color !important;
+          background: $tab-active-bg;
+          opacity: 1;
+        }
+
+        // Hover
+        &:hover {
+          color: $tab-hover-color;
+          background: $tab-hover-bg;
+        }
+
+        .mdc-tab__text-label {
+          color: inherit;
+          opacity: 1;
+        }
+      }
+
+      // Indicador activo (línea inferior)
+      .mat-mdc-tab-header-pagination-chevron {
+        border-color: $text-white;
+      }
+
+      .mdc-tab-indicator__content--underline {
+        border-color: $tab-indicator-color;
+        border-width: $tab-indicator-height;
+        height: $tab-indicator-height;
+      }
+
+      .mat-mdc-tab-ripple {
+        display: none;
+      }
+    }
+
+    .mat-mdc-tab-body-content {
+      padding: 0;
+      overflow: visible;
+    }
+  }
+}
+
+// ============================================
+// ESTADOS EN TABS (LOADING/EMPTY)
+// ============================================
+
+.loading-state,
+.empty-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xxl * 2 $spacing-xl;
+  gap: $spacing-lg;
+  min-height: 300px;
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: rgba(0, 0, 0, 0.26);
+  }
+
+  p {
+    color: $text-tertiary;
+    font-size: $font-size-base;
+    margin: 0;
+  }
+}
+
+.tab-content {
+  min-height: 300px;
+}
+
+// ============================================
+// RESPONSIVE PARA TABS
+// ============================================
+
+@media (max-width: $breakpoint-md) {
+  .tabs-container {
+    ::ng-deep {
+      .mat-mdc-tab {
+        font-size: $font-size-sm !important;
+        min-width: 100px !important;
+        padding: 0 $spacing-md;
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .tabs-container {
+    ::ng-deep {
+      .mat-mdc-tab {
+        font-size: $font-size-xs !important;
+        min-width: 80px !important;
+        padding: 0 $spacing-sm;
+      }
+    }
+  }
+}

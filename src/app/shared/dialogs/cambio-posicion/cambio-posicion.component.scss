@@ -1,0 +1,182 @@
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      color: #175641;
+
+      mat-icon {
+        color: #175641;
+      }
+    }
+
+    mat-dialog-content {
+      min-height: 400px;
+      padding: 1.5rem;
+    }
+
+    .no-data {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      min-height: 300px;
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: #666;
+      }
+
+      p {
+        color: #666;
+        margin: 0;
+      }
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .position-card {
+      padding: 1rem;
+      border-radius: 8px;
+      border: 2px solid;
+
+      &.current {
+        background: #e8f5e9;
+        border-color: #4caf50;
+      }
+
+      &.preview {
+        background: #e3f2fd;
+        border-color: #2196f3;
+      }
+    }
+
+    .position-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .district {
+        font-weight: 600;
+        color: #175641;
+      }
+    }
+
+    .position-details {
+      .position-name {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #333;
+      }
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+
+      .label {
+        font-weight: 500;
+        color: #666;
+      }
+
+      .value {
+        color: #333;
+      }
+    }
+
+    mat-form-field {
+      width: 100%;
+
+      &.full-width {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .option-content {
+      display: flex;
+      gap: 0.5rem;
+
+      .option-code {
+        font-weight: 600;
+        color: #175641;
+      }
+
+      .option-desc {
+        color: #666;
+      }
+    }
+
+    .password-form {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fff3e0;
+      border-radius: 8px;
+      border: 2px solid #ff9800;
+    }
+
+    .info-message {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #e3f2fd;
+      border-radius: 4px;
+
+      mat-icon {
+        color: #2196f3;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.875rem;
+        color: #1976d2;
+      }
+    }
+
+    mat-dialog-actions {
+      padding: 1rem 1.5rem;
+
+      button {
+        mat-icon {
+          margin-right: 0.25rem;
+        }
+
+        mat-spinner {
+          display: inline-block;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+
+    mat-divider {
+      margin: 1rem 0;
+    }

@@ -1,0 +1,147 @@
+<div class="detail-tab-container">
+  <!-- Header con búsqueda y estadísticas -->
+  <div class="detail-header">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input
+        matInput
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="searchTerm.set($event)"
+        placeholder="Buscar por tarea, riesgo o consecuencia...">
+    </mat-form-field>
+
+    <div class="stats-container">
+      <div class="stat-card">
+        <span class="stat-label">Total</span>
+        <span class="stat-value">{{ stats().total }}</span>
+      </div>
+      <div class="stat-card stat-intolerable">
+        <span class="stat-label">Intolerables</span>
+        <span class="stat-value">{{ stats().intolerables }}</span>
+      </div>
+      <div class="stat-card stat-tolerable">
+        <span class="stat-label">Tolerables</span>
+        <span class="stat-value">{{ stats().tolerables }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando detalle...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading() && data().length === 0" class="empty-state">
+    <p>No hay datos disponibles</p>
+  </div>
+
+  <!-- Tabla de datos -->
+  <div *ngIf="!loading() && data().length > 0" class="table-container">
+    <table mat-table [dataSource]="data()" class="detail-table">
+
+      <!-- Columna Tarea -->
+      <ng-container matColumnDef="tarea">
+        <th mat-header-cell *matHeaderCellDef>Tarea</th>
+        <td mat-cell *matCellDef="let row">{{ row.tareaDesc }}</td>
+      </ng-container>
+
+      <!-- Columna Riesgo -->
+      <ng-container matColumnDef="riesgo">
+        <th mat-header-cell *matHeaderCellDef>Riesgo</th>
+        <td mat-cell *matCellDef="let row">{{ row.riesgoDesc }}</td>
+      </ng-container>
+
+      <!-- Columna Consecuencia -->
+      <ng-container matColumnDef="consecuencia">
+        <th mat-header-cell *matHeaderCellDef>Consecuencia</th>
+        <td mat-cell *matCellDef="let row">{{ row.consecuenciaDesc }}</td>
+      </ng-container>
+
+      <!-- Columna Seguridad -->
+      <ng-container matColumnDef="seguridad">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="category-header">Seguridad</div>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="evaluation-cell">
+            <div class="eval-group">
+              <span class="eval-label">Puro:</span>
+              <span
+                class="criticality-badge"
+                [ngClass]="getCriticalityClass(row.seguridad.puro.criticidad)">
+                {{ row.seguridad.puro.criticidad || '-' }}
+              </span>
+            </div>
+            <div class="eval-group">
+              <span class="eval-label">Residual:</span>
+              <span
+                class="criticality-badge"
+                [ngClass]="getCriticalityClass(row.seguridad.residual.criticidad)">
+                {{ row.seguridad.residual.criticidad || '-' }}
+              </span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Columna Medio Ambiente -->
+      <ng-container matColumnDef="medioAmbiente">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="category-header">Medio Ambiente</div>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="evaluation-cell">
+            <div class="eval-group">
+              <span class="eval-label">Puro:</span>
+              <span
+                class="criticality-badge"
+                [ngClass]="getCriticalityClass(row.medioAmbiente.puro.criticidad)">
+                {{ row.medioAmbiente.puro.criticidad || '-' }}
+              </span>
+            </div>
+            <div class="eval-group">
+              <span class="eval-label">Residual:</span>
+              <span
+                class="criticality-badge"
+                [ngClass]="getCriticalityClass(row.medioAmbiente.residual.criticidad)">
+                {{ row.medioAmbiente.residual.criticidad || '-' }}
+              </span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Columna Operacional -->
+      <ng-container matColumnDef="operacional">
+        <th mat-header-cell *matHeaderCellDef>
+          <div class="category-header">Operacional</div>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="evaluation-cell">
+            <div class="eval-group">
+              <span class="eval-label">Puro:</span>
+              <span
+                class="criticality-badge"
+                [ngClass]="getCriticalityClass(row.operacional.puro.criticidad)">
+                {{ row.operacional.puro.criticidad || '-' }}
+              </span>
+            </div>
+            <div class="eval-group">
+              <span class="eval-label">Residual:</span>
+              <span
+                class="criticality-badge"
+                [ngClass]="getCriticalityClass(row.operacional.residual.criticidad)">
+                {{ row.operacional.residual.criticidad || '-' }}
+              </span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

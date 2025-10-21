@@ -1,0 +1,130 @@
+<!-- components/risk-table/risk-table.component.html -->
+<div class="risk-table-container">
+
+  <table mat-table [dataSource]="tableData()" class="risk-table">
+
+    <!-- Columna ID -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef class="column-sticky">
+        {{ columns[0]?.label || 'ID' }}
+      </th>
+      <td mat-cell *matCellDef="let row; let i = index"
+          class="column-sticky"
+          [class.row-pending]="row.status !== '008'"
+          [attr.title]="getStatusTitle(row.status, row.pendingDelete)">
+        {{ row.id }}
+        <span class="status-badge"
+              *ngIf="row.status !== '008'">
+          {{ getStatusBadge(row.status) }}
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- Columna Descripción -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ columns[1]?.label || 'Descripción' }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <span class="description-text">{{ row.description }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Headers de Dimensiones -->
+    <ng-container matColumnDef="sso-header">
+      <th mat-header-cell *matHeaderCellDef colspan="2"
+          class="dimension-header"
+          [style.border-left-color]="getDimensionColor('SSO')">
+        <mat-icon>health_and_safety</mat-icon>
+        Seguridad y Salud Ocupacional
+      </th>
+    </ng-container>
+
+    <ng-container matColumnDef="ma-header">
+      <th mat-header-cell *matHeaderCellDef colspan="2"
+          class="dimension-header"
+          [style.border-left-color]="getDimensionColor('MA')">
+        <mat-icon>eco</mat-icon>
+        Medio Ambiente
+      </th>
+    </ng-container>
+
+    <ng-container matColumnDef="op-header">
+      <th mat-header-cell *matHeaderCellDef colspan="2"
+          class="dimension-header"
+          [style.border-left-color]="getDimensionColor('OP')">
+        <mat-icon>engineering</mat-icon>
+        Operacional
+      </th>
+    </ng-container>
+
+    <!-- Columnas de Riesgo SSO -->
+    <ng-container matColumnDef="ssoPuro">
+      <th mat-header-cell *matHeaderCellDef class="risk-column">Puro</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="getRiskClass(row.ssoPuro)"
+          class="risk-cell">
+        {{ row.ssoPuro }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ssoResidual">
+      <th mat-header-cell *matHeaderCellDef class="risk-column">Residual</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="getRiskClass(row.ssoResidual)"
+          class="risk-cell">
+        {{ row.ssoResidual }}
+      </td>
+    </ng-container>
+
+    <!-- Columnas de Riesgo MA -->
+    <ng-container matColumnDef="maPuro">
+      <th mat-header-cell *matHeaderCellDef class="risk-column">Puro</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="getRiskClass(row.maPuro)"
+          class="risk-cell">
+        {{ row.maPuro }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="maResidual">
+      <th mat-header-cell *matHeaderCellDef class="risk-column">Residual</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="getRiskClass(row.maResidual)"
+          class="risk-cell">
+        {{ row.maResidual }}
+      </td>
+    </ng-container>
+
+    <!-- Columnas de Riesgo OP -->
+    <ng-container matColumnDef="opPuro">
+      <th mat-header-cell *matHeaderCellDef class="risk-column">Puro</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="getRiskClass(row.opPuro)"
+          class="risk-cell">
+        {{ row.opPuro }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="opResidual">
+      <th mat-header-cell *matHeaderCellDef class="risk-column">Residual</th>
+      <td mat-cell *matCellDef="let row"
+          [ngClass]="getRiskClass(row.opResidual)"
+          class="risk-cell">
+        {{ row.opResidual }}
+      </td>
+    </ng-container>
+
+    <!-- Rows -->
+    <tr mat-header-row *matHeaderRowDef="['sso-header', 'ma-header', 'op-header']"
+        class="dimension-header-row"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns()"
+        class="column-header-row"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns(); let i = index"
+        class="data-row"
+        [class.row-selected]="selectedRowIndex() === i"
+        (click)="onRowClick(i)">
+    </tr>
+  </table>
+
+</div>

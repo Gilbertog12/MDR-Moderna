@@ -14,8 +14,21 @@
       class="home-btn"
       (click)="onNavigateHome()">
       <mat-icon>home</mat-icon>
-      <span class="app-title">Matriz de Riesgos</span>
+      <span class="app-title">Matriz de Riesgos E9</span>
     </button>
+
+    <!-- Badge de ambiente -->
+    @if (appVersion()) {
+      <mat-chip
+        [highlighted]="true"
+        [color]="ambienteColor()"
+        [matTooltip]="versionTooltip()"
+        matTooltipPosition="below"
+        class="version-chip">
+        <mat-icon matChipAvatar>cloud</mat-icon>
+        {{ ambienteLabel() }}
+      </mat-chip>
+    }
 
     <!-- Breadcrumbs -->
     @if (breadcrumbs().length > 0) {
@@ -33,25 +46,44 @@
 
   <div class="toolbar-right">
     <!-- Usuario info -->
-    <div class="user-info">
-      <mat-icon class="user-icon">person</mat-icon>
+    <div class="user-info" (click)="onChangePosition()">
+      <div class="user-avatar">
+        <mat-icon
+
+        >person</mat-icon>
+      </div>
       <div class="user-details">
-        <span class="user-name">{{ usuario() }}</span>
-        <span class="user-meta">{{ distrito() }} - {{ posicion() }}</span>
+        <span class="user-name">{{ userInfo()?.usuario }}</span>
+        <span class="user-meta">{{ userInfo()?.distrito }} - {{ userInfo()?.posicion }}</span>
+        @if (permissionsLabels().length > 0) {
+          <span class="user-roles">{{ permissionsLabels().join(' • ') }}</span>
+        }
       </div>
     </div>
 
-    <!-- Notificaciones -->
+    <!-- Cambiar posición -->
     <button
       mat-icon-button
-      (click)="onNotifications()"
-      matTooltip="Notificaciones"
-      [matBadge]="notificationCount()"
-      [matBadgeHidden]="notificationCount() === 0"
-      matBadgeColor="warn"
-      matBadgeSize="small">
-      <mat-icon>notifications</mat-icon>
+      (click)="onChangePosition()"
+      matTooltip="Cambiar posición">
+      <mat-icon>account_circle</mat-icon>
     </button>
+
+    <!-- Notificaciones -->
+   <button
+  mat-icon-button
+  (click)="onNotifications()"
+  [matTooltip]="notificationTooltip()"
+  [matBadge]="notificationCount()"
+  [matBadgeHidden]="notificationCount() === 0"
+  matBadgeColor="warn"
+  matBadgeSize="small"
+  class="notification-button">
+  <mat-icon
+    [class.notification-pulse]="hasNotifications()">
+    notifications
+  </mat-icon>
+</button>
 
     <!-- Leyenda -->
     <button

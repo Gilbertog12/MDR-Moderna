@@ -17,7 +17,7 @@ $breakpoint-tablet: 1200px;
   justify-content: flex-end;
   gap: 8px;
   padding: 12px;
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  background: linear-gradient(135deg, #175641 0%, #1a6d4f 100%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   @media (max-width: #{$breakpoint-mobile - 1px}) {

@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { TreeSidebarComponent } from './components/tree-sidebar/tree-sidebar.component';
 // import { AppHeaderComponent } from './components/app-header/app-header.component';
 import { AppHeaderComponent } from './components/header/header.component';
+import { NotificationStateService } from '../../shared/services/notification-state.service';
 
 @Component({
   selector: 'app-rkmain',
@@ -30,7 +31,7 @@ export class RkmainComponent implements OnInit {
   isMobile = signal<boolean>(false);
   currentRoute = signal<string>('');
   breadcrumbs = signal<string[]>([]);
-  notificationCount = signal<number>(0);
+
 
   // Usuario
   usuario = signal<string>('');
@@ -40,6 +41,7 @@ export class RkmainComponent implements OnInit {
   // Breakpoints
   private readonly MOBILE_BREAKPOINT = 768;
   private readonly DESKTOP_LARGE_BREAKPOINT = 1920;
+   private readonly notificationState = inject(NotificationStateService);
 
   ngOnInit(): void {
     this.loadUserInfo();
@@ -54,6 +56,12 @@ export class RkmainComponent implements OnInit {
   @HostListener('window:resize')
   onResize(): void {
     this.checkScreenSize();
+  }
+
+   onNotifications(): void {
+    // Ya no necesitas hacer nada aquí
+    // El header maneja todo internamente
+    console.log('Notificaciones clicked');
   }
 
   /**
@@ -139,7 +147,7 @@ export class RkmainComponent implements OnInit {
    */
   private loadNotifications(): void {
     const count = localStorage.getItem('notificaciones');
-    this.notificationCount.set(count ? parseInt(count, 10) : 0);
+
   }
 
   /**

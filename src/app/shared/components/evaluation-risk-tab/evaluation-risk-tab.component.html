@@ -1,0 +1,135 @@
+<div class="risk-evaluation-container">
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando evaluación de riesgos...</p>
+  </div>
+  }
+
+  @if (!isLoading() && items().length === 0) {
+  <div class="empty-state">
+    <mat-icon>assessment</mat-icon>
+    <p>No hay evaluaciones de riesgo disponibles</p>
+  </div>
+  }
+
+  @if (!isLoading() && items().length > 0) {
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="items()" class="risk-table">
+
+      <!-- Columna: ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef class="col-id" rowspan="2">
+          {{ config().nivel === 'RKC' ? 'Tarea' : config().nivel === 'RKT' ? 'Dimensión' : 'Consecuencia' }}
+        </th>
+        <td mat-cell *matCellDef="let item" class="col-id">
+          <div class="id-container">
+            <span class="item-id">{{ item.id }}</span>
+            @if (getStatusIndicator(item)) {
+            <span class="status-indicator" [ngClass]="getStatusClass(item)" [matTooltip]="getStatusTooltip(item)"
+              matTooltipPosition="right">
+              {{ getStatusIndicator(item) }}
+            </span>
+            }
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Columna: Descripción -->
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef class="col-descripcion" rowspan="2">
+          Descripción {{ config().nivel === 'RKC' ? 'Tarea' : config().nivel === 'RKT' ? 'Dimensión' : 'Consecuencia' }}
+        </th>
+        <td mat-cell *matCellDef="let item" class="col-descripcion">
+          {{ item.descripcion }}
+        </td>
+      </ng-container>
+
+      <!-- CATEGORÍA: SEGURIDAD Y SALUD OCUPACIONAL - Header Principal -->
+      <ng-container matColumnDef="seguridadHeader">
+        <th mat-header-cell *matHeaderCellDef colspan="2" class="category-main seguridad">
+          SEGURIDAD Y SALUD OCUPACIONAL
+        </th>
+      </ng-container>
+
+      <!-- SEGURIDAD - Puro -->
+      <ng-container matColumnDef="seguridadPuro">
+        <th mat-header-cell *matHeaderCellDef class="category-sub">Puro</th>
+        <td mat-cell *matCellDef="let item" [ngClass]="getRiskClass(item.seguridadPuro)">
+          {{ getRiskText(item.seguridadPuro) }}
+        </td>
+      </ng-container>
+
+      <!-- SEGURIDAD - Residual -->
+      <ng-container matColumnDef="seguridadResidual">
+        <th mat-header-cell *matHeaderCellDef class="category-sub">Residual</th>
+        <td mat-cell *matCellDef="let item" [ngClass]="getRiskClass(item.seguridadResidual)">
+          {{ getRiskText(item.seguridadResidual) }}
+        </td>
+      </ng-container>
+
+      <!-- CATEGORÍA: MEDIO AMBIENTE - Header Principal -->
+      <ng-container matColumnDef="medioAmbienteHeader">
+        <th mat-header-cell *matHeaderCellDef colspan="2" class="category-main medio-ambiente">
+          MEDIO AMBIENTE
+        </th>
+      </ng-container>
+
+      <!-- MEDIO AMBIENTE - Puro -->
+      <ng-container matColumnDef="medioAmbientePuro">
+        <th mat-header-cell *matHeaderCellDef class="category-sub">Puro</th>
+        <td mat-cell *matCellDef="let item" [ngClass]="getRiskClass(item.medioAmbientePuro)">
+          {{ getRiskText(item.medioAmbientePuro) }}
+        </td>
+      </ng-container>
+
+      <!-- MEDIO AMBIENTE - Residual -->
+      <ng-container matColumnDef="medioAmbienteResidual">
+        <th mat-header-cell *matHeaderCellDef class="category-sub">Residual</th>
+        <td mat-cell *matCellDef="let item" [ngClass]="getRiskClass(item.medioAmbienteResidual)">
+          {{ getRiskText(item.medioAmbienteResidual) }}
+        </td>
+      </ng-container>
+
+      <!-- CATEGORÍA: OPERACIONAL - Header Principal -->
+      <ng-container matColumnDef="operacionalHeader">
+        <th mat-header-cell *matHeaderCellDef colspan="2" class="category-main operacional">
+          OPERACIONAL
+        </th>
+      </ng-container>
+
+      <!-- OPERACIONAL - Puro -->
+      <ng-container matColumnDef="operacionalPuro">
+        <th mat-header-cell *matHeaderCellDef class="category-sub">Puro</th>
+        <td mat-cell *matCellDef="let item" [ngClass]="getRiskClass(item.operacionalPuro)">
+          {{ getRiskText(item.operacionalPuro) }}
+        </td>
+      </ng-container>
+
+      <!-- OPERACIONAL - Residual -->
+      <ng-container matColumnDef="operacionalResidual">
+        <th mat-header-cell *matHeaderCellDef class="category-sub">Residual</th>
+        <td mat-cell *matCellDef="let item" [ngClass]="getRiskClass(item.operacionalResidual)">
+          {{ getRiskText(item.operacionalResidual) }}
+        </td>
+      </ng-container>
+
+      <!-- Headers con dos filas -->
+      <tr mat-header-row
+        *matHeaderRowDef="['id', 'descripcion', 'seguridadHeader', 'medioAmbienteHeader', 'operacionalHeader']; sticky: true"
+        class="header-row-1"></tr>
+      <tr mat-header-row
+        *matHeaderRowDef="['seguridadPuro', 'seguridadResidual', 'medioAmbientePuro', 'medioAmbienteResidual', 'operacionalPuro', 'operacionalResidual']; sticky: true"
+        class="header-row-2"></tr>
+
+      <!-- Filas de datos -->
+      <tr mat-row
+        *matRowDef="let row; columns: ['id', 'descripcion', 'seguridadPuro', 'seguridadResidual', 'medioAmbientePuro', 'medioAmbienteResidual', 'operacionalPuro', 'operacionalResidual'];"
+        (click)="onRowClick(row)" [class.clickable]="row.canNavigate"></tr>
+
+    </table>
+  </div>
+  }
+
+</div>

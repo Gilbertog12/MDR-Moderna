@@ -1,0 +1,187 @@
+@import 'variables';
+
+// src\app\shared\styles\_variables.scss
+
+.detail-tab-container {
+  padding: $spacing-md;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.search-field {
+  flex: 1;
+  min-width: 300px;
+
+  @media (max-width: 768px) {
+    min-width: 100%;
+  }
+}
+
+.stats-container {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius;
+  background-color: $color-background;
+  border: 1px solid $color-border;
+  min-width: 100px;
+
+  .stat-label {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-xs;
+  }
+
+  .stat-value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  &.stat-intolerable {
+    border-color: $color-danger;
+    background-color: rgba($color-danger, 0.05);
+
+    .stat-value {
+      color: $color-danger;
+    }
+  }
+
+  &.stat-tolerable {
+    border-color: $color-success;
+    background-color: rgba($color-success, 0.05);
+
+    .stat-value {
+      color: $color-success;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  gap: $spacing-md;
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-md;
+  }
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+
+  p {
+    color: $color-text-secondary;
+    font-size: $font-size-md;
+  }
+}
+
+.table-container {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid $color-border;
+  border-radius: $border-radius;
+}
+
+.detail-table {
+  width: 100%;
+  min-width: 1200px;
+
+  th {
+    background-color: $color-primary;
+    color: white;
+    font-weight: $font-weight-semibold;
+    padding: $spacing-sm $spacing-md;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  td {
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid $color-border;
+    vertical-align: middle;
+  }
+
+  tr:hover {
+    background-color: rgba($color-primary, 0.05);
+  }
+}
+
+.category-header {
+  font-weight: $font-weight-semibold;
+  text-align: center;
+}
+
+.evaluation-cell {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.eval-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.eval-label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  min-width: 70px;
+}
+
+.criticality-badge {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  text-align: center;
+  min-width: 90px;
+
+  &.criticality-intolerable {
+    background-color: $color-danger;
+    color: white;
+  }
+
+  &.criticality-tolerable {
+    background-color: $color-success;
+    color: white;
+  }
+
+  &.criticality-empty {
+    background-color: $color-border;
+    color: $color-text-secondary;
+  }
+}
