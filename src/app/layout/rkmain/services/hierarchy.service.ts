@@ -269,4 +269,143 @@ deleteNotificaciones(keys: string): Observable<any> {
     { headers: this.getHeaders() }
   );
 }
+
+
+// ==================== CHECKLIST METHODS ====================
+
+/**
+ * Obtiene la lista de checkboxes disponibles para una actividad
+ */
+getAvailableChecklists(areaId: string, procesoId: string, subprocesoId: string, actividadId: string): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'RCK_LIST' },
+    { name: 'areaId', value: areaId },
+    { name: 'procesoId', value: procesoId },
+    { name: 'subprocesoId', value: subprocesoId },
+    { name: 'actividadId', value: actividadId }
+  ];
+
+  return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+}
+
+/**
+ * Obtiene los checkboxes guardados de una actividad
+ */
+getActivityChecklists(areaId: string, procesoId: string, subprocesoId: string, actividadId: string): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'ACTIVIDAD_READ_CHECK' },
+    { name: 'areaId', value: areaId },
+    { name: 'procesoId', value: procesoId },
+    { name: 'subprocesoId', value: subprocesoId },
+    { name: 'actividadId', value: actividadId }
+  ];
+
+  return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+}
+
+/**
+ * Crea múltiples checkboxes en batch
+ */
+createChecklists(
+  areaId: string,
+  procesoId: string,
+  subprocesoId: string,
+  actividadId: string,
+  checkNo: string,
+  checkValidation: string,
+  comentario: string
+): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'CHECK_CREATE' },
+    { name: 'areaId', value: areaId },
+    { name: 'procesoId', value: procesoId },
+    { name: 'subprocesoId', value: subprocesoId },
+    { name: 'actividadId', value: actividadId },
+    { name: 'checkNo', value: checkNo },
+    { name: 'checkValidation', value: checkValidation },
+    { name: 'comentario', value: comentario }
+  ];
+
+  return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+}
+
+/**
+ * Actualiza un checkbox individual
+ */
+updateChecklist(
+  areaId: string,
+  procesoId: string,
+  subprocesoId: string,
+  actividadId: string,
+  checkCode: string,
+  checkValidation: string,
+  checkComment: string
+): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'CHECK_MODIFY' },
+    { name: 'areaId', value: areaId },
+    { name: 'procesoId', value: procesoId },
+    { name: 'subprocesoId', value: subprocesoId },
+    { name: 'actividadId', value: actividadId },
+    { name: 'checkNo', value: checkCode },
+    { name: 'checkValidation', value: checkValidation },
+    { name: 'comentario', value: checkComment }
+  ];
+
+  return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+}
+
+/**
+ * Actualiza múltiples checkboxes en batch
+ */
+updateChecklistsBatch(
+  areaId: string,
+  procesoId: string,
+  subprocesoId: string,
+  actividadId: string,
+  checkNo: string,
+  checkValidation: string,
+  comentario: string
+): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'CHECK_UPDATE_BATCH' },
+    { name: 'areaId', value: areaId },
+    { name: 'procesoId', value: procesoId },
+    { name: 'subprocesoId', value: subprocesoId },
+    { name: 'actividadId', value: actividadId },
+    { name: 'checkNo', value: checkNo },
+    { name: 'checkValidation', value: checkValidation },
+    { name: 'comentario', value: comentario }
+  ];
+
+  return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+}
+
+/**
+ * Elimina un checkbox
+ */
+deleteChecklist(
+  areaId: string,
+  procesoId: string,
+  subprocesoId: string,
+  actividadId: string,
+  checkCode: string
+): Observable<any> {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'CHECK_DELETE' },
+    { name: 'areaId', value: areaId },
+    { name: 'procesoId', value: procesoId },
+    { name: 'subprocesoId', value: subprocesoId },
+    { name: 'actividadId', value: actividadId },
+    { name: 'checkNo', value: checkCode }
+  ];
+
+  return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+}
 }

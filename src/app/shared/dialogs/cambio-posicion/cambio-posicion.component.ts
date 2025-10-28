@@ -91,64 +91,64 @@ export class CambioPosicionComponent {
     this.hidePassword.set(!this.hidePassword());
   }
 
-  async onSave(): Promise<void> {
-    const position = this.changePositionForm.get('position')?.value;
-    const password = this.changePositionForm.get('password')?.value;
+  // async onSave(): Promise<void> {
+  //   const position = this.changePositionForm.get('position')?.value;
+  //   const password = this.changePositionForm.get('password')?.value;
 
-    console.log(position)
+  //   console.log(position)
 
-    if (!position || !password || this.changePositionForm.invalid) {
-      this.changePositionForm.markAllAsTouched();
-      return;
-    }
+  //   if (!position || !password || this.changePositionForm.invalid) {
+  //     this.changePositionForm.markAllAsTouched();
+  //     return;
+  //   }
 
-    const username = this.currentUserInfo()?.usuario;
-    if (!username) {
-      await this.alertService.error('Error', 'No se pudo obtener el usuario');
-      return;
-    }
+  //   const username = this.currentUserInfo()?.usuario;
+  //   if (!username) {
+  //     await this.alertService.error('Error', 'No se pudo obtener el usuario');
+  //     return;
+  //   }
 
-    // const password = this.passwordForm.value.password!;
+  //   // const password = this.passwordForm.value.password!;
 
-    this.isSaving.set(true);
+  //   this.isSaving.set(true);
 
-    try {
-      // Re-autenticar con la nueva posición
-      const loginResult = await this.authService.loginWithCredentialsAndPosition(
-        username,
-        password,
-        position.districtDesc,
-        position.positionDesc
-      ).toPromise();
+  //   try {
+  //     // Re-autenticar con la nueva posición
+  //     const loginResult = await this.authService.loginWithCredentialsAndPosition(
+  //       username,
+  //       password,
+  //       position.districtDesc,
+  //       position.positionDesc
+  //     ).toPromise();
 
-      if (loginResult) {
-        await this.alertService.success(
-          'Posición Actualizada',
-          `Sesión iniciada con: ${position.positionDesc}`
-        );
+  //     if (loginResult) {
+  //       await this.alertService.success(
+  //         'Posición Actualizada',
+  //         `Sesión iniciada con: ${position.positionDesc}`
+  //       );
 
-        // Notificar al servicio
-        this.userInfoService.refreshUserData();
+  //       // Notificar al servicio
+  //       this.userInfoService.refreshUserData();
 
-        // Cerrar modal
-        this.dialogRef.close(true);
+  //       // Cerrar modal
+  //       this.dialogRef.close(true);
 
-        // Recargar la página para refrescar todo el estado
-        window.location.reload();
-      } else {
-        await this.alertService.error(
-          'Error',
-          'Credenciales inválidas o no se pudo cambiar la posición'
-        );
-      }
-    } catch (error: any) {
-      console.error('Error cambiando posición:', error);
-      await this.alertService.error(
-        'Error',
-        error?.error?.error_description || 'Ocurrió un error al cambiar la posición'
-      );
-    } finally {
-      this.isSaving.set(false);
-    }
-  }
+  //       // Recargar la página para refrescar todo el estado
+  //       window.location.reload();
+  //     } else {
+  //       await this.alertService.error(
+  //         'Error',
+  //         'Credenciales inválidas o no se pudo cambiar la posición'
+  //       );
+  //     }
+  //   } catch (error: any) {
+  //     console.error('Error cambiando posición:', error);
+  //     await this.alertService.error(
+  //       'Error',
+  //       error?.error?.error_description || 'Ocurrió un error al cambiar la posición'
+  //     );
+  //   } finally {
+  //     this.isSaving.set(false);
+  //   }
+  // }
 }

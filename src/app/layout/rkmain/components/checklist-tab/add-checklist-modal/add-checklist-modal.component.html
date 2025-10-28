@@ -1,0 +1,303 @@
+<div class="add-checklist-modal">
+
+  <!-- ==================== HEADER ==================== -->
+  <h2 mat-dialog-title class="modal-title">
+    <mat-icon>add_task</mat-icon>
+    <span>Agregar Lista de Verificación</span>
+  </h2>
+
+  <!-- ==================== CONTENT ==================== -->
+  <mat-dialog-content class="modal-content">
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Cargando checkboxes disponibles...</p>
+      </div>
+    }
+
+    <!-- Main Content -->
+    @if (!loading()) {
+      <div class="content-grid">
+
+        <!-- ===== COLUMNA 1: CHECKBOXES DISPONIBLES ===== -->
+        <div class="available-column">
+
+          <div class="column-header">
+            <mat-icon>list</mat-icon>
+            <span>Checkboxes Disponibles</span>
+            <div class="badge">{{ filteredItems().length }}</div>
+          </div>
+
+          <!-- Buscador -->
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="searchTerm.set($event)"
+              placeholder="Buscar por código o descripción...">
+            @if (searchTerm()) {
+              <button
+                matSuffix
+                mat-icon-button
+                (click)="searchTerm.set('')"
+                matTooltip="Limpiar búsqueda">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+
+          <!-- Lista de disponibles -->
+          <div class="items-list">
+            @if (filteredItems().length === 0) {
+              <div class="empty-message">
+                <mat-icon>search_off</mat-icon>
+                <p>No se encontraron resultados</p>
+              </div>
+            }
+
+            @for (item of filteredItems(); track item.id) {
+              <div
+                class="available-item"
+                [class.selected]="isSelected(item.id)"
+                (click)="toggleSelection(item)">
+
+                <mat-checkbox
+                  [checked]="isSelected(item.id)"
+                  (click)="$event.stopPropagation()"
+                  (change)="toggleSelection(item)">
+                </mat-checkbox>
+
+                <div class="item-info">
+                  <div class="item-code">{{ item.id }}</div>
+                  <div class="item-description">{{ item.fullDescription }}</div>
+                </div>
+
+                <mat-icon class="chevron">chevron_right</mat-icon>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- ===== COLUMNA 2: SELECCIONADOS ===== -->
+        <div class="selected-column">
+
+          <div class="column-header">
+            <mat-icon>playlist_add_check</mat-icon>
+            <span>Seleccionados</span>
+            <div class="badge" [class.active]="hasSelected()">
+              {{ selectedCount() }}
+            </div>
+          </div>
+
+          <!-- Lista de seleccionados -->
+          <div class="selected-list">
+            @if (!hasSelected()) {
+              <div class="empty-state">
+                <mat-icon>touch_app</mat-icon>
+                <p>Selecciona checkboxes</p>
+                <small>de la lista de disponibles</small>
+              </div>
+            }
+
+            @for (item of selectedItems(); track item.id; let i = $index) {
+              <div class="selected-item">
+
+                <div class="item-header">
+                  <span class="item-number">{{ i + 1 }}</span>
+                  <div class="item-info">
+                    <strong>{{ item.id }}</strong>
+                    <small>{{ item.description }}</small>
+                  </div>
+                  <button
+                    mat-icon-button
+                    (click)="removeSelected(item.id)"
+                    matTooltip="Quitar"
+                    class="remove-btn">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="item-config">
+                  <!-- Toggle Aplica -->
+                  <mat-slide-toggle
+                    [(ngModel)]="item.applies"
+                    (change)="onAppliesChange(item.id)"
+                    color="primary"
+                    class="applies-toggle">
+                    {{ item.applies ? 'Aplica: Sí' : 'Aplica: No' }}
+                  </mat-slide-toggle>
+
+                  <!-- Comentario -->
+                  <mat-form-field appearance="outline" class="comment-field">
+                    <mat-label>Comentario *</mat-label>
+                    <textarea
+                      matInput
+                      [(ngModel)]="item.comment"
+                      (ngModelChange)="onCommentChange(item.id)"
+                      placeholder="Comentario obligatorio..."
+                      rows="2"
+                      maxlength="500"
+                      required>
+                    </textarea>
+                    @if (!item.comment || item.comment.trim() === '') {
+                      <mat-icon matSuffix color="warn">warning</mat-icon>
+                    } @else {
+                      <mat-icon matSuffix color="primary">check</mat-icon>
+                    }
+                  </mat-form-field>
+                </div>
+
+              </div>
+            }
+          </div>
+
+          <!-- Acciones rápidas -->
+          @if (hasSelected()) {
+            <div class="selected-actions">
+              <button
+                mat-button
+                (click)="clearSelection()"
+                color="warn">
+                <mat-icon>clear_all</mat-icon>
+                Limpiar todo
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- ===== COLUMNA 3: RESUMEN ===== -->
+        <div class="summary-column">
+
+          <div class="column-header">
+            <mat-icon>summarize</mat-icon>
+            <span>Resumen</span>
+          </div>
+
+          <div class="summary-content">
+
+            <!-- Estadísticas -->
+            <div class="summary-stats">
+              <div class="stat-item">
+                <mat-icon>list_alt</mat-icon>
+                <div class="stat-info">
+                  <span class="stat-label">Disponibles</span>
+                  <span class="stat-value">{{ availableItems().length }}</span>
+                </div>
+              </div>
+
+              <div class="stat-item primary">
+                <mat-icon>check_circle</mat-icon>
+                <div class="stat-info">
+                  <span class="stat-label">Seleccionados</span>
+                  <span class="stat-value">{{ selectedCount() }}</span>
+                </div>
+              </div>
+
+              @if (selectedItemsWithoutComment().length > 0) {
+                <div class="stat-item warn">
+                  <mat-icon>warning</mat-icon>
+                  <div class="stat-info">
+                    <span class="stat-label">Sin comentario</span>
+                    <span class="stat-value">{{ selectedItemsWithoutComment().length }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Alertas -->
+            @if (!hasSelected()) {
+              <div class="alert info">
+                <mat-icon>info</mat-icon>
+                <div>
+                  <strong>Selecciona checkboxes</strong>
+                  <p>Haz clic en los items de la lista de disponibles para agregarlos.</p>
+                </div>
+              </div>
+            }
+
+            @if (selectedItemsWithoutComment().length > 0) {
+              <div class="alert warn">
+                <mat-icon>warning</mat-icon>
+                <div>
+                  <strong>Comentarios faltantes</strong>
+                  <p>{{ selectedItemsWithoutComment().length }} checkbox(es) no tienen comentario. Es obligatorio.</p>
+                </div>
+              </div>
+            }
+
+            @if (canSave()) {
+              <div class="alert success">
+                <mat-icon>check_circle</mat-icon>
+                <div>
+                  <strong>Listo para guardar</strong>
+                  <p>Todos los checkboxes tienen comentario.</p>
+                </div>
+              </div>
+            }
+
+            <!-- Info adicional -->
+            <div class="info-section">
+              <h4>Instrucciones</h4>
+              <ul>
+                <li>Selecciona los checkboxes que deseas agregar</li>
+                <li>Configura si "Aplica" para cada uno</li>
+                <li>Agrega un comentario obligatorio a cada checkbox</li>
+                <li>Haz clic en "Guardar" para confirmar</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+
+  </mat-dialog-content>
+
+  <!-- ==================== FOOTER ==================== -->
+  <mat-dialog-actions class="modal-actions">
+
+    <div class="actions-left">
+      @if (hasSelected()) {
+        <div class="selected-info">
+          <mat-icon>info</mat-icon>
+          <span>
+            <strong>{{ selectedCount() }}</strong> checkbox(es) seleccionados
+          </span>
+        </div>
+      }
+    </div>
+
+    <div class="actions-right">
+      <button
+        mat-button
+        (click)="cancel()"
+        [disabled]="saving()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="save()"
+        [disabled]="!canSave() || saving()">
+        <mat-icon>save</mat-icon>
+        @if (saving()) {
+          <span>Guardando...</span>
+        } @else {
+          <span>Guardar ({{ selectedCount() }})</span>
+        }
+      </button>
+    </div>
+
+  </mat-dialog-actions>
+
+  <!-- Barra de progreso durante guardado -->
+  @if (saving()) {
+    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+  }
+
+</div>

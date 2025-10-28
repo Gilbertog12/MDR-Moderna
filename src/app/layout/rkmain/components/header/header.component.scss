@@ -99,6 +99,41 @@
   align-items: center;
   gap: 0.5rem;
 
+  .solicitudes-button {
+    position: relative;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    mat-icon {
+      color: white;
+    }
+  }
+
+  .notification-button {
+    position: relative;
+
+    .notification-pulse {
+      animation: notificationPulse 2s ease-in-out infinite;
+    }
+
+    // Efecto hover mejorado
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .refresh-button {
+    mat-icon {
+      transition: transform 0.3s ease;
+    }
+
+    &:active mat-icon {
+      transform: rotate(360deg);
+    }
+  }
+
   .user-info {
     display: flex;
     align-items: center;

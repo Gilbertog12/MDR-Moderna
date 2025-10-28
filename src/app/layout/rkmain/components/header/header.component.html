@@ -48,9 +48,7 @@
     <!-- Usuario info -->
     <div class="user-info" (click)="onChangePosition()">
       <div class="user-avatar">
-        <mat-icon
-
-        >person</mat-icon>
+        <mat-icon>person</mat-icon>
       </div>
       <div class="user-details">
         <span class="user-name">{{ userInfo()?.usuario }}</span>
@@ -69,21 +67,34 @@
       <mat-icon>account_circle</mat-icon>
     </button>
 
+    <!-- Solicitudes Pendientes -->
+    <button
+      mat-icon-button
+      (click)="onEntidadesPendientes()"
+      [matBadge]="solicitudesPendientes()"
+      [matBadgeHidden]="solicitudesPendientes() === 0"
+      matBadgeColor="accent"
+      matBadgeSize="small"
+      [matTooltip]="solicitudestooltip()"
+      class="solicitudes-button">
+      <mat-icon>pending_actions</mat-icon>
+    </button>
+
     <!-- Notificaciones -->
-   <button
-  mat-icon-button
-  (click)="onNotifications()"
-  [matTooltip]="notificationTooltip()"
-  [matBadge]="notificationCount()"
-  [matBadgeHidden]="notificationCount() === 0"
-  matBadgeColor="warn"
-  matBadgeSize="small"
-  class="notification-button">
-  <mat-icon
-    [class.notification-pulse]="hasNotifications()">
-    notifications
-  </mat-icon>
-</button>
+    <button
+      mat-icon-button
+      (click)="onNotifications()"
+      [matTooltip]="notificationTooltip()"
+      [matBadge]="notificationCount()"
+      [matBadgeHidden]="notificationCount() === 0"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      class="notification-button">
+      <mat-icon
+        [class.notification-pulse]="hasNotifications()">
+        notifications
+      </mat-icon>
+    </button>
 
     <!-- Leyenda -->
     <button

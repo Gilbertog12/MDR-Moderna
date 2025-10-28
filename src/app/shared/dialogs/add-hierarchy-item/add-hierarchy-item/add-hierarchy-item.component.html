@@ -19,9 +19,8 @@
       <mat-icon>add</mat-icon>
       Crear Nueva
     </button>
-  }
-
-  <button
+  }@else {
+     <button
     class="close-button"
     mat-icon-button
     (click)="cancel()"
@@ -29,6 +28,9 @@
     matTooltip="Cerrar">
     <mat-icon>close</mat-icon>
   </button>
+  }
+
+
 </div>
 
 <!-- ==================== BÚSQUEDA ==================== -->
@@ -115,7 +117,7 @@
             (click)="toggleSelection(item)">
             <mat-checkbox
               [checked]="item.selected"
-              (click)="$event.stopPropagation()">
+              (click)="toggleSelection(item)">
             </mat-checkbox>
             <div class="item-info">
               <span class="item-code">{{ item.id }}</span>

@@ -332,7 +332,7 @@ export class RkrComponent implements OnInit {
               estado: atts[9]?.value || '',
               orderItem: atts[10]?.value || '',
               pendingDelete: atts[11]?.value || 'N',
-              canNavigate: false // Las consecuencias NO navegan (nivel final)
+              canNavigate: true // Las consecuencias NO navegan (nivel final)
             });
           }
         });
@@ -554,8 +554,18 @@ export class RkrComponent implements OnInit {
    * Click en consecuencia (NO navega - solo informativo)
    */
   onConsecuenciaClick(consecuencia: ConsecuenciaWithCategories): void {
-    // Las consecuencias son el nivel final, no navegan
-    console.log('Consecuencia seleccionada (sin navegación):', consecuencia);
+
+     this.router.navigate([
+        '/rkmain/rky',
+        this.areaId(),
+        this.procesoId(),
+        this.subprocesoId(),
+        this.actividadId(),
+        this.tareaId(),
+        this.dimensionId(),
+        this.riesgoId(),
+        consecuencia.id
+      ]);
   }
 
   // ============================================

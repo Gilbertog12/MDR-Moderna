@@ -152,7 +152,10 @@
 
   <!-- Contenido principal con Tabs -->
   <div class="content-section">
-    <mat-tab-group [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)">
+    <mat-tab-group  #tabGroup
+  (selectedTabChange)="onTabChange($event.index)"
+  [selectedIndex]="selectedTab()"
+  (selectedIndexChange)="selectedTab.set($event)">
 
       <!-- Tab: Evaluación de Riesgo (Tareas) -->
       <mat-tab label="Evaluación Riesgo">
@@ -252,17 +255,17 @@
 
       <!-- Tab: CheckList (Simplificado) -->
       <mat-tab label="CheckList">
-        <div class="tab-content-simple">
-          <div class="info-message">
-            <mat-icon>checklist</mat-icon>
-            <h3>Lista de Verificación</h3>
-            <p>Esta funcionalidad estará disponible en próximas versiones</p>
-            <button mat-raised-button color="primary" disabled>
-              <mat-icon>add</mat-icon>
-              Añadir Item
-            </button>
-          </div>
-        </div>
+        <app-checklist-tab
+      #checklistTab
+      [areaId]="actividadDetail()?.areaId || ''"
+      [procesoId]="actividadDetail()?.procesoId || ''"
+      [subprocesoId]="actividadDetail()?.subprocesoId || ''"
+      [actividadId]="actividadDetail()?.actividadId || ''"
+      [permissions]="checklistPermissions()"
+      [activityStatus]="actividadDetail()?.actividadStatusId || '001'">
+    </app-checklist-tab>
+
+
       </mat-tab>
 
       <!-- Tab: Detalle (Simplificado) -->

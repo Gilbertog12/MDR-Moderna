@@ -1,0 +1,228 @@
+<div class="checklist-tab-container">
+
+  <!-- ==================== HEADER CON BOTONES ==================== -->
+  <div class="checklist-header">
+
+    <!-- Botón Guardar Todos (solo si hay modificados) -->
+    @if (canSaveAll()) {
+    <button mat-raised-button color="primary" (click)="saveAll()" [disabled]="savingAll()" class="save-all-btn">
+      <mat-icon>save</mat-icon>
+      @if (savingAll()) {
+      <span>Guardando...</span>
+      } @else {
+      <span>Guardar Todos ({{ modifiedCount() }})</span>
+      }
+    </button>
+    } @else {
+    <button mat-raised-button disabled class="save-all-btn-disabled">
+      <mat-icon>save</mat-icon>
+      <span>Guardar Todos</span>
+    </button>
+    }
+
+    <!-- Botón Agregar -->
+    @if (permissions().canAdd) {
+    <button mat-raised-button color="accent" (click)="openAddModal()" [disabled]="loading()" class="add-btn">
+      <mat-icon>add</mat-icon>
+      <span>Agregar CheckList</span>
+    </button>
+    }
+
+    <!-- Botón Copiar -->
+    @if (canCopyChecklist()) {
+    <button mat-raised-button
+            color="primary"
+            (click)="copyChecklist()"
+            [disabled]="loading()"
+            class="copy-btn"
+            matTooltip="Copiar checklist al portapapeles">
+      <mat-icon>content_copy</mat-icon>
+      <span>Copiar</span>
+    </button>
+    }
+
+    <!-- Botón Pegar -->
+    @if (permissions().canAdd) {
+    <button mat-raised-button
+            [color]="hasCopiedData() ? 'accent' : ''"
+            (click)="pasteChecklist()"
+            [disabled]="!canPasteChecklist() || loading()"
+            class="paste-btn"
+            [matTooltip]="canPasteChecklist() ? 'Pegar checklist desde portapapeles' : 'No se puede pegar en esta actividad'">
+      <mat-icon>content_paste</mat-icon>
+      <span>Pegar</span>
+      @if (hasCopiedData()) {
+      <mat-icon class="paste-indicator">check_circle</mat-icon>
+      }
+    </button>
+    }
+
+    <!-- Badge de modificados -->
+    @if (modifiedCount() > 0) {
+    <div class="modified-badge">
+      <mat-icon>edit</mat-icon>
+      <span>{{ modifiedCount() }} modificado(s)</span>
+    </div>
+    }
+  </div>
+
+  <!-- ==================== LOADING SPINNER ==================== -->
+  @if (loading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando checklists...</p>
+  </div>
+  }
+
+  <!-- ==================== EMPTY STATE ==================== -->
+  @if (!loading() && !hasChecklists()) {
+  <div class="empty-state">
+    <mat-icon>checklist</mat-icon>
+    <h3>No hay checkboxes registrados</h3>
+    <p>Haz clic en "Agregar CheckList" para comenzar</p>
+    @if (permissions().canAdd) {
+    <button mat-raised-button color="primary" (click)="openAddModal()">
+      <mat-icon>add</mat-icon>
+      Agregar CheckList
+    </button>
+    }
+  </div>
+  }
+
+  <!-- ==================== TABLA DE CHECKBOXES ==================== -->
+  @if (!loading() && hasChecklists()) {
+  <div class="checklist-table-container">
+    <table mat-table [dataSource]="checklists()" class="checklist-table">
+
+      <!-- Columna: Index -->
+      <ng-container matColumnDef="index">
+        <th mat-header-cell *matHeaderCellDef class="index-column">#</th>
+        <td mat-cell *matCellDef="let item; let i = index" class="index-column">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
+
+      <!-- Columna: Guardar Individual -->
+      <ng-container matColumnDef="save">
+        <th mat-header-cell *matHeaderCellDef class="action-column">
+          <mat-icon>save</mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let item" class="action-column">
+          @if (item.modified && canEditItem(item)) {
+          <button mat-icon-button color="primary" (click)="saveIndividual(item)" matTooltip="Guardar cambios">
+            <mat-icon>save</mat-icon>
+          </button>
+          } @else {
+          <button mat-icon-button disabled matTooltip="Sin cambios">
+            <mat-icon class="disabled-icon">save</mat-icon>
+          </button>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Columna: Eliminar -->
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef class="action-column">
+          <mat-icon>delete</mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let item" class="action-column">
+          @if (item.canDelete) {
+          <button mat-icon-button color="warn" (click)="deleteItem(item)" matTooltip="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+          } @else {
+          <button mat-icon-button disabled matTooltip="No se puede eliminar">
+            <mat-icon class="disabled-icon">delete</mat-icon>
+          </button>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Columna: Código -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef>Código</th>
+        <td mat-cell *matCellDef="let item" class="code-cell">
+          <div class="code-with-badge">
+            <span class="code-text">{{ item.checkCode }}</span>
+
+            <!-- Badge de estado -->
+            @if (getStatusBadge(item.statusId).label) {
+            <mat-chip class="status-chip" [class.status-primary]="getStatusBadge(item.statusId).color === 'primary'"
+              [class.status-accent]="getStatusBadge(item.statusId).color === 'accent'"
+              [class.status-warn]="getStatusBadge(item.statusId).color === 'warn'"
+              [class.status-success]="getStatusBadge(item.statusId).color === 'success'"
+              [class.status-error]="getStatusBadge(item.statusId).color === 'error'"
+              [matTooltip]="'Estado: ' + item.statusId">
+              {{ getStatusBadge(item.statusId).label }}
+            </mat-chip>
+            }
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Columna: Descripción -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let item" class="description-cell">
+          {{ item.checkDescription }}
+        </td>
+      </ng-container>
+
+      <!-- Columna: Aplica (Toggle) -->
+      <ng-container matColumnDef="applies">
+        <th mat-header-cell *matHeaderCellDef class="applies-column">Aplica</th>
+        <td mat-cell *matCellDef="let item" class="applies-column">
+          <mat-slide-toggle [(ngModel)]="item.check" (change)="onToggleChange(item)" [disabled]="!canEditItem(item)"
+            color="primary">
+            {{ item.check ? 'Sí' : 'No' }}
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <!-- Columna: Comentario -->
+      <ng-container matColumnDef="comment">
+        <th mat-header-cell *matHeaderCellDef>Comentario</th>
+        <td mat-cell *matCellDef="let item" class="comment-cell">
+          <mat-form-field appearance="outline" class="comment-field">
+            <textarea matInput
+  cdkTextareaAutosize
+  cdkAutosizeMinRows="1"
+  cdkAutosizeMaxRows="3"
+  [(ngModel)]="item.checkComment"
+  (ngModelChange)="onCommentChange(item)"
+  [disabled]="!canEditItem(item)"
+  placeholder="Comentario obligatorio..."
+  maxlength="500">
+              </textarea>
+            @if (item.modified) {
+            <mat-icon matSuffix class="edit-icon">edit</mat-icon>
+            }
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Header Row -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <!-- Data Rows -->
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" [class.modified-row]="row.modified">
+      </tr>
+
+    </table>
+  </div>
+
+  <!-- Info de leyenda de estados -->
+  <div class="legend">
+    <span class="legend-title">Leyenda de estados:</span>
+    <mat-chip class="status-chip status-primary">*</mat-chip>
+    <span>En proceso</span>
+    <mat-chip class="status-chip status-warn">**</mat-chip>
+    <span>Pendiente aprobación</span>
+    <mat-chip class="status-chip status-error">***</mat-chip>
+    <span>Archivado</span>
+    <mat-chip class="status-chip status-warn">R</mat-chip>
+    <span>Rechazado</span>
+  </div>
+  }
+
+</div>

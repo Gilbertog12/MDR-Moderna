@@ -1,0 +1,156 @@
+<div class="entidades-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">add_business</mat-icon>
+      <div class="header-text">
+        <h2 mat-dialog-title>Solicitudes Pendientes</h2>
+        <p class="subtitle">Creación de registros en tablas Maestras</p>
+      </div>
+    </div>
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="cerrar()"
+      matTooltip="Cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content class="dialog-content">
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Cargando solicitudes...</p>
+      </div>
+    } @else if (solicitudes().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">inbox</mat-icon>
+        <h3>No hay solicitudes pendientes</h3>
+        <p>No se encontraron solicitudes en este momento</p>
+      </div>
+    } @else {
+      <!-- Actions Bar -->
+      <div class="actions-bar">
+        <div class="selection-info">
+          <mat-checkbox
+            [checked]="allSelected()"
+            [indeterminate]="someSelected()"
+            (click)="$event.stopPropagation(); toggleAllRows()"
+            color="primary">
+          </mat-checkbox>
+          @if (hasSelection()) {
+            <span class="selection-text">
+              {{ selectionCount() }} seleccionada(s)
+            </span>
+          } @else {
+            <span class="selection-text">Seleccionar todas</span>
+          }
+        </div>
+
+        <button
+          mat-stroked-button
+          (click)="actualizar()"
+          [disabled]="loading()"
+          class="refresh-btn">
+          <mat-icon>refresh</mat-icon>
+          Actualizar
+        </button>
+      </div>
+
+      <!-- Table Container -->
+      <div class="table-container">
+        <table class="solicitudes-table">
+          <thead>
+            <tr>
+              <th class="col-check">
+                <mat-checkbox
+                  [checked]="allSelected()"
+                  [indeterminate]="someSelected()"
+                  (click)="$event.stopPropagation(); toggleAllRows()"
+                  color="primary"
+                  matTooltip="Seleccionar todas">
+                </mat-checkbox>
+              </th>
+              <th class="col-tipo">Tipo</th>
+              <th class="col-codigo">Código</th>
+              <th class="col-descripcion">Descripción</th>
+              <th class="col-texto">Texto Extendido</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (solicitud of solicitudes(); track solicitud.tableCode + solicitud.tablaTipo) {
+              <tr
+                [class.selected]="isSelected(solicitud)"
+                (click)="$event.stopPropagation(); toggleRow(solicitud)">
+
+                <td class="col-check" (click)="$event.stopPropagation()">
+                  <mat-checkbox
+                    [checked]="isSelected(solicitud)"
+                    (change)="toggleRow(solicitud)"
+                    color="primary">
+                  </mat-checkbox>
+                </td>
+
+                <td class="col-tipo">
+                  <mat-chip
+                    [highlighted]="true"
+                    [color]="getTipoColor(solicitud.tipo)"
+                    class="tipo-chip">
+                    <mat-icon class="tipo-icon">{{ getTipoIcon(solicitud.tipo) }}</mat-icon>
+                    {{ solicitud.tipo }}
+                  </mat-chip>
+                </td>
+
+                <td class="col-codigo">
+                  <span class="codigo-badge">{{ solicitud.tableCode }}</span>
+                </td>
+
+                <td class="col-descripcion">{{ solicitud.tableDesc }}</td>
+
+                <td class="col-texto">
+                  <span class="texto-extendido" [matTooltip]="solicitud.textoExtendido">
+                    {{ solicitud.textoExtendido }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button
+      mat-button
+      (click)="cerrar()"
+      class="action-btn">
+      Cerrar
+    </button>
+
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="eliminarSolicitudes()"
+        [disabled]="!hasSelection() || loading()"
+        class="action-btn delete-btn">
+        <mat-icon>delete</mat-icon>
+        Eliminar Solicitud
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="enviarSolicitudes()"
+        [disabled]="!hasSelection() || loading()"
+        class="action-btn send-btn">
+        <mat-icon>send</mat-icon>
+        Enviar Solicitud
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

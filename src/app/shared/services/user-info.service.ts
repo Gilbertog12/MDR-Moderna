@@ -231,4 +231,20 @@ export class UserInfoService {
       'Authorization': `bearer ${token}`
     });
   }
+
+  setPerfilRkj(value: string): void {
+  const current = this._userInfo();
+  if (current) {
+    this._userInfo.set({ ...current, perfilRkj: value });
+  } else {
+    // Si aún no hay info cargada
+    this._userInfo.set({
+      usuario: localStorage.getItem('Usuario') || '',
+      posicion: localStorage.getItem('Posicion') || '',
+      distrito: localStorage.getItem('Distrito') || '',
+      perfilRkj: value
+    });
+  }
+}
+
 }

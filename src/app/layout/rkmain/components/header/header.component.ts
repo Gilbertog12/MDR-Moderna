@@ -15,6 +15,7 @@ import { NotificationStateService } from '../../../../shared/services/notificati
 import { CambioPosicionComponent } from '../../../../shared/dialogs/cambio-posicion/cambio-posicion.component';
 import { NotificacionesComponent } from '../notificaciones/notificaciones.component';
 import { HierarchyService } from '../../services/hierarchy.service';
+import { EntidadesPendientesComponent } from '../entidades-pendientes/entidades-pendientes.component';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +28,8 @@ import { HierarchyService } from '../../services/hierarchy.service';
     MatBadgeModule,
     MatTooltipModule,
     MatChipsModule,
-    MatDialogModule
+    MatDialogModule,
+    EntidadesPendientesComponent
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -41,7 +43,7 @@ export class AppHeaderComponent implements OnInit {
 
   // Inputs
   breadcrumbs = input<string[]>([]);
-  // ❌ NO DEBE EXISTIR: notificationCount = input<number>(0);
+
 
   // Outputs
   toggleMenu = output<void>();
@@ -50,6 +52,7 @@ export class AppHeaderComponent implements OnInit {
   legendClick = output<void>();
   helpClick = output<void>();
   logoutClick = output<void>();
+  entidadesPendientesClick = output<void>();
 
   // Signals del servicio de usuario
   readonly userInfo = this.userInfoService.userInfo;
@@ -58,7 +61,10 @@ export class AppHeaderComponent implements OnInit {
   readonly appVersion = this.userInfoService.appVersion;
   readonly displayName = this.userInfoService.displayName;
 
+
   // ✅ Signals del servicio de notificaciones
+  readonly solicitudesPendientes = signal(0);
+
   readonly notificationCount = this.notificationState.count;
   readonly notificationTooltip = this.notificationState.tooltip;
   readonly hasNotifications = this.notificationState.hasNotifications;
@@ -90,8 +96,13 @@ export class AppHeaderComponent implements OnInit {
     return `Frontend: v${version.frontendVersion}\nBackend: ${version.backendVersion}\nÚltima compilación: ${version.fecha}`;
   });
 
-  ngOnInit(): void {
-    this.userInfoService.initializeFromStorage();
+  constructor(){
+     this.userInfoService.initializeFromStorage();
+    }
+
+    ngOnInit(): void {
+
+      // this.userInfoService.initializeFromStorage();
 
     this.userInfoService.fetchAppVersion().subscribe({
       next: (version) => {
@@ -107,6 +118,8 @@ export class AppHeaderComponent implements OnInit {
         this.userInfoService.refreshUserData();
       }
     });
+
+    this.loadSolicitudesPendientes();
   }
 
   onToggleMenu(): void {
@@ -228,4 +241,67 @@ export class AppHeaderComponent implements OnInit {
         return '';
     }
   }
+
+  // AGREGAR este método
+/**
+ * Carga el contador de solicitudes pendientes
+ */
+private loadSolicitudesPendientes(): void {
+  const atts = [
+    { name: 'scriptName', value: 'coemdr' },
+    { name: 'action', value: 'LIST_DEFINITION' }
+  ];
+
+  this.hierarchyService.executeGenericAction({ atts }).subscribe({
+    next: (response) => {
+      if (response.success && response.data) {
+        this.solicitudesPendientes.set(response.data.length);
+      }
+    },
+    error: (error) => {
+      console.error('Error al cargar solicitudes pendientes:', error);
+    }
+  });
+}
+
+// AGREGAR este método
+/**
+ * Abre el modal de entidades pendientes
+ */
+onEntidadesPendientes(): void {
+  const dialogRef = this.dialog.open(EntidadesPendientesComponent, {
+    width: '95vw',
+    maxWidth: '1200px',
+    maxHeight: '90vh',
+    panelClass: 'entidades-dialog-container',
+    disableClose: false,
+    autoFocus: false
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    // Recargar el contador después de cerrar
+    this.loadSolicitudesPendientes();
+
+    if (result && result.success) {
+      console.log('Acción realizada:', result.action);
+      // Mostrar toast de confirmación
+      if (result.action === 'enviar') {
+        console.log('Solicitudes enviadas a aprobar');
+      } else if (result.action === 'eliminar') {
+        console.log('Solicitudes eliminadas');
+      }
+    }
+  });
+
+  // Emitir evento para el padre si es necesario
+  this.entidadesPendientesClick.emit();
+}
+
+// AGREGAR computed para el tooltip (opcional)
+readonly solicitudestooltip = computed(() => {
+  const count = this.solicitudesPendientes();
+  if (count === 0) return 'No hay solicitudes pendientes';
+  if (count === 1) return '1 solicitud pendiente';
+  return `${count} solicitudes pendientes`;
+});
 }

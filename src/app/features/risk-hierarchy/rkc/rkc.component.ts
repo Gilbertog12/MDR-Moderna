@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -6,11 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { HierarchyService } from '../../../layout/rkmain/services/hierarchy.service';
 import { AlertService } from '../../../shared/services/alert.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
+import { ChecklistTabComponent } from '../../../layout/rkmain/components/checklist-tab/checklist-tab.component';
+import { ChecklistPermissions } from '../../../shared/models/checklist.interface';
+
 
 interface ActividadDetail {
   offset: string;
@@ -64,7 +67,10 @@ export interface TareaWithRisk {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatTabsModule
+    MatTabsModule,
+    ChecklistTabComponent,
+
+
   ],
   templateUrl: './rkc.component.html',
   styleUrl: './rkc.component.scss'
@@ -76,12 +82,25 @@ export class RkcComponent implements OnInit {
   subprocesoId = signal<string>('');
   actividadId = signal<string>('');
 
+  private tabGroup = viewChild<MatTabGroup>('tabGroup');
+private checklistTab = viewChild<ChecklistTabComponent>('checklistTab');
+
+
+  checklistPermissions = computed((): ChecklistPermissions => ({
+  canAdd: this.actividadDetail()?.canAdd === 'true',
+  canEdit: this.actividadDetail()?.canModify === 'true',
+  canDelete: this.actividadDetail()?.canModify === 'true',
+  isCreator: this.actividadDetail()?.creador === 'true'
+}));
+
   // Estado del componente
   actividadDetail = signal<ActividadDetail | null>(null);
   tareas = signal<TareaWithRisk[]>([]);
   isLoadingActividad = signal(false);
   isLoadingTareas = signal(false);
   selectedTab = signal<number>(0);
+
+
 
   // Permisos y flujo
   userProfile = signal<string>('');
@@ -96,7 +115,16 @@ export class RkcComponent implements OnInit {
     private hierarchyService: HierarchyService,
     private alertService: AlertService,
     private approvalFlowService: ApprovalFlowService
-  ) {}
+  ) {
+
+    effect(()=> {
+      const actividadId = this.actividadDetail()?.actividadId
+
+      if(actividadId){
+        this.selectedTab.set(0)
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.loadUserPermissions();
@@ -585,4 +613,19 @@ export class RkcComponent implements OnInit {
 
     return '';
   }
+
+
+  onTabChange(index: number): void {
+  const CHECKLIST_TAB_INDEX = 2; // 👈 Ajusta según tu estructura
+
+  if (index === CHECKLIST_TAB_INDEX) {
+
+    const checklistComponent = this.checklistTab();
+
+    console.log(checklistComponent);
+    if (checklistComponent) {
+      checklistComponent.initTab();
+    }
+  }
+}
 }

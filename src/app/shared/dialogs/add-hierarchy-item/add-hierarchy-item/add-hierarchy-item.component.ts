@@ -221,6 +221,8 @@ export class AddHierarchyItemComponent implements OnInit {
   }
 
   toggleSelection(item: SelectableItem): void {
+
+
     const originalItem = this.allItems().find(i => i.id === item.id);
     if (!originalItem) return;
 
