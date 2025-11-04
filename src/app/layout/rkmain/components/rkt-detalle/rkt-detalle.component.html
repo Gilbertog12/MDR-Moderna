@@ -1,6 +1,6 @@
 
 <!-- ✨ CONTENEDOR DE LA TABLA - Usando @if (nuevo control flow) -->
-@if (!effectiveLoading()) {
+
   <div
     class="box box-default table-box table-responsive mdl-shadow--2dp"
     [style.height]="containerHeight()">
@@ -21,23 +21,15 @@
         <thead>
           <!-- Primera fila de headers -->
           <tr>
-            <th colspan="2" rowspan="2" style="text-align: center;" scope="col">Tarea</th>
+            <th colspan="2" rowspan="2" style="text-align: center;" scope="col">Dimension</th>
             <th colspan="2" rowspan="2" style="text-align: center;" scope="col">Riesgo</th>
             <th colspan="2" rowspan="2" style="text-align: center;" scope="col">Consecuencia</th>
-            <th colspan="2" style="text-align: center;" scope="colgroup">Seguridad y Salud Ocupacional</th>
-            <th colspan="2" style="text-align: center;" scope="colgroup">Medio ambiente</th>
-            <th colspan="2" style="text-align: center;" scope="colgroup">Operacional</th>
+            <th colspan="1" style="text-align: center;" scope="col">Probabilidad</th>
+            <th colspan="1" style="text-align: center;" scope="col">Severidad</th>
+            <th colspan="1" style="text-align: center;" scope="col">Criticidad</th>
           </tr>
 
-          <!-- Segunda fila de headers - Puro y Residual -->
-          <tr>
-            <th style="text-align: left;" scope="col">Puro</th>
-            <th style="text-align: left;" scope="col">Residual</th>
-            <th style="text-align: left;" scope="col">Puro</th>
-            <th style="text-align: left;" scope="col">Residual</th>
-            <th style="text-align: left;" scope="col">Puro</th>
-            <th style="text-align: left;" scope="col">Residual</th>
-          </tr>
+
         </thead>
 
         <tbody>
@@ -46,8 +38,8 @@
           @for (item of effectiveData(); track item.offset) {
             <tr>
               <!-- Tarea -->
-              <td class="mdl-data-table__cell--non-numeric">{{ item.tareaId }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ item.tareaDesc }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ item.dimensionId }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ item.dimensionDesc }}</td>
 
               <!-- Riesgo -->
               <td class="mdl-data-table__cell--non-numeric">{{ item.riesgoId }}</td>
@@ -58,20 +50,20 @@
               <td class="mdl-data-table__cell--non-numeric">{{ item.consecuenciaDesc }}</td>
 
               <!-- Seguridad y Salud Ocupacional -->
-              <td class="mdl-data-table__cell--non-numeric">{{ item.probabilidadM }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ item.severidadM }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ item.probabilidad }}</td>
+              <!-- <td class="mdl-data-table__cell--non-numeric">{{ item.severidad }}</td> -->
 
               <!-- Medio ambiente -->
-              <td class="mdl-data-table__cell--non-numeric">{{ item.probabilidadN }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ item.severidadN }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ item.severidad }}</td>
+              <!-- <td class="mdl-data-table__cell--non-numeric">{{ item.severidad }}</td> -->
 
               <!-- Operacional -->
-              <td class="mdl-data-table__cell--non-numeric">{{ item.probabilidadS }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ item.severidadS }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ item.criticidad }}</td>
+              <!-- <td class="mdl-data-table__cell--non-numeric">{{ item.severidad }}</td> -->
             </tr>
           }
         </tbody>
       </table>
     }
   </div>
-}
+

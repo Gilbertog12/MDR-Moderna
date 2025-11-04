@@ -1,0 +1,204 @@
+<!-- ==================== HEADER ==================== -->
+<div class="modal-header">
+  <h2 mat-dialog-title class="modal-title">
+    <mat-icon class="title-icon">checklist</mat-icon>
+    {{ data.title }}
+  </h2>
+  <button
+    mat-icon-button
+    class="close-button"
+    (click)="cancelar()"
+    [disabled]="isSaving()"
+    matTooltip="Cerrar"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<!-- ==================== CONTENT ==================== -->
+<mat-dialog-content class="modal-content">
+
+  <!-- ==================== CHIPS AREA ==================== -->
+  <div class="chips-section">
+    <div class="chips-header">
+      <mat-icon class="chips-icon">label</mat-icon>
+      <span class="chips-label">Seleccionados:</span>
+      <span class="chips-count">{{ selectedCount() }}</span>
+    </div>
+
+    <div class="chips-container">
+      @if (selectedControles().length > 0) {
+        @for (control of selectedControles(); track trackById($index, control)) {
+          <mat-chip-row
+            class="selected-chip"
+            (removed)="removeChip(control)"
+            [matTooltip]="control.descripcion"
+          >
+            <span class="chip-id">{{ control.id }}</span>
+            <span class="chip-text">{{ control.descripcion }}</span>
+            <button matChipRemove [attr.aria-label]="'Remover ' + control.descripcion">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        }
+      } @else {
+        <div class="chips-empty">
+          <mat-icon class="empty-icon">info_outline</mat-icon>
+          <span>No hay controles seleccionados</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ==================== SEARCH SECTION ==================== -->
+  <div class="search-section">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Buscar controles blandos</mat-label>
+      <input
+        matInput
+        type="text"
+        placeholder="Ingrese código o descripción..."
+        [ngModel]="searchTerm()"
+        (keydown)="onSearchKeydown($event)"
+        [disabled]="isSaving()"
+      />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="search-button"
+      (click)="applyFilter(searchTerm())"
+      [disabled]="isSaving() || !searchTerm().trim()"
+    >
+      <mat-icon>search</mat-icon>
+      Buscar
+    </button>
+
+    <button
+      mat-stroked-button
+      class="clear-button"
+      (click)="clearSearch()"
+      [disabled]="isSaving() || !searchTerm()"
+    >
+      <mat-icon>clear</mat-icon>
+      Limpiar
+    </button>
+  </div>
+
+  <!-- ==================== TABLE SECTION ==================== -->
+  <div class="table-section">
+    @if (controlesBlandos().length > 0) {
+      <div class="table-container">
+        <table mat-table [dataSource]="controlesBlandos()" class="controles-table">
+
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="checkbox-column">
+              <mat-icon class="header-icon">check_circle_outline</mat-icon>
+            </th>
+            <td mat-cell *matCellDef="let control" class="checkbox-column">
+              <mat-checkbox
+                [checked]="isSelected(control.id)"
+                (change)="toggleSelection(control)"
+                [disabled]="isSaving()"
+                color="primary"
+              >
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef class="id-column">
+              <mat-icon class="header-icon">tag</mat-icon>
+              ID
+            </th>
+            <td mat-cell *matCellDef="let control" class="id-column">
+              <span class="id-badge">{{ control.id }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Descripción Column -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-icon class="header-icon">description</mat-icon>
+              Descripción
+            </th>
+            <td mat-cell *matCellDef="let control">
+              <span class="descripcion-text">{{ control.descripcion }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns;"
+            class="table-row"
+            [class.selected-row]="isSelected(row.id)"
+          ></tr>
+        </table>
+      </div>
+
+      <!-- Selection info -->
+      <div class="selection-info">
+        <mat-icon class="info-icon">info</mat-icon>
+        <span>{{ selectedCount() }} control(es) seleccionado(s)</span>
+      </div>
+
+    } @else {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <h3 class="empty-title">Sin resultados</h3>
+        <p class="empty-message">
+          @if (searchTerm()) {
+            No se encontraron controles blandos con el criterio de búsqueda "{{ searchTerm() }}"
+          } @else {
+            Ingrese un término de búsqueda para comenzar
+          }
+        </p>
+      </div>
+    }
+  </div>
+
+</mat-dialog-content>
+
+<!-- ==================== FOOTER ==================== -->
+<mat-dialog-actions class="modal-actions">
+  <div class="actions-info">
+    <mat-icon class="info-icon">info</mat-icon>
+    <span class="info-text">
+      @if (selectedCount() > 0) {
+        Se agregarán {{ selectedCount() }} control(es) blando(s)
+      } @else {
+        Seleccione al menos un control para guardar
+      }
+    </span>
+  </div>
+
+  <div class="actions-buttons">
+    <button
+      mat-stroked-button
+      type="button"
+      class="cancel-button"
+      (click)="cancelar()"
+      [disabled]="isSaving()"
+    >
+      <mat-icon>close</mat-icon>
+      {{ data.button_close || 'Cancelar' }}
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      class="save-button"
+      (click)="guardar()"
+      [disabled]="isSaving() || selectedCount() === 0"
+    >
+      <mat-icon>save</mat-icon>
+      {{ data.button_confirm || 'Guardar' }}
+    </button>
+  </div>
+</mat-dialog-actions>

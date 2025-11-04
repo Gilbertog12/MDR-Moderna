@@ -1,0 +1,355 @@
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  width: 900px;
+  max-width: 95vw;
+}
+
+// ========================================
+// HEADER
+// ========================================
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e0e0e0;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: #212121;
+  }
+
+  .close-button {
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// ========================================
+// CONTENIDO
+// ========================================
+.modal-content {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+// ========================================
+// FORMULARIO DE BÚSQUEDA
+// ========================================
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: start;
+
+  .search-field {
+    width: 100%;
+  }
+
+  .search-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 8px;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+// ========================================
+// PAGINACIÓN
+// ========================================
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 16px;
+
+  .page-indicator {
+    font-size: 14px;
+    font-weight: 500;
+    color: #424242;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  button[mat-icon-button] {
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+// ========================================
+// LOADING STATE
+// ========================================
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// ========================================
+// EMPTY STATE
+// ========================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #757575;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #bdbdbd;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+    color: #424242;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+    max-width: 350px;
+    line-height: 1.5;
+  }
+}
+
+// ========================================
+// TABLA
+// ========================================
+.table-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: white;
+  margin-bottom: 16px;
+}
+
+.results-table {
+  width: 100%;
+
+  // Encabezados
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    font-size: 13px;
+    color: #424242;
+    padding: 12px 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.select-column {
+      width: 60px;
+      text-align: center;
+    }
+
+    &.num-column {
+      width: 100px;
+      text-align: center;
+    }
+
+    &.actions-column {
+      width: 100px;
+      text-align: center;
+    }
+  }
+
+  // Celdas
+  td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #212121;
+    border-bottom: 1px solid #f0f0f0;
+
+    &.select-column {
+      text-align: center;
+    }
+
+    &.num-column {
+      text-align: center;
+    }
+
+    &.actions-column {
+      text-align: center;
+    }
+
+    strong {
+      font-weight: 600;
+      color: #1976d2;
+    }
+
+    .task-count {
+      display: inline-block;
+      padding: 4px 12px;
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+
+  // Filas
+  tr.mat-mdc-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #fafafa;
+    }
+
+    &.selected-row {
+      background-color: #e3f2fd;
+
+      &:hover {
+        background-color: #bbdefb;
+      }
+    }
+  }
+}
+
+// ========================================
+// INFO DE SELECCIÓN
+// ========================================
+.selection-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  border-left: 4px solid #1976d2;
+
+  mat-icon {
+    color: #1976d2;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+
+    &[inline] {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      margin: 0 4px;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1565c0;
+
+    strong {
+      font-weight: 600;
+    }
+  }
+}
+
+// ========================================
+// ACCIONES DEL MODAL
+// ========================================
+.modal-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// ========================================
+// RESPONSIVE
+// ========================================
+@media (max-width: 768px) {
+  .modal-container {
+    width: 100%;
+  }
+
+  .search-form {
+    grid-template-columns: 1fr;
+
+    .search-actions {
+      justify-content: stretch;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+
+  .results-table {
+    font-size: 12px;
+
+    th, td {
+      padding: 8px;
+    }
+
+    .task-count {
+      font-size: 11px;
+      padding: 2px 8px;
+    }
+  }
+
+  .selection-info {
+    p {
+      font-size: 12px;
+    }
+  }
+}

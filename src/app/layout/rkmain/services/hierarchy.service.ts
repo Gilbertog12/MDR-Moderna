@@ -408,4 +408,140 @@ deleteChecklist(
 
   return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
 }
+
+ // ==================== CONTROLES BLANDOS METHODS ====================
+
+  /**
+   * Busca controles blandos asociados a una consecuencia
+   */
+  searchControlesBlandos(
+    areaId: string,
+    procesoId: string,
+    subprocesoId: string,
+    actividadId: string,
+    tareaId: string,
+    dimensionId: string,
+    riesgoId: string,
+    consecuenciaId: string
+  ): Observable<any> {
+    const atts = [
+      { name: 'scriptName', value: 'coemdr' },
+      { name: 'action', value: 'CONSEC_SEARCH_CONTROLB' },
+      { name: 'areaId', value: areaId },
+      { name: 'procesoId', value: procesoId },
+      { name: 'subprocesoId', value: subprocesoId },
+      { name: 'actividadId', value: actividadId },
+      { name: 'tareaId', value: tareaId },
+      { name: 'dimensionId', value: dimensionId },
+      { name: 'riesgoId', value: riesgoId },
+      { name: 'consecuenciaId', value: consecuenciaId }
+    ];
+
+    return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Obtiene lista de controles blandos disponibles para agregar
+   */
+  getControlesBlandosDisponibles(
+    areaId: string,
+    procesoId: string,
+    subprocesoId: string,
+    actividadId: string,
+    tareaId: string,
+    dimensionId: string,
+    riesgoId: string,
+    consecuenciaId: string,
+    lookupName?: string
+  ): Observable<any> {
+    const atts = [
+      { name: 'scriptName', value: 'coemdr' },
+      { name: 'action', value: 'CBLANDO_LIST' },
+      { name: 'areaId', value: areaId },
+      { name: 'procesoId', value: procesoId },
+      { name: 'subprocesoId', value: subprocesoId },
+      { name: 'actividadId', value: actividadId },
+      { name: 'tareaId', value: tareaId },
+      { name: 'dimensionId', value: dimensionId },
+      { name: 'riesgoId', value: riesgoId },
+      { name: 'consecuenciaId', value: consecuenciaId }
+    ];
+
+    if (lookupName) {
+      atts.push({ name: 'lookupName', value: lookupName });
+    }
+
+    return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Crea/asocia controles blandos a una consecuencia
+   */
+  createControlesBlandos(
+    areaId: string,
+    procesoId: string,
+    subprocesoId: string,
+    actividadId: string,
+    tareaId: string,
+    dimensionId: string,
+    riesgoId: string,
+    consecuenciaId: string,
+    cblandoIds: string[]
+  ): Observable<any> {
+    const atts = [
+      { name: 'scriptName', value: 'coemdr' },
+      { name: 'action', value: 'CBLANDO_CREATE' },
+      { name: 'areaId', value: areaId },
+      { name: 'procesoId', value: procesoId },
+      { name: 'subprocesoId', value: subprocesoId },
+      { name: 'actividadId', value: actividadId },
+      { name: 'tareaId', value: tareaId },
+      { name: 'dimensionId', value: dimensionId },
+      { name: 'riesgoId', value: riesgoId },
+      { name: 'consecuenciaId', value: consecuenciaId },
+      { name: 'cblandoId', value: cblandoIds.join(',') }
+    ];
+
+    return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Elimina un control blando de una consecuencia
+   */
+  deleteControlBlando(
+    areaId: string,
+    procesoId: string,
+    subprocesoId: string,
+    actividadId: string,
+    tareaId: string,
+    dimensionId: string,
+    riesgoId: string,
+    consecuenciaId: string,
+    cblandoId: string,
+    version: string,
+    status: string,
+    warning: boolean = false
+  ): Observable<any> {
+    const atts = [
+      { name: 'scriptName', value: 'coemdr' },
+      { name: 'action', value: 'CBLANDO_DELETE' },
+      { name: 'areaId', value: areaId },
+      { name: 'procesoId', value: procesoId },
+      { name: 'subprocesoId', value: subprocesoId },
+      { name: 'actividadId', value: actividadId },
+      { name: 'tareaId', value: tareaId },
+      { name: 'dimensionId', value: dimensionId },
+      { name: 'riesgoId', value: riesgoId },
+      { name: 'consecuenciaId', value: consecuenciaId },
+      { name: 'cblandoId', value: cblandoId },
+      { name: 'versionId', value: version },
+      { name: 'statusId', value: status }
+    ];
+
+    if (warning) {
+      atts.push({ name: 'warning', value: 'Y' });
+    }
+
+    return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
+  }
 }

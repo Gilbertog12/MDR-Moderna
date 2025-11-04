@@ -75,19 +75,7 @@ export class ChecklistTabComponent {
   canPasteChecklist = computed(() => {
     const copiedData = this.copyPasteService.getCopiedData();
 
-    // 🐛 DEBUG TEMPORAL - Eliminar después de probar
-    console.log('🔍 DEBUG canPasteChecklist:', {
-      copiedData: copiedData,
-      currentActivityId: this.actividadId(),
-      activityStatus: this.activityStatus(),
-      canAdd: this.permissions().canAdd,
-      loading: this.loading(),
-      canPasteResult: copiedData ? this.copyPasteService.canPasteInActivity(
-        this.actividadId(),
-        this.activityStatus()
-      ) : false
-    });
-    // 🐛 FIN DEBUG
+
 
     if (!copiedData) return false;
 

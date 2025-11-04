@@ -240,7 +240,7 @@
 
       <!-- Tab: Std. Job (Simplificado) -->
       <mat-tab label="Std. Job">
-        <div class="tab-content-simple">
+        <!-- <div class="tab-content-simple">
           <div class="info-message">
             <mat-icon>construction</mat-icon>
             <h3>Gestión de Trabajos Estándar</h3>
@@ -250,8 +250,20 @@
               Añadir Std. Job
             </button>
           </div>
-        </div>
-      </mat-tab>
+        </div> -->
+
+
+    <app-stdjob-tab
+      #stdJobTab
+      [areaId]="areaId()"
+      [procesoId]="procesoId()"
+      [subprocesoId]="subprocesoId()"
+      [actividadId]="actividadId()"
+      [statusId]="actividadDetail()?.actividadStatusId || '001'"
+      [versionId]="actividadDetail()?.actividadVersion || ''"
+      [autoLoad]="false" />
+  </mat-tab>
+
 
       <!-- Tab: CheckList (Simplificado) -->
       <mat-tab label="CheckList">
@@ -270,14 +282,22 @@
 
       <!-- Tab: Detalle (Simplificado) -->
       <mat-tab label="Detalle">
-        <div class="tab-content-simple">
+        <!-- <div class="tab-content-simple">
           <div class="info-message">
             <mat-icon>analytics</mat-icon>
             <h3>Detalle de Riesgos</h3>
             <p>Vista detallada de la evaluación de riesgos por tarea</p>
             <p class="subtitle">Esta funcionalidad estará disponible en próximas versiones</p>
           </div>
-        </div>
+        </div> -->
+
+           <app-rkc-detalle
+           #detalleTab
+      [areaId]="areaId()"
+      [procesoId]="procesoId()"
+      [subprocesoId]="subprocesoId()"
+      [actividadId]="actividadId()"
+      [autoLoad]="false" />
       </mat-tab>
 
     </mat-tab-group>

@@ -1,5 +1,5 @@
 // src/app/features/risk-hierarchy/rky/rky.component.ts
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +12,9 @@ import { HierarchyService } from '../../../layout/rkmain/services/hierarchy.serv
 import { AlertService } from '../../../shared/services/alert.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+
+
 
 interface ConsecuenciaDetail {
   offset: string;
@@ -104,6 +107,11 @@ export class RkyComponent implements OnInit {
   userProfile = signal<string>('');
   currentFlowButton = signal<string>('');
   showButtons = signal<boolean>(false);
+
+   // Signals
+  readonly controlesBlandos = signal<any[]>([]);
+  readonly ids = signal<string[]>([]);
+  private readonly dialog = inject(MatDialog);
 
   private destroy$ = new Subject<void>();
 
@@ -573,4 +581,67 @@ export class RkyComponent implements OnInit {
   openDashboard(): void {
     this.alertService.toast('success', 'Dashboard en desarrollo');
   }
+
+  onTabChange(index:number){
+    switch(index){
+      case 1 :
+        return
+    }
+  }
+
+ // COntroles Blandos
+
+  /**
+   * Carga los controles blandos asociados
+   */
+  loadControlesBlandos(): void {
+    const ids = this.ids();
+
+    this.hierarchyService.searchControlesBlandos(
+      ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7]
+    ).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.controlesBlandos.set(response.data);
+        }
+      },
+      error: (error) => {
+        this.alertService.error('Error', 'No se pudieron cargar los controles blandos');
+      }
+    });
+  }
+
+async openAddControlBlandoModal(): Promise<void> {
+  // ✅ Lazy loading del modal
+  const { RkycblandoComponent } = await import('./rkycblando/rkycblando.component');
+
+  const ids = this.ids();
+
+  const dialogRef = this.dialog.open(RkycblandoComponent, {
+    width: '900px',
+    maxWidth: '95vw',
+    maxHeight: '90vh',
+    disableClose: true,
+    data: {
+      title: 'Agregar Controles Blandos',
+      areaId: ids[0] || '',
+      procesoId: ids[1] || '',
+      subprocesoId: ids[2] || '',
+      actividadId: ids[3] || '',
+      tareaId: ids[4] || '',
+      dimensionId: ids[5] || '',
+      riesgoId: ids[6] || '',
+      consecuenciaId: ids[7] || '',
+      button_confirm: 'Guardar',
+      button_close: 'Cancelar'
+    }
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result?.success) {
+      this.alertService.toast('success', 'Controles blandos agregados');
+      this.loadControlesBlandos();  // Recargar tabla
+    }
+  });
+}
 }

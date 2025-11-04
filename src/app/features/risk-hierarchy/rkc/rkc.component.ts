@@ -13,6 +13,8 @@ import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-fl
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { ChecklistTabComponent } from '../../../layout/rkmain/components/checklist-tab/checklist-tab.component';
 import { ChecklistPermissions } from '../../../shared/models/checklist.interface';
+import { RkcDetalleComponent } from "../../../layout/rkmain/components/rkc-detalle/rkc-detalle.component";
+import { StdjobTabComponent } from '../../../layout/rkmain/components/stdjob-tab/stdjob-tab.component'
 
 
 interface ActividadDetail {
@@ -69,8 +71,8 @@ export interface TareaWithRisk {
     MatTooltipModule,
     MatTabsModule,
     ChecklistTabComponent,
-
-
+    RkcDetalleComponent,
+    StdjobTabComponent
   ],
   templateUrl: './rkc.component.html',
   styleUrl: './rkc.component.scss'
@@ -82,16 +84,18 @@ export class RkcComponent implements OnInit {
   subprocesoId = signal<string>('');
   actividadId = signal<string>('');
 
+  private stdJobTab = viewChild<StdjobTabComponent>('stdJobTab');
   private tabGroup = viewChild<MatTabGroup>('tabGroup');
-private checklistTab = viewChild<ChecklistTabComponent>('checklistTab');
+  private checklistTab = viewChild<ChecklistTabComponent>('checklistTab');
+  private detalleTab = viewChild<RkcDetalleComponent>('detalleTab');
 
 
   checklistPermissions = computed((): ChecklistPermissions => ({
-  canAdd: this.actividadDetail()?.canAdd === 'true',
-  canEdit: this.actividadDetail()?.canModify === 'true',
-  canDelete: this.actividadDetail()?.canModify === 'true',
-  isCreator: this.actividadDetail()?.creador === 'true'
-}));
+    canAdd: this.actividadDetail()?.canAdd === 'true',
+    canEdit: this.actividadDetail()?.canModify === 'true',
+    canDelete: this.actividadDetail()?.canModify === 'true',
+    isCreator: this.actividadDetail()?.creador === 'true'
+  }));
 
   // Estado del componente
   actividadDetail = signal<ActividadDetail | null>(null);
@@ -117,14 +121,16 @@ private checklistTab = viewChild<ChecklistTabComponent>('checklistTab');
     private approvalFlowService: ApprovalFlowService
   ) {
 
-    effect(()=> {
+    effect(() => {
       const actividadId = this.actividadDetail()?.actividadId
 
-      if(actividadId){
+      if (actividadId) {
         this.selectedTab.set(0)
       }
     })
   }
+
+
 
   ngOnInit(): void {
     this.loadUserPermissions();
@@ -604,7 +610,7 @@ private checklistTab = viewChild<ChecklistTabComponent>('checklistTab');
     }
 
     if (tarea.estado === '001' || tarea.estado === '002' ||
-        tarea.estado === '003' || tarea.estado === '006') {
+      tarea.estado === '003' || tarea.estado === '006') {
       return '(*)';
     }
 
@@ -616,16 +622,30 @@ private checklistTab = viewChild<ChecklistTabComponent>('checklistTab');
 
 
   onTabChange(index: number): void {
-  const CHECKLIST_TAB_INDEX = 2; // 👈 Ajusta según tu estructura
 
-  if (index === CHECKLIST_TAB_INDEX) {
 
-    const checklistComponent = this.checklistTab();
-
-    console.log(checklistComponent);
-    if (checklistComponent) {
-      checklistComponent.initTab();
+    switch (index) {
+      case 1:
+        const stdJobComponent = this.stdJobTab();
+        if (stdJobComponent) {
+          stdJobComponent.initTab();
+         }
+        break;
+      case 2:
+        const checklistComponent = this.checklistTab();
+        if (checklistComponent) {
+          checklistComponent.initTab();
+        }
+        break;
+      case 3:
+        const detalleComponent = this.detalleTab();
+        if (detalleComponent) {
+          detalleComponent.loadData();
+        }
+        break;
+      default:
+        break
     }
+
   }
-}
 }

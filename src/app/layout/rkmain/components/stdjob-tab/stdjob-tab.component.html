@@ -1,0 +1,99 @@
+<div class="stdjob-tab-container">
+  <!-- Header con botón de agregar -->
+  <div class="tab-header">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openAddStdJobModal()"
+      [disabled]="isLoading()"
+      class="add-button">
+      <mat-icon>add</mat-icon>
+      Agregar Std. Job
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">Cargando Std Jobs asociados...</p>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @else if (isEmpty()) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">work_outline</mat-icon>
+      <h3>No hay Std Jobs asociados</h3>
+      <p>Agregue Std Jobs a esta actividad usando el botón "Agregar Std. Job"</p>
+    </div>
+  }
+
+  <!-- Tabla con datos -->
+  @else if (hasStdJobs()) {
+    <div class="table-container">
+      <table mat-table [dataSource]="stdJobsAssociated()" class="stdjob-table">
+
+        <!-- Columna: Código Std Job -->
+        <ng-container matColumnDef="stdJobNo">
+          <th mat-header-cell *matHeaderCellDef>Código Std Job</th>
+          <td mat-cell *matCellDef="let element">
+            <strong>{{ element.stdJobNo }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Columna: Descripción Std Job -->
+        <ng-container matColumnDef="stdJobDesc">
+          <th mat-header-cell *matHeaderCellDef>Descripción Std Job</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.stdJobDesc }}
+          </td>
+        </ng-container>
+
+        <!-- Columna: Código Tarea -->
+        <ng-container matColumnDef="stdJobTaskNo">
+          <th mat-header-cell *matHeaderCellDef>Código Tarea</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="task-code">{{ element.stdJobTaskNo }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Columna: Descripción Tarea -->
+        <ng-container matColumnDef="taskDesc">
+          <th mat-header-cell *matHeaderCellDef>Descripción Tarea</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.taskDesc }}
+          </td>
+        </ng-container>
+
+        <!-- Columna: Acciones -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-column">Acciones</th>
+          <td mat-cell *matCellDef="let element" class="actions-column">
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteStdJob(element)"
+              [disabled]="!element.canDelete"
+              [matTooltip]="element.canDelete ? 'Eliminar Std Job' : 'No se puede eliminar'"
+              aria-label="Eliminar Std Job">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Definición de filas -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Resumen -->
+    <div class="table-footer">
+      <p class="summary-text">
+        Total: <strong>{{ stdJobsAssociated().length }}</strong>
+        {{ stdJobsAssociated().length === 1 ? 'Std Job asociado' : 'Std Jobs asociados' }}
+      </p>
+    </div>
+  }
+</div>

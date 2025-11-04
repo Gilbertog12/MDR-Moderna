@@ -1,0 +1,197 @@
+<div class="modal-container">
+  <!-- Header del modal -->
+  <div class="modal-header">
+    <h2 mat-dialog-title>Seleccionar Std. Job</h2>
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="cancel()"
+      aria-label="Cerrar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Contenido del modal -->
+  <mat-dialog-content class="modal-content">
+
+    <!-- Formulario de búsqueda -->
+    <div class="search-form">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Código</mat-label>
+        <input
+          matInput
+          [(ngModel)]="codigoFilter"
+          placeholder="Filtrar por código"
+          (keyup.enter)="searchStdJobs()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Descripción</mat-label>
+        <input
+          matInput
+          [(ngModel)]="descripcionFilter"
+          placeholder="Filtrar por descripción"
+          (keyup.enter)="searchStdJobs()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="search-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="searchStdJobs()"
+          [disabled]="isLoading()">
+          <mat-icon>search</mat-icon>
+          Buscar
+        </button>
+
+        <button
+          mat-stroked-button
+          (click)="clearFilters()"
+          [disabled]="isLoading()">
+          <mat-icon>clear</mat-icon>
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination">
+      <button
+        mat-icon-button
+        (click)="previousPage()"
+        [disabled]="currentPage() === 1 || isLoading()"
+        matTooltip="Página anterior">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <span class="page-indicator">
+        Página {{ currentPage() }}
+      </span>
+
+      <button
+        mat-icon-button
+        (click)="nextPage()"
+        [disabled]="!hasResults() || isLoading()"
+        matTooltip="Página siguiente">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <!-- Loading state -->
+    @if (isLoading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Buscando Std Jobs...</p>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (isEmpty()) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">work_outline</mat-icon>
+        <h3>No se encontraron Std Jobs</h3>
+        <p>Intente con otros criterios de búsqueda</p>
+      </div>
+    }
+
+    <!-- Tabla de resultados -->
+    @else if (hasResults()) {
+      <div class="table-container">
+        <table mat-table [dataSource]="stdJobs()" class="results-table">
+
+          <!-- Columna: Selección -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="select-column"></th>
+            <td mat-cell *matCellDef="let element" class="select-column">
+              <mat-radio-button
+                [checked]="element.selected"
+                (change)="selectStdJob(element)"
+                [value]="element.stdJobNo">
+              </mat-radio-button>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Código -->
+          <ng-container matColumnDef="stdJobNo">
+            <th mat-header-cell *matHeaderCellDef>Código</th>
+            <td mat-cell *matCellDef="let element">
+              <strong>{{ element.stdJobNo }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Descripción -->
+          <ng-container matColumnDef="stdJobDesc">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.stdJobDesc }}
+            </td>
+          </ng-container>
+
+          <!-- Columna: Número de tareas -->
+          <ng-container matColumnDef="numTareas">
+            <th mat-header-cell *matHeaderCellDef class="num-column">Tareas</th>
+            <td mat-cell *matCellDef="let element" class="num-column">
+              <span class="task-count">{{ element.numTareas }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Columna: Acciones (Ver tareas) -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-column">Acciones</th>
+            <td mat-cell *matCellDef="let element" class="actions-column">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="selectStdJob(element); openTaskSelectionModal()"
+                matTooltip="Ver y seleccionar tarea"
+                aria-label="Ver tareas">
+                <mat-icon>list</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Definición de filas -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns;"
+            [class.selected-row]="row.selected"
+            (click)="selectStdJob(row)"></tr>
+        </table>
+      </div>
+
+      <!-- Info sobre selección de tareas -->
+      @if (hasSelection()) {
+        <div class="selection-info">
+          <mat-icon>info</mat-icon>
+          <p>
+            Si no selecciona una tarea específica, se asociarán <strong>todas las tareas</strong> del Std Job.
+            Use el botón <mat-icon inline>list</mat-icon> para seleccionar una tarea específica.
+          </p>
+        </div>
+      }
+    }
+
+  </mat-dialog-content>
+
+  <!-- Footer con botones de acción -->
+  <mat-dialog-actions class="modal-actions">
+    <button
+      mat-stroked-button
+      (click)="cancel()"
+      [disabled]="isLoading()">
+      Cancelar
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="saveSelection()"
+      [disabled]="!hasSelection() || isLoading()">
+      <mat-icon>check</mat-icon>
+      Guardar
+    </button>
+  </mat-dialog-actions>
+</div>

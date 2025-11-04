@@ -198,7 +198,7 @@
 
   <!-- Tabs de Contenido -->
   <div class="content-section">
-    <mat-tab-group class="custom-tabs">
+    <mat-tab-group class="custom-tabs" (selectedTabChange)="onTabChange($event.index)">
       <!-- Tab 1: Evaluación Riesgo -->
       <mat-tab label="Evaluación Riesgo">
         <div class="tab-content">

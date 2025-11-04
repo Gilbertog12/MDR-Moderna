@@ -1,0 +1,295 @@
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  width: 700px;
+  max-width: 95vw;
+}
+
+// ========================================
+// HEADER
+// ========================================
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e0e0e0;
+
+  .header-content {
+    flex: 1;
+
+    h2 {
+      margin: 0 0 4px 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: #212121;
+    }
+
+    .std-job-desc {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+      font-weight: 400;
+    }
+  }
+
+  .close-button {
+    margin-left: 16px;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// ========================================
+// CONTENIDO
+// ========================================
+.modal-content {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+// ========================================
+// BANNER INFORMATIVO
+// ========================================
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #fff3e0;
+  border-radius: 4px;
+  border-left: 4px solid #ff9800;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: #f57c00;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e65100;
+  }
+}
+
+// ========================================
+// LOADING STATE
+// ========================================
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// ========================================
+// EMPTY STATE
+// ========================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #757575;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #bdbdbd;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+    color: #424242;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+    max-width: 350px;
+    line-height: 1.5;
+  }
+}
+
+// ========================================
+// TABLA
+// ========================================
+.table-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: white;
+  margin-bottom: 16px;
+}
+
+.tasks-table {
+  width: 100%;
+
+  // Encabezados
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    font-size: 13px;
+    color: #424242;
+    padding: 12px 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.select-column {
+      width: 60px;
+      text-align: center;
+    }
+  }
+
+  // Celdas
+  td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #212121;
+    border-bottom: 1px solid #f0f0f0;
+
+    &.select-column {
+      text-align: center;
+    }
+
+    strong {
+      font-weight: 600;
+      color: #1976d2;
+    }
+  }
+
+  // Filas
+  tr.mat-mdc-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #fafafa;
+    }
+
+    &.selected-row {
+      background-color: #e3f2fd;
+
+      &:hover {
+        background-color: #bbdefb;
+      }
+    }
+  }
+}
+
+// ========================================
+// RESUMEN DE SELECCIÓN
+// ========================================
+.selection-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #e8f5e9;
+  border-radius: 4px;
+  border-left: 4px solid #4caf50;
+
+  mat-icon {
+    color: #388e3c;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #2e7d32;
+
+    strong {
+      font-weight: 600;
+      color: #1b5e20;
+    }
+  }
+}
+
+// ========================================
+// ACCIONES DEL MODAL
+// ========================================
+.modal-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// ========================================
+// RESPONSIVE
+// ========================================
+@media (max-width: 768px) {
+  .modal-container {
+    width: 100%;
+  }
+
+  .modal-header {
+    .header-content {
+      h2 {
+        font-size: 18px;
+      }
+
+      .std-job-desc {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .tasks-table {
+    font-size: 12px;
+
+    th, td {
+      padding: 8px;
+    }
+  }
+
+  .info-banner,
+  .selection-summary {
+    p {
+      font-size: 12px;
+    }
+  }
+}

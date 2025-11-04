@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,9 @@ import { HierarchyService } from '../../../layout/rkmain/services/hierarchy.serv
 import { AlertService } from '../../../shared/services/alert.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
+import { StdjobTabComponent } from "../../../layout/rkmain/components/stdjob-tab/stdjob-tab.component";
+import { RktDetalleComponent } from "../../../layout/rkmain/components/rkt-detalle/rkt-detalle.component";
+import { RkcDetalleComponent } from '../../../layout/rkmain/components/rkc-detalle/rkc-detalle.component';
 
 interface TareaDetail {
   offset: string;
@@ -65,8 +68,10 @@ export interface DimensionWithRisk {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatTabsModule
-  ],
+    MatTabsModule,
+    StdjobTabComponent,
+    RktDetalleComponent
+],
   templateUrl: './rkt.component.html',
   styleUrl: './rkt.component.scss'
 })
@@ -91,6 +96,9 @@ export class RktComponent implements OnInit {
   showButtons = signal<boolean>(false);
 
   private destroy$ = new Subject<void>();
+
+  private stdJobTab = viewChild<StdjobTabComponent>('stdJobTab');
+  private detalleTab = viewChild<RkcDetalleComponent>('detalleTab');
 
   constructor(
     private route: ActivatedRoute,
@@ -605,5 +613,27 @@ export class RktComponent implements OnInit {
     if (dimension.estado === '007') return '(***)';
 
     return '';
+  }
+
+
+  onTabChange(index: number): void {
+
+    switch(index){
+
+      case 1 :
+         const stdJobComponent = this.stdJobTab();
+      if (stdJobComponent) {
+        stdJobComponent.loadData();
+      }
+        break
+      case 2 :
+            const detalleComponent = this.detalleTab();
+        if (detalleComponent) {
+          detalleComponent.loadData();
+        }
+        break
+    }
+
+
   }
 }
