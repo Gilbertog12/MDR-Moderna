@@ -291,12 +291,17 @@
 
       <!-- Tab 2: Controles Blandos -->
       <mat-tab label="Controles Blandos">
-        <div class="tab-content">
-          <div class="empty-state">
-            <mat-icon>pending_actions</mat-icon>
-            <p>Gestión de controles blandos en desarrollo</p>
-          </div>
-        </div>
+        <app-rkycblando-tab
+          #cblandoTab
+          [areaId]="areaId()"
+          [procesoId]="procesoId()"
+          [subprocesoId]="subprocesoId()"
+          [actividadId]="actividadId()"
+          [tareaId]="tareaId()"
+          [dimensionId]="dimensionId()"
+          [riesgoId]="riesgoId()"
+          [consecuenciaId]="consecuenciaId()"
+          [autoLoad]="false" />
       </mat-tab>
 
       <!-- Tab 3: Controles Duros -->

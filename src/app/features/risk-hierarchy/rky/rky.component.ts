@@ -1,5 +1,5 @@
 // src/app/features/risk-hierarchy/rky/rky.component.ts
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -13,6 +13,7 @@ import { AlertService } from '../../../shared/services/alert.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { RkycblandoTabComponent } from './rkycblando/rkycblando-tab.component';
 
 
 
@@ -83,7 +84,8 @@ interface ConsecuenciaDetail {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatTabsModule
+    MatTabsModule,
+    RkycblandoTabComponent
   ],
   templateUrl: './rky.component.html',
   styleUrl: './rky.component.scss'
@@ -99,6 +101,9 @@ export class RkyComponent implements OnInit {
   riesgoId = signal<string>('');
   consecuenciaId = signal<string>('');
 
+  // ViewChild para el tab de controles blandos
+  private cblandoTab = viewChild<RkycblandoTabComponent>('cblandoTab');
+
   // Estado del componente
   consecuenciaDetail = signal<ConsecuenciaDetail | null>(null);
   isLoadingConsecuencia = signal(false);
@@ -107,11 +112,6 @@ export class RkyComponent implements OnInit {
   userProfile = signal<string>('');
   currentFlowButton = signal<string>('');
   showButtons = signal<boolean>(false);
-
-   // Signals
-  readonly controlesBlandos = signal<any[]>([]);
-  readonly ids = signal<string[]>([]);
-  private readonly dialog = inject(MatDialog);
 
   private destroy$ = new Subject<void>();
 
@@ -582,66 +582,17 @@ export class RkyComponent implements OnInit {
     this.alertService.toast('success', 'Dashboard en desarrollo');
   }
 
-  onTabChange(index:number){
-    switch(index){
-      case 1 :
-        return
-    }
-  }
-
- // COntroles Blandos
-
-  /**
-   * Carga los controles blandos asociados
-   */
-  loadControlesBlandos(): void {
-    const ids = this.ids();
-
-    this.hierarchyService.searchControlesBlandos(
-      ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7]
-    ).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.controlesBlandos.set(response.data);
+  onTabChange(index: number): void {
+    switch (index) {
+      case 1:
+        // Tab de Controles Blandos
+        const cblandoComponent = this.cblandoTab();
+        if (cblandoComponent) {
+          cblandoComponent.initTab();
         }
-      },
-      error: (error) => {
-        this.alertService.error('Error', 'No se pudieron cargar los controles blandos');
-      }
-    });
+        break;
+      default:
+        break;
+    }
   }
-
-async openAddControlBlandoModal(): Promise<void> {
-  // ✅ Lazy loading del modal
-  const { RkycblandoComponent } = await import('./rkycblando/rkycblando.component');
-
-  const ids = this.ids();
-
-  const dialogRef = this.dialog.open(RkycblandoComponent, {
-    width: '900px',
-    maxWidth: '95vw',
-    maxHeight: '90vh',
-    disableClose: true,
-    data: {
-      title: 'Agregar Controles Blandos',
-      areaId: ids[0] || '',
-      procesoId: ids[1] || '',
-      subprocesoId: ids[2] || '',
-      actividadId: ids[3] || '',
-      tareaId: ids[4] || '',
-      dimensionId: ids[5] || '',
-      riesgoId: ids[6] || '',
-      consecuenciaId: ids[7] || '',
-      button_confirm: 'Guardar',
-      button_close: 'Cancelar'
-    }
-  });
-
-  dialogRef.afterClosed().subscribe((result) => {
-    if (result?.success) {
-      this.alertService.toast('success', 'Controles blandos agregados');
-      this.loadControlesBlandos();  // Recargar tabla
-    }
-  });
-}
 }

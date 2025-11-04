@@ -1,0 +1,84 @@
+<div class="rkycblando-tab-container">
+  <!-- Header con botón de acción -->
+  <div class="tab-header">
+    <h3 class="tab-title">Controles Blandos Asociados</h3>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openAddControlesBlandosModal()"
+      class="add-button">
+      <mat-icon>add</mat-icon>
+      Agregar Controles Blandos
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando controles blandos...</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (isEmpty()) {
+    <div class="empty-state">
+      <mat-icon>assignment</mat-icon>
+      <h4>No hay controles blandos asociados</h4>
+      <p>Agregue controles blandos para gestionar los controles asociados a esta consecuencia</p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openAddControlesBlandosModal()">
+        <mat-icon>add</mat-icon>
+        Agregar Controles Blandos
+      </button>
+    </div>
+  }
+
+  <!-- Table with Data -->
+  @else if (hasControles()) {
+    <div class="table-container">
+      <table mat-table [dataSource]="controlesBlandos()" class="controles-table">
+
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let control">{{ control.id }}</td>
+        </ng-container>
+
+        <!-- Descripción Column -->
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let control">{{ control.descripcion }}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Acciones</th>
+          <td mat-cell *matCellDef="let control" class="actions-cell">
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteControlBlando(control)"
+              [disabled]="!control.canDelete"
+              [matTooltip]="control.canDelete ? 'Eliminar control blando' : 'No se puede eliminar'"
+              class="delete-button">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Footer con contador -->
+    <div class="table-footer">
+      <span class="record-count">
+        Total: {{ controlesBlandos().length }} control(es) blando(s)
+      </span>
+    </div>
+  }
+</div>
