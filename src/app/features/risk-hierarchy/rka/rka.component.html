@@ -14,40 +14,42 @@
 
       <div class="header-actions">
         <!-- Botones del flujo de aprobación -->
-        @if (shouldShowApprovalButtons()) {
-          <div class="approval-buttons">
-            @if (getFlowButton() === 'enviar-validar') {
-              <button mat-raised-button color="accent" (click)="enviarAValidar()">
-                <mat-icon>send</mat-icon>
-                Enviar a Validar
-              </button>
-            } @else if (getFlowButton() === 'aprobar') {
-              <button mat-raised-button color="primary" (click)="aprobar()">
-                <mat-icon>check_circle</mat-icon>
-                Aprobar
-              </button>
-              <button mat-raised-button color="warn" (click)="rechazar()">
-                <mat-icon>cancel</mat-icon>
-                Rechazar
-              </button>
-            } @else if (getFlowButton() === 'validar') {
-              <button mat-raised-button color="primary" (click)="validar()">
-                <mat-icon>verified</mat-icon>
-                Validar
-              </button>
-              <button mat-raised-button color="warn" (click)="rechazar()">
-                <mat-icon>cancel</mat-icon>
-                Rechazar
-              </button>
-            }
+@if (shouldShowApprovalButtons()) {
+  <div class="approval-buttons">
+    @if (getFlowButton() === 'enviar-validar') {
+      <button mat-raised-button color="accent" (click)="enviarAValidar()">
+        <mat-icon>send</mat-icon>
+        Enviar a Validar
+      </button>
+    } @else if (getFlowButton() === 'aprobar') {
+      <button mat-raised-button color="primary" (click)="aprobar()">
+        <mat-icon>check_circle</mat-icon>
+        Aprobar
+      </button>
+      <button mat-raised-button color="warn" (click)="rechazar()">
+        <mat-icon>cancel</mat-icon>
+        Rechazar
+      </button>
+    } @else if (getFlowButton() === 'validar') {
+      <button mat-raised-button color="primary" (click)="validar()">
+        <mat-icon>verified</mat-icon>
+        Validar
+      </button>
+      <button mat-raised-button color="warn" (click)="rechazar()">
+        <mat-icon>cancel</mat-icon>
+        Rechazar
+      </button>
+    }
 
-            <!-- Dashboard solo si hay flujo activo -->
-            <button mat-raised-button (click)="openDashboard()">
-              <mat-icon>dashboard</mat-icon>
-              Dashboard
-            </button>
-          </div>
-        }
+    <!-- Dashboard SOLO en status 001 o 002 -->
+    @if (shouldShowDashboard()) {
+      <button mat-raised-button (click)="openDashboard()">
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </button>
+    }
+  </div>
+}
 
         <!-- Solo Generar Reporte siempre visible -->
         <div class="standard-buttons">

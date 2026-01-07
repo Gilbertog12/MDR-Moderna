@@ -96,6 +96,8 @@ export class TreeSidebarComponent implements OnInit, AfterViewChecked {
    */
   navigateToNode(node: TreeNode): void {
     this.selectedNode.set(node);
+    console.table(node.perfiles)
+    localStorage.setItem('allow' , this.getPerfil(node.perfiles) )
 
     // Construir la ruta usando el mapper
     const route = TreeNodeMapper.buildRoute(node.key, node.level as HierarchyLevel);
@@ -110,6 +112,40 @@ export class TreeSidebarComponent implements OnInit, AfterViewChecked {
     // Navegar
     console.log(this.router.navigate([ route]));
   }
+
+  public getPerfil(node: string): string {
+
+    if (node[0] == 'Y') {
+
+      return 'administrador'
+
+    }
+
+    switch(node){
+
+      case 'NNYYN':
+        return 'creacion'
+        break;
+      case 'NNYYY':
+        return 'validacion'
+        break
+      case 'NNNYY':
+        return 'validacion'
+        break
+      case 'NYYYN':
+        return 'aprobacion'
+        break
+      case 'NYYNN':
+        return 'aprobacion'
+        break
+
+      default :
+        return ''
+        break
+    }
+
+  }
+
 
   /**
    * Refresca el árbol completo

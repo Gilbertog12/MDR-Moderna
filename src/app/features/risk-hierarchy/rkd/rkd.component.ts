@@ -241,8 +241,8 @@ export class RkdComponent implements OnInit {
             dimensionStatusId: atts[22]?.value || '',
             key: atts[23]?.value || '',
             statusParent: atts[24]?.value || '',
-            canAdd: atts[25]?.value || 'N',
-            canModify: atts[26]?.value || 'N'
+            canAdd: atts[17]?.value === 'true' ? 'Y' : 'N',
+            canModify: atts[18]?.value === 'true' ? 'Y' : 'N'
           });
 
           // Guardar en localStorage

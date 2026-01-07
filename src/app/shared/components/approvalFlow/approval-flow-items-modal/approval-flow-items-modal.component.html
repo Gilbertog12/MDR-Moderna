@@ -1,0 +1,348 @@
+<!--
+  APPROVAL FLOW ITEMS MODAL - Template HTML
+  Modal reutilizable para mostrar items pendientes según tipo
+-->
+
+<div class="items-modal-container">
+
+  <!-- Header -->
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>
+          @switch (config.tipo) {
+            @case ('EV') { build_circle }
+            @case ('RE') { cancel }
+            @case ('IV') { fact_check }
+            @case ('IA') { check_circle }
+          }
+        </mat-icon>
+      </div>
+      <div class="header-text">
+        <h2>{{ config.titulo }}</h2>
+        <p class="subtitle">{{ config.nivel }}: {{ config.descripcion }}</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="cerrar()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando items...</p>
+    </div>
+  }
+
+  <!-- Content -->
+  @else {
+    <div class="modal-content">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+
+        <!-- Filtro por Entidad -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Filtrar por entidad o descripción</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filtroEntidad"
+            (ngModelChange)="filtrarPorEntidad()"
+            placeholder="Ej: AREA, PROCESO..."
+            autocomplete="off">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (filtroEntidad()) {
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="limpiarFiltro()"
+              matTooltip="Limpiar filtro">
+              <mat-icon>clear</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <!-- Contador -->
+        <div class="counter-section">
+          @if (config.permitirSeleccion) {
+            <div class="selection-counter">
+              <mat-icon>check_box</mat-icon>
+              <span class="counter-text">
+                <strong>{{ contadorSeleccionados() }}</strong> / {{ totalItems() }}
+              </span>
+            </div>
+          } @else {
+            <div class="total-counter">
+              <mat-icon>list</mat-icon>
+              <span class="counter-text">
+                <strong>{{ totalItems() }}</strong> items
+              </span>
+            </div>
+          }
+        </div>
+
+        <!-- Botones de Selección -->
+        @if (config.permitirSeleccion) {
+          <div class="selection-actions">
+            <button
+              mat-stroked-button
+              (click)="toggleTodos(true)"
+              [disabled]="itemsFiltrados().length === 0">
+              <mat-icon>select_all</mat-icon>
+              Marcar Todos
+            </button>
+            <button
+              mat-stroked-button
+              (click)="desmarcarTodos()"
+              [disabled]="!haySeleccion()">
+              <mat-icon>clear</mat-icon>
+              Desmarcar Todos
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Tabla con Virtual Scrolling -->
+      <div class="table-container">
+
+        @if (itemsFiltrados().length === 0) {
+          <!-- Empty State -->
+          <div class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            @if (filtroEntidad()) {
+              <h3>Sin Resultados</h3>
+              <p>No hay items que coincidan con "{{ filtroEntidad() }}"</p>
+              <button mat-stroked-button (click)="limpiarFiltro()">
+                <mat-icon>clear</mat-icon>
+                Limpiar Filtro
+              </button>
+            } @else {
+              <h3>Sin Items</h3>
+              <p>No hay items {{ config.titulo.toLowerCase() }}</p>
+            }
+          </div>
+        } @else {
+          <!-- Virtual Scroll Viewport -->
+          <cdk-virtual-scroll-viewport
+            itemSize="60"
+            class="virtual-scroll-viewport">
+
+            <table class="items-table">
+              <thead>
+                <tr>
+                  @if (config.permitirSeleccion) {
+                    <th class="col-checkbox">
+                      <mat-checkbox
+                        [checked]="haySeleccion() && contadorSeleccionados() === itemsFiltrados().length"
+                        [indeterminate]="haySeleccion() && contadorSeleccionados() < itemsFiltrados().length"
+                        (change)="toggleTodos($event.checked)">
+                      </mat-checkbox>
+                    </th>
+                  }
+                  <th class="col-accion">Acción</th>
+                  <th class="col-jerarquia">Jerarquía</th>
+                  @if (config.mostrarComentarios) {
+                    <th class="col-comentarios">Comentarios</th>
+                  }
+                  <th class="col-fecha">Fecha</th>
+                  <th class="col-entidad">Entidad</th>
+                  <th class="col-descripcion">Descripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *cdkVirtualFor="let item of itemsFiltrados()"
+                  [class.selected]="item.check"
+                  class="item-row">
+
+                  <!-- Checkbox -->
+                  @if (config.permitirSeleccion) {
+                    <td class="col-checkbox">
+                      <mat-checkbox
+                        [(ngModel)]="item.check"
+                        (change)="toggleItem(item)">
+                      </mat-checkbox>
+                    </td>
+                  }
+
+                  <!-- Acción -->
+                  <td class="col-accion">
+                    <div class="accion-badge" [class]="getAccionColor(item.accion)">
+                      <mat-icon [matTooltip]="item.accion">
+                        {{ getAccionIcon(item.accion) }}
+                      </mat-icon>
+                      <span>{{ item.accion }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Jerarquía -->
+                  <td class="col-jerarquia">
+                    <div class="jerarquia-info">
+                      <span class="jerarquia-nivel">{{ item.jerarquia }}</span>
+                      <span class="jerarquia-ruta">{{ item.rutaJerarquia }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Comentarios -->
+                  @if (config.mostrarComentarios) {
+                    <td class="col-comentarios">
+                      @if (config.comentariosEditables) {
+                        <!-- Comentarios EDITABLES (solo IA) -->
+                        <textarea
+                          [(ngModel)]="item.comentarios"
+                          class="comentario-textarea"
+                          rows="2"
+                          placeholder="Agregar comentarios..."
+                          maxlength="500"
+                          [disabled]="!item.check">
+                        </textarea>
+                      } @else {
+                        <!-- Comentarios READONLY -->
+                        <div class="comentario-readonly">
+                          {{ item.comentarios || '-' }}
+                        </div>
+                      }
+                    </td>
+                  }
+
+                  <!-- Fecha -->
+                  <td class="col-fecha">
+                    <div class="fecha-info">
+                      <mat-icon>event</mat-icon>
+                      <span>{{ item.fecha }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Entidad -->
+                  <td class="col-entidad">
+                    <div class="entidad-info">
+                      <strong>{{ item.entidad }}</strong>
+                      <span class="entidad-ruta">{{ item.rutaJerarquia }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Descripción -->
+                  <td class="col-descripcion">
+                    <a
+                      class="descripcion-link"
+                      (click)="navegarAItem(item)"
+                      matTooltip="Click para ir al item">
+                      {{ item.descripcion }}
+                      <mat-icon class="nav-icon">arrow_forward</mat-icon>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </cdk-virtual-scroll-viewport>
+        }
+      </div>
+
+      <!-- Footer con Botones de Acción -->
+      <div class="modal-footer">
+
+        <!-- Botones de Acción según configuración -->
+        <div class="action-buttons">
+
+          <!-- Botón: Validar (solo IV) -->
+          @if (config.botones.validar) {
+            <button
+              mat-raised-button
+              color="accent"
+              class="action-button"
+              [disabled]="!haySeleccion() || procesando()"
+              (click)="validar()">
+              @if (procesando()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Validando...</span>
+              } @else {
+                <mat-icon>fact_check</mat-icon>
+                <span>Validar</span>
+                @if (haySeleccion()) {
+                  <span class="button-badge">{{ contadorSeleccionados() }}</span>
+                }
+              }
+            </button>
+          }
+
+          <!-- Botón: Aprobar (solo IA) -->
+          @if (config.botones.aprobar) {
+            <button
+              mat-raised-button
+              color="primary"
+              class="action-button"
+              [disabled]="!haySeleccion() || procesando()"
+              (click)="aprobar()">
+              @if (procesando()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Aprobando...</span>
+              } @else {
+                <mat-icon>check_circle</mat-icon>
+                <span>Aprobar</span>
+                @if (haySeleccion()) {
+                  <span class="button-badge">{{ contadorSeleccionados() }}</span>
+                }
+              }
+            </button>
+          }
+
+          <!-- Botón: Rechazar (IV y IA) -->
+          @if (config.botones.rechazar) {
+            <button
+              mat-raised-button
+              color="warn"
+              class="action-button"
+              [disabled]="!haySeleccion() || procesando()"
+              (click)="rechazar()">
+              @if (procesando()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Rechazando...</span>
+              } @else {
+                <mat-icon>cancel</mat-icon>
+                <span>Rechazar</span>
+                @if (haySeleccion()) {
+                  <span class="button-badge">{{ contadorSeleccionados() }}</span>
+                }
+              }
+            </button>
+          }
+
+          <!-- Botón: Restaurar (solo RE) -->
+          @if (config.botones.restaurar) {
+            <button
+              mat-raised-button
+              color="accent"
+              class="action-button"
+              [disabled]="!haySeleccion() || procesando()"
+              (click)="restaurar()">
+              @if (procesando()) {
+                <mat-spinner diameter="20"></mat-spinner>
+                <span>Restaurando...</span>
+              } @else {
+                <mat-icon>restore</mat-icon>
+                <span>Restaurar</span>
+                @if (haySeleccion()) {
+                  <span class="button-badge">{{ contadorSeleccionados() }}</span>
+                }
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Botón: Cerrar -->
+        <button
+          mat-stroked-button
+          class="close-action"
+          (click)="cerrar()"
+          [disabled]="procesando()">
+          <mat-icon>close</mat-icon>
+          <span>Cerrar</span>
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>

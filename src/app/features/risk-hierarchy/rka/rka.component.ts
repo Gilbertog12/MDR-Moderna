@@ -13,6 +13,9 @@ import { AlertService } from '../../../shared/services/alert.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../../shared/services/auth/auth.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
+import { DashboardComponent } from '../../../shared/components/approvalFlow/dashboard/dashboard.component';
+
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 interface AreaDetail {
   offset: string;
@@ -78,7 +81,8 @@ interface ProcesoChild {
     MatTableModule,
     MatTabsModule,
     MatProgressSpinnerModule,
-    MatTooltipModule],
+    MatTooltipModule,
+  MatDialogModule  ],
   templateUrl: './rka.component.html',
   styleUrl: './rka.component.scss'
 })
@@ -127,7 +131,8 @@ export class RkaComponent {
     private router: Router,
     private hierarchyService: HierarchyService,
     private alertService: AlertService,
-    private approvalFlowService: ApprovalFlowService
+    private approvalFlowService: ApprovalFlowService,
+     private dialog: MatDialog
   ) {}
 
    ngOnInit() {
@@ -150,13 +155,13 @@ export class RkaComponent {
   }
 
    private loadUserPermissions(): void {
-     let allow = localStorage.getItem('allow') || '';
+    let allow = localStorage.getItem('allow') || '';
+  console.log('🔍 [loadUserPermissions] allow:', allow);
 
-  // 🔧 TEMPORAL: Si allow está vacío, simular administrador
   if (!allow || allow.trim() === '') {
-
     allow = 'administrador';
     localStorage.setItem('allow', allow);
+    console.log('✅ [loadUserPermissions] seteado a:', allow);
   }
 
   this.userProfile.set(allow);
@@ -178,22 +183,33 @@ export class RkaComponent {
    */
   private determineFlowButton(): void {
       const area = this.areaDetail();
-    const allow = localStorage.getItem('allow') || '';
+  const allow = localStorage.getItem('allow') || '';
 
-    if (!area || !allow) {
+  console.group('🔍 [determineFlowButton]');
+  console.log('area:', area);
+  console.log('allow:', allow);
+  console.log('statusId:', area?.statusId);
+  console.log('canAdd:', area?.canAdd);
 
-      this.currentFlowButton.set('');
-      this.showButtons.set(false);
-      return;
-    }
+  if (!area || !allow) {
+    console.log('❌ PROBLEMA: No hay area o allow');
+    console.groupEnd();
+    this.currentFlowButton.set('');
+    this.showButtons.set(false);
+    return;
+  }
 
-    const parameters = [allow, area.statusId, area.canAdd];
-    const buttonType = this.approvalFlowService.botonesFlujoAprobacion(parameters);
+  const parameters = [allow, area.statusId, area.canAdd];
+  console.log('parameters:', parameters);
 
+  const buttonType = this.approvalFlowService.botonesFlujoAprobacion(parameters);
+  console.log('buttonType:', buttonType);
 
+  this.currentFlowButton.set(buttonType || '');
+  this.showButtons.set(!!buttonType);
 
-    this.currentFlowButton.set(buttonType || '');
-    this.showButtons.set(!!buttonType);
+  console.log('✅ showButtons:', this.showButtons());
+  console.groupEnd();
 
 
   }
@@ -207,6 +223,14 @@ export class RkaComponent {
 
     return this.currentFlowButton();
   }
+
+  shouldShowDashboard(): boolean {
+  const area = this.areaDetail();
+  if (!area) return false;
+
+  const status = area.statusId;
+  return status === '001' || status === '002';
+}
 
   /**
    * Lógica del legacy: botonesFlujoAprobacion()
@@ -371,7 +395,7 @@ export class RkaComponent {
     if (!uuidElement) {
       throw new Error('No se pudo obtener UUID de validación');
     }
-
+    console.log('UUID : '+uuidElement.atts[0].value);
     return uuidElement.atts[0].value;
   }
 
@@ -382,40 +406,43 @@ export class RkaComponent {
  async loadAreaDetail(areaId: string): Promise<void> {
      this.isLoadingArea.set(true);
 
-    try {
-      const response = await firstValueFrom(
-        this.hierarchyService.getNodeDetail(1, [areaId])
-      );
+  try {
+    const response = await firstValueFrom(
+      this.hierarchyService.getNodeDetail(1, [areaId])
+    );
 
-      if (response?.success && response.data?.[0]) {
-        const atts = response.data[0].atts;
+    if (response?.success && response.data?.[0]) {
+      const atts = response.data[0].atts;
 
-        this.areaDetail.set({
-          offset: atts[0]?.value || '',
-          areaId: atts[1]?.value || '',
-          description: atts[2]?.value || '',
-          extendedDescription: atts[3]?.value || '',
-          position: atts[4]?.value || '',
-          positionDesc: atts[5]?.value || '',
-          classificationId: atts[6]?.value || '',
-          classificationDesc: atts[7]?.value || '',
-          pureRiskDesc: atts[8]?.value || '',
-          residualRiskDesc: atts[9]?.value || '',
-          status: atts[10]?.value || '',
-          version: atts[11]?.value || '',
-          statusId: atts[14]?.value || '',
-          key: atts[15]?.value || '',
-          statusParent: atts[16]?.value || '',
-          canAdd: atts[17]?.value || 'N',
-          canModify: atts[18]?.value || 'N'
-        });
-      }
-    } catch (error) {
-      console.error('Error loading area:', error);
-      this.alertService.error('Error al cargar el área');
-    } finally {
-      this.isLoadingArea.set(false);
+      this.areaDetail.set({
+        offset: atts[0]?.value || '',
+        areaId: atts[1]?.value || '',
+        description: atts[2]?.value || '',
+        extendedDescription: atts[3]?.value || '',
+        position: atts[4]?.value || '',
+        positionDesc: atts[5]?.value || '',
+        classificationId: atts[6]?.value || '',
+        classificationDesc: atts[7]?.value || '',
+        pureRiskDesc: atts[8]?.value || '',
+        residualRiskDesc: atts[9]?.value || '',
+        status: atts[10]?.value || '',
+        version: atts[11]?.value || '',
+        statusId: atts[14]?.value || '',
+        key: atts[15]?.value || '',
+        statusParent: atts[16]?.value || '',
+       canAdd: atts[17]?.value === 'true' ? 'Y' : 'N',
+canModify: atts[18]?.value === 'true' ? 'Y' : 'N'
+      });
+
+      // ✅ AGREGAR ESTE LOG AQUÍ
+      console.log('✅ [loadAreaDetail] statusId:', atts[14]?.value);
     }
+  } catch (error) {
+    console.error('Error loading area:', error);
+    this.alertService.error('Error al cargar el área');
+  } finally {
+    this.isLoadingArea.set(false);
+  }
   }
 
   async loadProcessesWithRisks(areaId: string): Promise<void> {
@@ -644,8 +671,38 @@ goToProcess(process: ProcessWithRisk): void {
 
 
 
-openDashboard(): void {
-  this.alertService.toast('success','Dashboard en desarrollo');
+async openDashboard(): Promise<void> {
+   const area = this.areaDetail();
+
+  if (!area) {
+    await this.alertService.warning(
+      'Sin Datos',
+      'Debe cargar un área primero'
+    );
+    return;
+  }
+
+  // Abrir dashboard
+  const dialogRef = this.dialog.open(DashboardComponent, {
+    width: '900px',
+    maxWidth: '95vw',
+    maxHeight: '90vh',
+    disableClose: false,
+    data: {
+      key: area.key,
+      status: area.statusId || '',
+      nivel: 'Área',
+      descripcion: area.description || ''
+    }
+  });
+
+  // Manejar cierre del modal
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.refresh) {
+      console.log('♻️ Recargando datos del área');
+      this.loadData(this.areaId());
+    }
+  });
 }
 
 }

@@ -1,0 +1,221 @@
+<!--
+  APPROVAL FLOW DASHBOARD - Template HTML
+  Dashboard principal con contadores y acciones del flujo de aprobación
+-->
+
+<div class="dashboard-container">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>assessment</mat-icon>
+      </div>
+      <div class="header-text">
+        <h2>Tablero de Flujo de Aprobación</h2>
+        <p class="subtitle">{{ data.nivel }}: {{ data.descripcion }}</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="cerrar()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando contadores...</p>
+    </div>
+  }
+
+  <!-- Dashboard Content -->
+  @else {
+    <div class="dashboard-content">
+
+      <!-- Cards de Contadores -->
+      <div class="counters-grid">
+
+        <!-- Card: Items en Construcción -->
+        <mat-card class="counter-card construction"
+                  [class.has-items]="hayItemsPendientes()"
+                  (click)="verItemsEnConstruccion()">
+          <mat-card-header>
+            <div class="card-header-content">
+              <mat-icon class="card-icon">build_circle</mat-icon>
+              <div class="card-title">
+                <h3>Items en Construcción</h3>
+                <span class="card-subtitle">Pendientes de enviar</span>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="counter-display">
+              <span class="counter-number">{{ contadores().ENVIAR_A_VALIDAR_CONSTRUCCION }}</span>
+              <span class="counter-label">items</span>
+            </div>
+            @if (hayItemsPendientes()) {
+              <button mat-stroked-button color="primary" class="view-button">
+                <mat-icon>visibility</mat-icon>
+                Ver Detalle
+              </button>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card: Items Rechazados -->
+        <mat-card class="counter-card rejected"
+                  [class.has-items]="hayItemsRechazados()"
+                  (click)="verItemsRechazados()">
+          <mat-card-header>
+            <div class="card-header-content">
+              <mat-icon class="card-icon">cancel</mat-icon>
+              <div class="card-title">
+                <h3>Items Rechazados</h3>
+                <span class="card-subtitle">Requieren atención</span>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="counter-display">
+              <span class="counter-number">{{ contadores().RECHAZADO }}</span>
+              <span class="counter-label">items</span>
+            </div>
+            @if (hayItemsRechazados()) {
+              <button mat-stroked-button color="warn" class="view-button">
+                <mat-icon>visibility</mat-icon>
+                Ver Detalle
+              </button>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card: Items Por Validar -->
+        <mat-card class="counter-card validate"
+                  [class.has-items]="hayItemsPorValidar()"
+                  (click)="verItemsPorValidar()">
+          <mat-card-header>
+            <div class="card-header-content">
+              <mat-icon class="card-icon">fact_check</mat-icon>
+              <div class="card-title">
+                <h3>Items Por Validar</h3>
+                <span class="card-subtitle">Esperando validación</span>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="counter-display">
+              <span class="counter-number">{{ contadores().POR_VALIDAR }}</span>
+              <span class="counter-label">items</span>
+            </div>
+            @if (hayItemsPorValidar()) {
+              <button mat-stroked-button color="accent" class="view-button">
+                <mat-icon>visibility</mat-icon>
+                Ver Detalle
+              </button>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card: Items Por Aprobar -->
+        <mat-card class="counter-card approve"
+                  [class.has-items]="hayItemsPorAprobar()"
+                  (click)="verItemsPorAprobar()">
+          <mat-card-header>
+            <div class="card-header-content">
+              <mat-icon class="card-icon">check_circle</mat-icon>
+              <div class="card-title">
+                <h3>Items Por Aprobar</h3>
+                <span class="card-subtitle">Aprobación final</span>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="counter-display">
+              <span class="counter-number">{{ contadores().POR_APROBAR }}</span>
+              <span class="counter-label">items</span>
+            </div>
+            @if (hayItemsPorAprobar()) {
+              <button mat-stroked-button color="accent" class="view-button">
+                <mat-icon>visibility</mat-icon>
+                Ver Detalle
+              </button>
+            }
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+
+      <!-- Resumen Total -->
+      <div class="summary-section">
+        <div class="summary-card">
+          <mat-icon>analytics</mat-icon>
+          <div class="summary-content">
+            <span class="summary-label">Total de Items en Flujo</span>
+            <span class="summary-value">{{ totalItems() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones Globales -->
+      <div class="actions-section">
+
+        <!-- Botón: Enviar a Validar -->
+        <button
+          mat-raised-button
+          color="primary"
+          class="action-button primary-action"
+          [disabled]="!hayItemsPendientes() || enviandoValidar()"
+          (click)="enviarAValidar()">
+          @if (enviandoValidar()) {
+            <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+            <span>Enviando...</span>
+          } @else {
+            <mat-icon>send</mat-icon>
+            <span>Enviar a Validar</span>
+            @if (hayItemsPendientes()) {
+              <span class="button-badge">{{ contadores().ENVIAR_A_VALIDAR }}</span>
+            }
+          }
+        </button>
+
+        <!-- Botón: Generar Reporte -->
+        <button
+          mat-raised-button
+          color="accent"
+          class="action-button"
+          [disabled]="generandoReporte()"
+          (click)="generarReporte()">
+          @if (generandoReporte()) {
+            <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+            <span>Generando...</span>
+          } @else {
+            <mat-icon>description</mat-icon>
+            <span>Generar Reporte</span>
+          }
+        </button>
+
+        <!-- Botón: Cerrar -->
+        <button
+          mat-stroked-button
+          class="action-button"
+          (click)="cerrar()">
+          <mat-icon>close</mat-icon>
+          <span>Cerrar</span>
+        </button>
+
+      </div>
+
+      <!-- Info adicional -->
+      @if (!hayItemsPendientes() && totalItems() === 0) {
+        <div class="empty-state">
+          <mat-icon>check_circle_outline</mat-icon>
+          <h3>Sin Items en Flujo</h3>
+          <p>No hay items pendientes de aprobación en este nodo.</p>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

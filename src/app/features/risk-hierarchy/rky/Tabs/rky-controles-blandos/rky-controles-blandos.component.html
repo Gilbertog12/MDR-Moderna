@@ -1,0 +1,149 @@
+<!-- ==================== HEADER CON BOTÓN AGREGAR ==================== -->
+<div class="tab-header">
+  <div class="header-left">
+    <mat-icon class="header-icon">checklist</mat-icon>
+    <h3 class="header-title">Controles Blandos</h3>
+    <span class="header-count" [class.has-items]="hasControles()">
+      {{ controlesCount() }}
+    </span>
+  </div>
+
+  <div class="header-right">
+    <button
+      mat-raised-button
+      color="primary"
+      class="add-button"
+      (click)="openAddControlBlandoModal()"
+      [disabled]="disabled || isLoading()"
+      matTooltip="Agregar nuevos controles blandos"
+    >
+      <mat-icon>add_circle</mat-icon>
+      Agregar Control Blando
+    </button>
+  </div>
+</div>
+
+<!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+<div class="tab-content">
+
+  <!-- ==================== LOADING STATE ==================== -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-icon class="loading-icon rotating">sync</mat-icon>
+      <p>Cargando controles blandos...</p>
+    </div>
+  }
+
+  <!-- ==================== TABLA DE CONTROLES ==================== -->
+  @else if (hasControles()) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <div class="table-container">
+          <table mat-table [dataSource]="controlesBlandos()" class="controles-table">
+
+            <!-- Código Column -->
+            <ng-container matColumnDef="codigo">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-icon class="header-icon">tag</mat-icon>
+                Código
+              </th>
+              <td mat-cell *matCellDef="let control">
+                <span class="codigo-badge">{{ control.codigo }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Descripción Column -->
+            <ng-container matColumnDef="descripcion">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-icon class="header-icon">description</mat-icon>
+                Descripción
+              </th>
+              <td mat-cell *matCellDef="let control">
+                <span class="descripcion-text">{{ control.descripcion }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Tipo Column -->
+            <ng-container matColumnDef="tipo">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-icon class="header-icon">category</mat-icon>
+                Tipo
+              </th>
+              <td mat-cell *matCellDef="let control">
+                @if (control.tipo) {
+                  <span class="tipo-badge">{{ control.tipo }}</span>
+                } @else {
+                  <span class="no-data">N/A</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Acciones Column -->
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef class="actions-column">
+                <mat-icon class="header-icon">settings</mat-icon>
+                Acciones
+              </th>
+              <td mat-cell *matCellDef="let control" class="actions-column">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  class="delete-button"
+                  (click)="deleteControlBlando(control)"
+                  [disabled]="disabled"
+                  matTooltip="Eliminar control blando"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <!-- Header y Rows -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns;"
+              class="table-row"
+            ></tr>
+          </table>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="table-footer">
+          <mat-icon class="footer-icon">info</mat-icon>
+          <span class="footer-text">
+            {{ controlesCount() }} control(es) blando(s) asociado(s)
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- ==================== EMPTY STATE ==================== -->
+  @else {
+    <mat-card class="empty-card">
+      <mat-card-content>
+        <div class="empty-state">
+          <mat-icon class="empty-icon">info_outline</mat-icon>
+          <h3 class="empty-title">No hay controles blandos asociados</h3>
+          <p class="empty-message">
+            Esta consecuencia no tiene controles blandos asociados.
+            <br>
+            Haga clic en el botón "Agregar Control Blando" para comenzar.
+          </p>
+          <button
+            mat-raised-button
+            color="primary"
+            class="empty-action-button"
+            (click)="openAddControlBlandoModal()"
+            [disabled]="disabled"
+          >
+            <mat-icon>add_circle</mat-icon>
+            Agregar Primer Control
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+</div>

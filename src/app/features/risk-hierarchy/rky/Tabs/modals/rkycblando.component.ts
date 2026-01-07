@@ -14,9 +14,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HierarchyService } from '../../../../../layout/rkmain/services/hierarchy.service';
+import { AlertService } from '../../../../../shared/services/alert.service';
 
-import { HierarchyService } from '../../../../layout/rkmain/services/hierarchy.service';
-import { AlertService } from '../../../../shared/services/alert.service';
 
 
 /**
@@ -138,11 +138,70 @@ export class RkycblandoComponent implements OnInit {
   // ==================== LIFECYCLE ====================
   /**
    * Inicialización del componente
-   * Configura el estado inicial (tabla vacía o con búsqueda por defecto)
+   * Carga controles disponibles al abrir el modal
    */
   ngOnInit(): void {
-    // Opcionalmente cargar datos iniciales
-    // this.loadControles();
+    // Cargar controles disponibles al abrir
+    this.loadControles();
+  }
+
+  // ==================== DATA MAPPING ====================
+  /**
+   * Mapea la respuesta del backend (formato atts[]) a la interface ControlBlandoDisponible
+   */
+  private mapControlBlandoFromAtts(item: any): ControlBlandoDisponible | null {
+    try {
+      if (!item || !item.atts || !Array.isArray(item.atts)) {
+        console.warn('Item inválido, no tiene atts[]:', item);
+        return null;
+      }
+
+      const atts = item.atts;
+      const control: ControlBlandoDisponible = {
+        id: '',
+        descripcion: ''
+      };
+
+      // Mapear cada atributo según los nombres reales del backend
+      for (const att of atts) {
+        const name = att.name?.toLowerCase();
+        const value = att.value || '';
+
+        switch (name) {
+          // ID del control blando
+          case 'cblandoid':
+            control.id = value;
+            break;
+
+          // Descripción
+          case 'cblandodescripcion':
+            control.descripcion = value;
+            break;
+
+          // Código (si existe en disponibles)
+          case 'codigo':
+            control.codigo = value;
+            break;
+
+          // Tipo (familia del control)
+          case 'cblandofamiliadesc':
+          case 'tipo':
+            control.tipo = value;
+            break;
+        }
+      }
+
+      // Validar que tenga los campos mínimos requeridos
+      if (!control.id) {
+        console.warn('Control blando sin ID:', control);
+        return null;
+      }
+
+      return control;
+    } catch (error) {
+      console.error('Error mapeando control blando disponible:', error, item);
+      return null;
+    }
   }
 
   // ==================== SEARCH METHODS ====================
@@ -154,12 +213,6 @@ export class RkycblandoComponent implements OnInit {
   loadControles(reset: boolean = false): void {
     const term = this.searchTerm().trim();
 
-    // Si no hay término de búsqueda, limpiar resultados
-    if (!term && reset) {
-      this.controlesBlandos.set([]);
-      return;
-    }
-
     this.hierarchyService.getControlesBlandosDisponibles(
       this.data.areaId,
       this.data.procesoId,
@@ -169,24 +222,34 @@ export class RkycblandoComponent implements OnInit {
       this.data.dimensionId,
       this.data.riesgoId,
       this.data.consecuenciaId,
-      term
+      term || ''  // Permitir búsqueda vacía para cargar todos
     ).subscribe({
       next: (response) => {
-        if (response.success && response.data) {
-          this.controlesBlandos.set(response.data);
+        console.log('📥 Respuesta disponibles:', response);
 
-          if (response.data.length === 0) {
+        if (response.success && response.data) {
+          // Mapear cada item del backend al formato de la interface
+          const controlesMapeados = response.data
+            .map((item: any) => this.mapControlBlandoFromAtts(item))
+            .filter((control: ControlBlandoDisponible | null) => control !== null) as ControlBlandoDisponible[];
+
+          console.log('✅ Controles disponibles mapeados:', controlesMapeados);
+          this.controlesBlandos.set(controlesMapeados);
+
+          if (controlesMapeados.length === 0 && term) {
             this.alertService.info(
               'Sin resultados',
-              'No se encontraron controles blandos con ese criterio de búsqueda'
+              `No se encontraron controles blandos con el criterio "${term}"`
             );
           }
         } else {
           this.controlesBlandos.set([]);
-          this.alertService.error(
-            'Error',
-            response.message || 'No se pudieron cargar los controles blandos'
-          );
+          if (response.message) {
+            this.alertService.error(
+              'Error',
+              response.message || 'No se pudieron cargar los controles blandos'
+            );
+          }
         }
       },
       error: (error) => {

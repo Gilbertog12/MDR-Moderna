@@ -1,13 +1,10 @@
-@import "../../../../shared/styles/variables";
-@import "../../../../shared/styles/mixins";
-
 :host {
   display: block;
 }
 
 .app-header-toolbar {
-  background: $gradient-secondary;
-  color: $bg-white;
+  background: linear-gradient(135deg, #175641 0%, #1a6d4f 100%);
+  color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 0 1rem;
   display: flex;
@@ -21,7 +18,7 @@
   // Asegurar que los botones e íconos sean blancos
   button,
   mat-icon {
-    color: $bg-white;
+    color: white;
   }
 }
 
@@ -36,7 +33,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: $bg-white;
+    color: white;
     padding: 0.5rem 1rem;
     transition: all 0.2s ease;
 
@@ -110,7 +107,7 @@
     }
 
     mat-icon {
-      color: $bg-white;
+      color: white;
     }
   }
 
@@ -143,7 +140,7 @@
     gap: 0.75rem;
     padding: 0.5rem 1rem;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: $border-radius-md;
+    border-radius: 8px;
     margin-right: 0.5rem;
     transition: all 0.2s ease;
 
@@ -164,7 +161,7 @@
         font-size: 24px;
         width: 24px;
         height: 24px;
-        color: $bg-white;
+        color: white;
       }
     }
 
@@ -177,7 +174,7 @@
         font-weight: 600;
         font-size: 0.875rem;
         line-height: 1.2;
-        color: $bg-white;
+        color: white;
       }
 
       .user-meta {
@@ -190,7 +187,7 @@
       .user-roles {
         font-size: 0.7rem;
         font-weight: 500;
-        color: $color-info-light;
+        color: #ffd54f;
         line-height: 1.2;
         letter-spacing: 0.3px;
       }
@@ -202,7 +199,7 @@
   }
 
   button {
-    color: $bg-white;
+    color: white;
     transition: all 0.2s ease;
 
     &:hover {
@@ -210,7 +207,7 @@
     }
 
     mat-icon {
-      color: $bg-white;
+      color: white;
     }
   }
 

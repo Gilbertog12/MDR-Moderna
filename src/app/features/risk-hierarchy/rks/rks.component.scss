@@ -4,10 +4,12 @@
 // ============================================================================
 // BREADCRUMBS DE JERARQUÍA
 // ============================================================================
+@import '../../../shared/styles/variables';
+@import '../../../shared/styles/mixins';
 .hierarchy-breadcrumb {
-  background-color: white;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 12px 24px;
+  background-color: $text-white;
+  border-bottom: 1px solid $border-color;
+  padding: $spacing-sm 24px;
 
   .breadcrumb-nav {
     .breadcrumb-list {
@@ -16,13 +18,13 @@
       list-style: none;
       margin: 0;
       padding: 0;
-      gap: 8px;
+      gap: $spacing-sm;
 
       .breadcrumb-item {
         display: flex;
         align-items: center;
         gap: 6px;
-        color: #666;
+        color: $text-light;
         font-size: 14px;
 
         &.clickable {
@@ -30,12 +32,12 @@
           transition: color 0.2s ease;
 
           &:hover {
-            color: #1976d2;
+            color: $color-primary;
           }
         }
 
         &.current {
-          color: #1976d2;
+          color: $color-primary;
           font-weight: 500;
         }
 
@@ -47,7 +49,7 @@
       }
 
       .breadcrumb-separator {
-        color: #ccc;
+        color: $color-gray-ccc;
 
         mat-icon {
           font-size: 16px;
@@ -66,23 +68,23 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background-color: $bg-gray-100;
 }
 
 // ============================================================================
 // HEADER DEL SUBPROCESO (Sección azul superior con degradado)
 // ============================================================================
 .area-header {
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  color: white;
-  padding: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: $gradient-header;
+  color: $text-white;
+  padding: $spacing-xl;
+  box-shadow: $shadow-sm;
 
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    gap: $spacing-lg;
 
     .header-left {
       flex: 1;
@@ -106,7 +108,7 @@
 
     .header-actions {
       display: flex;
-      gap: 12px;
+      gap: $spacing-sm;
 
       button {
         mat-icon {
@@ -123,16 +125,16 @@
 .info-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 20px;
+  gap: $spacing-md;
+  padding: $spacing-lg;
 
   .info-card {
     mat-card-content {
-      padding: 16px;
+      padding: $spacing-md;
 
       .card-label {
         font-size: 12px;
-        color: #666;
+        color: $text-light;
         margin-bottom: 8px;
         text-transform: uppercase;
         font-weight: 500;
@@ -141,25 +143,25 @@
       .card-value {
         font-size: 18px;
         font-weight: 600;
-        color: #333;
+        color: $color-gray-900;
 
         &.risk-intolerable {
-          color: #d32f2f;
+          color: $risk-intolerable-bg;
         }
 
         &.risk-tolerable {
-          color: #f57c00;
+          color: $color-warning;
         }
 
         &.risk-insignificant {
-          color: #388e3c;
+          color: $risk-insignificant-bg;
         }
       }
 
       .status-badge {
         display: inline-block;
-        padding: 4px 12px;
-        border-radius: 12px;
+        padding: $spacing-xs 12px;
+        border-radius: $border-radius-lg;
         font-size: 12px;
         font-weight: 600;
 
@@ -167,28 +169,28 @@
         &.status-002,
         &.status-003,
         &.status-006 {
-          background-color: #e3f2fd;
-          color: #1976d2;
+          background-color: $bg-primary-light;
+          color: $color-primary;
         }
 
         &.status-004 {
-          background-color: #fff3e0;
-          color: #f57c00;
+          background-color: $bg-warning-light;
+          color: $color-warning;
         }
 
         &.status-007 {
-          background-color: #f3e5f5;
-          color: #7b1fa2;
+          background-color: $bg-purple-light;
+          color: $color-purple;
         }
 
         &.status-008 {
-          background-color: #e8f5e9;
-          color: #388e3c;
+          background-color: $bg-success-light;
+          color: $risk-insignificant-bg;
         }
 
         &.status-000 {
-          background-color: #ffebee;
-          color: #c62828;
+          background-color: $bg-danger-light;
+          color: $risk-intolerable-bg;
         }
       }
     }
@@ -199,18 +201,18 @@
 // SECCIÓN DE CONTENIDO (Contiene la tabla de actividades)
 // ============================================================================
 .content-section {
-  background-color: white;
+  background-color: $text-white;
   margin: 0 20px 20px 20px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: $spacing-lg;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
   overflow: hidden;
 
   .section-title {
     margin: 0 0 20px 0;
     font-size: 18px;
     font-weight: 500;
-    color: #333;
+    color: $color-gray-900;
   }
 }
 
@@ -235,18 +237,18 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: white;
+    background-color: $text-white;
 
     .main-header {
       th {
-        background-color: #f5f5f5;
-        padding: 12px 8px;
+        background-color: $bg-gray-100;
+        padding: $spacing-sm 8px;
         font-weight: 600;
-        border: 1px solid #ddd;
+        border: 1px solid $color-gray-ddd;
         text-align: center;
 
         &.group-header {
-          background-color: #e0e0e0;
+          background-color: $border-color;
           font-size: 12px;
           text-transform: uppercase;
         }
@@ -255,11 +257,11 @@
 
     .sub-header {
       th {
-        background-color: #f5f5f5;
-        padding: 8px;
+        background-color: $bg-gray-100;
+        padding: $spacing-sm;
         font-weight: 500;
         font-size: 11px;
-        border: 1px solid #ddd;
+        border: 1px solid $color-gray-ddd;
         text-align: center;
       }
     }
@@ -271,7 +273,7 @@
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: #f9f9f9;
+        background-color: $bg-gray-f9;
       }
 
       &.pending-delete {
@@ -282,15 +284,15 @@
 
     td {
       padding: 10px 8px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid $border-color;
       text-align: center;
 
       &.id-cell {
         font-weight: 600;
-        background-color: white;
+        background-color: $text-white;
 
         .status-indicator {
-          color: #f44336;
+          color: $color-danger;
           font-size: 11px;
           margin-left: 4px;
         }
@@ -300,7 +302,7 @@
         text-align: left;
         min-width: 250px;
         max-width: 350px;
-        background-color: white;
+        background-color: $text-white;
       }
 
       &.risk-cell {
@@ -312,26 +314,26 @@
         letter-spacing: 0.5px;
 
         &.risk-intolerable {
-          background-color: #e53935;
-          color: white;
+          background-color: $risk-intolerable-bg;
+          color: $text-white;
           font-weight: 700;
         }
 
         &.risk-tolerable {
-          background-color: #fdd835;
-          color: #333;
+          background-color: $color-info;
+          color: $color-gray-900;
           font-weight: 700;
         }
 
         &.risk-insignificant {
-          background-color: #43a047;
-          color: white;
+          background-color: $risk-insignificant-bg;
+          color: $text-white;
           font-weight: 700;
         }
 
         // Celdas vacías
         &:empty {
-          background-color: #f5f5f5;
+          background-color: $bg-gray-100;
         }
       }
     }
@@ -341,7 +343,7 @@
     position: sticky;
     left: 0;
     z-index: 5;
-    background-color: white;
+    background-color: $text-white;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
   }
 
@@ -349,7 +351,7 @@
     position: sticky;
     left: 60px;
     z-index: 5;
-    background-color: white;
+    background-color: $text-white;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
   }
 }
@@ -364,7 +366,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #666;
+  color: $text-light;
 
   mat-icon {
     font-size: 48px;
@@ -385,12 +387,12 @@
 // ============================================================================
 .header-actions {
   display: flex;
-  gap: 12px;
+  gap: $spacing-sm;
   align-items: center;
 
   .approval-buttons {
     display: flex;
-    gap: 8px;
+    gap: $spacing-sm;
     margin-right: 16px;
     padding-right: 16px;
     border-right: 1px solid rgba(255, 255, 255, 0.3);
@@ -398,7 +400,7 @@
 
   .standard-buttons {
     display: flex;
-    gap: 12px;
+    gap: $spacing-sm;
   }
 
   button {

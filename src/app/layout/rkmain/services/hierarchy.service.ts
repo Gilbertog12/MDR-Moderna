@@ -499,7 +499,7 @@ deleteChecklist(
       { name: 'dimensionId', value: dimensionId },
       { name: 'riesgoId', value: riesgoId },
       { name: 'consecuenciaId', value: consecuenciaId },
-      { name: 'cblandoId', value: cblandoIds.join(',') }
+      { name: 'cblandoId', value: cblandoIds.join(',').trim() }
     ];
 
     return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
@@ -520,7 +520,7 @@ deleteChecklist(
     cblandoId: string,
     version: string,
     status: string,
-    warning: boolean = false
+
   ): Observable<any> {
     const atts = [
       { name: 'scriptName', value: 'coemdr' },
@@ -538,9 +538,7 @@ deleteChecklist(
       { name: 'statusId', value: status }
     ];
 
-    if (warning) {
-      atts.push({ name: 'warning', value: 'Y' });
-    }
+
 
     return this.http.post<any>(this.apiUrl, { atts }, { headers: this.getHeaders() });
   }

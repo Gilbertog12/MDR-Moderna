@@ -10,6 +10,8 @@ import { HierarchyService } from '../../../layout/rkmain/services/hierarchy.serv
 import { AlertService } from '../../../shared/services/alert.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { DashboardComponent } from '../../../shared/components/approvalFlow/dashboard/dashboard.component';
 
 interface SubprocesoDetail {
   offset: string;
@@ -52,13 +54,14 @@ export interface ActividadWithRisk {
 @Component({
   selector: 'app-rks',
   imports: [
-     CommonModule,
+   CommonModule,
     RouterModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
   ],
   templateUrl: './rks.component.html',
   styleUrl: './rks.component.scss'
@@ -83,11 +86,12 @@ export class RksComponent {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private hierarchyService: HierarchyService,
-    private alertService: AlertService,
-    private approvalFlowService: ApprovalFlowService
+  private route: ActivatedRoute,
+  private router: Router,
+  private hierarchyService: HierarchyService,
+  private alertService: AlertService,
+  private approvalFlowService: ApprovalFlowService,
+  private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -192,8 +196,8 @@ export class RksComponent {
             subprocesoStatusId: atts[16]?.value || '',
             key: atts[17]?.value || '',
             statusParent: atts[18]?.value || '',
-            canAdd: atts[19]?.value || 'N',
-            canModify: atts[20]?.value || 'N'
+            canAdd: atts[19]?.value === 'true' ? 'Y' : 'N',
+            canModify: atts[20]?.value === 'true' ? 'Y' : 'N'
           });
 
           // Guardar en localStorage (igual que el legacy)
@@ -487,8 +491,38 @@ export class RksComponent {
   /**
    * Abre el dashboard (en desarrollo)
    */
-  openDashboard(): void {
-    this.alertService.toast('success', 'Dashboard en desarrollo');
+  async openDashboard(): Promise<void>  {
+    const subproceso = this.subprocesoDetail();
+
+  if (!subproceso) {
+    await this.alertService.warning(
+      'Sin Datos',
+      'Debe cargar un subproceso primero'
+    );
+    return;
+  }
+
+  // Abrir dashboard
+  const dialogRef = this.dialog.open(DashboardComponent, {
+    width: '900px',
+    maxWidth: '95vw',
+    maxHeight: '90vh',
+    disableClose: false,
+    data: {
+      key: subproceso.key,
+      status: subproceso.subprocesoStatusId || '',
+      nivel: 'Subproceso',
+      descripcion: subproceso.subprocesoDescripcion || ''
+    }
+  });
+
+  // Manejar cierre del modal
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.refresh) {
+      console.log('♻️ Recargando datos del subproceso');
+      this.loadData(this.areaId(), this.procesoId(), this.subprocesoId());
+    }
+  });
   }
 
   /**

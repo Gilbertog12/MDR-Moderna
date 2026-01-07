@@ -1,5 +1,5 @@
 // src/app/features/risk-hierarchy/rky/rky.component.ts
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal ,viewChild, computed} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -13,7 +13,7 @@ import { AlertService } from '../../../shared/services/alert.service';
 import { ApprovalFlowService } from '../../../layout/rkmain/services/approval-flow.service';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-
+import { RkyControlesBlandosComponent } from './Tabs/rky-controles-blandos/rky-controles-blandos.component';
 
 
 interface ConsecuenciaDetail {
@@ -83,7 +83,8 @@ interface ConsecuenciaDetail {
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatTabsModule
+    MatTabsModule,
+    RkyControlesBlandosComponent
   ],
   templateUrl: './rky.component.html',
   styleUrl: './rky.component.scss'
@@ -108,12 +109,9 @@ export class RkyComponent implements OnInit {
   currentFlowButton = signal<string>('');
   showButtons = signal<boolean>(false);
 
-   // Signals
-  readonly controlesBlandos = signal<any[]>([]);
-  readonly ids = signal<string[]>([]);
-  private readonly dialog = inject(MatDialog);
 
-  private destroy$ = new Subject<void>();
+
+ private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -122,6 +120,35 @@ export class RkyComponent implements OnInit {
     private alertService: AlertService,
     private approvalFlowService: ApprovalFlowService
   ) {}
+
+
+  readonly nodeIds = computed(() => [
+  this.areaId(),
+  this.procesoId(),
+  this.subprocesoId(),
+  this.actividadId(),
+  this.tareaId(),
+  this.dimensionId(),
+  this.riesgoId(),
+  this.consecuenciaId()
+]);
+
+readonly isDisabled = computed(() => {
+  // const detail = this.consecuenciaDetail();
+  // return detail?.consecuenciaStatusId !== '001';
+   const detail = this.consecuenciaDetail();
+  const statusId = detail?.consecuenciaStatusId;
+
+  // Habilitar en estos estados:
+  // '001' = Creación
+  // '002' = En construcción
+  // '008' = Otro estado que permita edición
+  return statusId !== '001' && statusId !== '002' && statusId !== '008';
+});
+
+
+private controlesBlandosTab = viewChild<RkyControlesBlandosComponent>('controlesBlandosTab');
+
 
   ngOnInit(): void {
     this.loadUserPermissions();
@@ -308,8 +335,8 @@ export class RkyComponent implements OnInit {
             consecuenciaStatusId: atts[36]?.value || '',
             key: atts[41]?.value || '',
             statusParent: atts[42]?.value || '',
-            canAdd: atts[43]?.value || 'N',
-            canModify: atts[44]?.value || 'N'
+            canAdd: atts[17]?.value === 'true' ? 'Y' : 'N',
+            canModify: atts[18]?.value === 'true' ? 'Y' : 'N'
           });
 
           // Guardar en localStorage
@@ -585,6 +612,10 @@ export class RkyComponent implements OnInit {
   onTabChange(index:number){
     switch(index){
       case 1 :
+         const tab = this.controlesBlandosTab();
+    if (tab) {
+      tab.refresh();
+    }
         return
     }
   }
@@ -594,54 +625,5 @@ export class RkyComponent implements OnInit {
   /**
    * Carga los controles blandos asociados
    */
-  loadControlesBlandos(): void {
-    const ids = this.ids();
 
-    this.hierarchyService.searchControlesBlandos(
-      ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7]
-    ).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.controlesBlandos.set(response.data);
-        }
-      },
-      error: (error) => {
-        this.alertService.error('Error', 'No se pudieron cargar los controles blandos');
-      }
-    });
-  }
-
-async openAddControlBlandoModal(): Promise<void> {
-  // ✅ Lazy loading del modal
-  const { RkycblandoComponent } = await import('./rkycblando/rkycblando.component');
-
-  const ids = this.ids();
-
-  const dialogRef = this.dialog.open(RkycblandoComponent, {
-    width: '900px',
-    maxWidth: '95vw',
-    maxHeight: '90vh',
-    disableClose: true,
-    data: {
-      title: 'Agregar Controles Blandos',
-      areaId: ids[0] || '',
-      procesoId: ids[1] || '',
-      subprocesoId: ids[2] || '',
-      actividadId: ids[3] || '',
-      tareaId: ids[4] || '',
-      dimensionId: ids[5] || '',
-      riesgoId: ids[6] || '',
-      consecuenciaId: ids[7] || '',
-      button_confirm: 'Guardar',
-      button_close: 'Cancelar'
-    }
-  });
-
-  dialogRef.afterClosed().subscribe((result) => {
-    if (result?.success) {
-      this.alertService.toast('success', 'Controles blandos agregados');
-      this.loadControlesBlandos();  // Recargar tabla
-    }
-  });
-}
 }

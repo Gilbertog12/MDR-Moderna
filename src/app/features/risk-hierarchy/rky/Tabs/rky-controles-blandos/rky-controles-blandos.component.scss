@@ -1,0 +1,462 @@
+// ==================== VARIABLES ====================
+$primary-color: #1976d2;
+$primary-dark: #115293;
+$success-color: #4caf50;
+$danger-color: #f44336;
+$warning-color: #ff9800;
+$text-primary: #212121;
+$text-secondary: #757575;
+$border-color: #e0e0e0;
+$background-light: #f5f5f5;
+$background-card: #ffffff;
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+$transition: all 0.3s ease;
+
+// ==================== TAB HEADER ====================
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(to right, #fafafa, #f5f5f5);
+  border-radius: 8px;
+  border-left: 4px solid $primary-color;
+  margin-bottom: 20px;
+  box-shadow: $shadow-sm;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .header-icon {
+      color: $primary-color;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .header-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: $text-primary;
+    }
+
+    .header-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 10px;
+      background: lighten($primary-color, 45%);
+      color: $primary-color;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: $transition;
+
+      &.has-items {
+        background: $primary-color;
+        color: white;
+      }
+    }
+  }
+
+  .header-right {
+    .add-button {
+      mat-icon {
+        margin-right: 8px;
+      }
+
+      &[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// ==================== TAB CONTENT ====================
+.tab-content {
+  padding: 0;
+}
+
+// ==================== LOADING STATE ====================
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  color: $text-secondary;
+
+  .loading-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: $primary-color;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+// Rotating animation
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating {
+  animation: rotate 1.5s linear infinite;
+}
+
+// ==================== TABLE CARD ====================
+.table-card {
+  box-shadow: $shadow-md;
+  border-radius: 8px;
+  overflow: hidden;
+
+  mat-card-content {
+    padding: 0 !important;
+  }
+}
+
+// ==================== TABLE CONTAINER ====================
+.table-container {
+  overflow-x: auto;
+  max-height: 600px;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-light;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 4px;
+
+    &:hover {
+      background: #9e9e9e;
+    }
+  }
+}
+
+// ==================== TABLE ====================
+.controles-table {
+  width: 100%;
+  background: $background-card;
+
+  // Header styling
+  th {
+    background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+    color: $text-primary;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 2px solid $border-color;
+    padding: 16px 12px !important;
+
+    .header-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      margin-right: 6px;
+      color: $primary-color;
+    }
+  }
+
+  // Cell styling
+  td {
+    padding: 12px !important;
+    border-bottom: 1px solid lighten($border-color, 5%);
+    vertical-align: middle;
+  }
+
+  // Código badge
+  .codigo-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: lighten($primary-color, 45%);
+    color: $primary-color;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  // Descripción text
+  .descripcion-text {
+    display: block;
+    color: $text-primary;
+    line-height: 1.5;
+  }
+
+  // Tipo badge
+  .tipo-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: lighten($warning-color, 35%);
+    color: darken($warning-color, 15%);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .no-data {
+    color: $text-secondary;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  // Actions column
+  .actions-column {
+    width: 100px;
+    text-align: center;
+  }
+
+  .delete-button {
+    transition: $transition;
+
+    &:hover:not([disabled]) {
+      background-color: rgba($danger-color, 0.1);
+    }
+
+    &[disabled] {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  // Row states
+  .table-row {
+    transition: $transition;
+
+    &:hover {
+      background-color: lighten($primary-color, 48%);
+    }
+  }
+}
+
+// ==================== TABLE FOOTER ====================
+.table-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: lighten($primary-color, 48%);
+  border-top: 1px solid $border-color;
+
+  .footer-icon {
+    color: $primary-color;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .footer-text {
+    color: $text-primary;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+// ==================== EMPTY STATE ====================
+.empty-card {
+  box-shadow: $shadow-sm;
+  border-radius: 8px;
+  border: 2px dashed $border-color;
+  background: $background-light;
+
+  mat-card-content {
+    padding: 60px 24px !important;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  color: $text-secondary;
+
+  .empty-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: lighten($text-secondary, 20%);
+    margin-bottom: 20px;
+  }
+
+  .empty-title {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    font-weight: 500;
+    color: $text-primary;
+  }
+
+  .empty-message {
+    margin: 0 0 24px 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: $text-secondary;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .empty-action-button {
+    mat-icon {
+      margin-right: 8px;
+    }
+
+    &[disabled] {
+      opacity: 0.6;
+    }
+  }
+}
+
+// ==================== RESPONSIVE ====================
+@media (max-width: 768px) {
+  .tab-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    padding: 16px;
+
+    .header-left {
+      justify-content: center;
+
+      .header-title {
+        font-size: 18px;
+      }
+    }
+
+    .header-right {
+      width: 100%;
+
+      .add-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .table-container {
+    max-height: 500px;
+  }
+
+  .controles-table {
+    th, td {
+      padding: 10px 8px !important;
+      font-size: 13px;
+    }
+
+    .codigo-badge {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .actions-column {
+      width: 70px;
+    }
+  }
+
+  .empty-state {
+    .empty-icon {
+      font-size: 60px;
+      width: 60px;
+      height: 60px;
+    }
+
+    .empty-title {
+      font-size: 18px;
+    }
+
+    .empty-message {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-header {
+    padding: 12px;
+
+    .header-left {
+      gap: 8px;
+
+      .header-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      .header-title {
+        font-size: 16px;
+      }
+
+      .header-count {
+        min-width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .controles-table {
+    th, td {
+      padding: 8px 6px !important;
+      font-size: 12px;
+    }
+
+    .descripcion-text {
+      font-size: 13px;
+    }
+  }
+
+  .empty-card mat-card-content {
+    padding: 40px 16px !important;
+  }
+}
+
+// ==================== ACCESSIBILITY ====================
+button:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// ==================== PRINT STYLES ====================
+@media print {
+  .tab-header .header-right,
+  .actions-column {
+    display: none;
+  }
+
+  .table-card {
+    box-shadow: none;
+    border: 1px solid $border-color;
+  }
+}

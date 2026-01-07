@@ -1,13 +1,10 @@
-@import "../../styles/variables";
-@import "../../styles/mixins";
-
 // components/risk-table/risk-table.component.scss
 
 .risk-table-container {
   overflow-x: auto;
-  background: $bg-white;
-  border-radius: $border-radius-md;
-  box-shadow: $shadow-md;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
   .risk-table {
     width: 100%;
@@ -15,19 +12,19 @@
 
     // Header styles
     .dimension-header-row {
-      background: linear-gradient(135deg, $bg-gray-100 0%, $border-color 100%);
+      background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
     }
 
     .column-header-row {
-      background: $bg-gray-50;
+      background: #fafafa;
     }
 
     th {
       font-weight: 600;
-      color: $color-gray-900;
-      padding: $spacing-sm $spacing-md;
+      color: #333;
+      padding: 12px 16px;
       font-size: 13px;
-      border-bottom: 2px solid $border-color;
+      border-bottom: 2px solid #e0e0e0;
 
       &.dimension-header {
         text-align: center;
@@ -35,11 +32,11 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-left: 4px solid;
-        background: linear-gradient(135deg, $bg-gray-50 0%, $bg-gray-100 100%);
+        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
 
         mat-icon {
           vertical-align: middle;
-          margin-right: $spacing-xs;
+          margin-right: 6px;
           font-size: 18px;
           width: 18px;
           height: 18px;
@@ -50,7 +47,7 @@
         position: sticky;
         left: 0;
         z-index: 10;
-        background: $bg-white;
+        background: #fff;
         box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
       }
 
@@ -61,8 +58,8 @@
     }
 
     td {
-      padding: $spacing-sm $spacing-md;
-      border-bottom: 1px solid $color-gray-200;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
       font-size: 14px;
       transition: all 0.2s ease;
 
@@ -70,7 +67,7 @@
         position: sticky;
         left: 0;
         z-index: 5;
-        background: $bg-white;
+        background: #fff;
         box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
         font-weight: 600;
       }
@@ -94,8 +91,8 @@
         display: inline-block;
         margin-left: 4px;
         padding: 2px 5px;
-        background: -warning-light;
-        color: $bg-white;
+        background: #ff9800;
+        color: white;
         border-radius: 3px;
         font-size: 10px;
         font-weight: 700;
@@ -108,18 +105,18 @@
       transition: all 0.2s ease;
 
       &:hover {
-        background: $bg-gray-50;
+        background: #fafafa;
 
         td {
-          background: $bg-gray-50;
+          background: #fafafa;
         }
       }
 
       &.row-selected {
-        background: -primary-light;
+        background: #e3f2fd;
 
         td {
-          background: -primary-light;
+          background: #e3f2fd;
         }
       }
 
@@ -130,28 +127,28 @@
 
     // Risk level colors
     .risk-empty {
-      background-color: $bg-gray-100;
-      color: $color-gray-999;
+      background-color: #f5f5f5;
+      color: #999;
     }
 
     .risk-low {
-      background-color: $bg-success-light;
-      color: $risk-insignificant-bg;
+      background-color: #c8e6c9;
+      color: #2e7d32;
     }
 
     .risk-medium {
-      background-color: $risk-tolerable-bg;
-      color: $color-warning-dark;
+      background-color: #fff9c4;
+      color: #f57f17;
     }
 
     .risk-high {
-      background-color: $bg-danger-light;
-      color: $risk-intolerable-bg;
+      background-color: #ffccbc;
+      color: #d84315;
     }
 
     .risk-critical {
-      background-color: $bg-danger-light;
-      color: $risk-intolerable-bg;
+      background-color: #ffcdd2;
+      color: #c62828;
       animation: pulseGlow 2s infinite;
     }
   }
@@ -184,7 +181,7 @@
       font-size: 12px;
 
       th, td {
-        padding: $spacing-sm 12px;
+        padding: 8px 12px;
       }
     }
   }

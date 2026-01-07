@@ -243,8 +243,8 @@ export class RkcComponent implements OnInit {
             key: atts[19]?.value || '',
             approvedDate: atts[20]?.value || '',
             statusParent: atts[21]?.value || '',
-            canAdd: atts[22]?.value || 'N',
-            canModify: atts[23]?.value || 'N',
+            canAdd: atts[17]?.value === 'true' ? 'Y' : 'N',
+            canModify: atts[18]?.value === 'true' ? 'Y' : 'N',
             creador: atts[24]?.value || 'N'
           });
 

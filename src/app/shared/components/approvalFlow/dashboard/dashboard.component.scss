@@ -1,0 +1,462 @@
+/**
+ * APPROVAL FLOW DASHBOARD - Estilos SCSS
+ * Material Design 3 con gradientes modernos
+ */
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow: hidden;
+}
+
+// ==================== HEADER ====================
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .header-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .header-text {
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        font-size: 14px;
+        opacity: 0.9;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .close-button {
+    color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// ==================== LOADING ====================
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  gap: 20px;
+
+  p {
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// ==================== CONTENT ====================
+
+.dashboard-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+// ==================== COUNTERS GRID ====================
+
+.counters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.counter-card {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 16px !important;
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transition: height 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+
+    &::before {
+      height: 6px;
+    }
+  }
+
+  &.has-items {
+    border: 2px solid transparent;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2) !important;
+    }
+  }
+
+  // Colores específicos por tipo
+  &.construction {
+    &::before {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card-icon {
+      color: #667eea;
+    }
+
+    &.has-items {
+      border-color: #667eea;
+    }
+  }
+
+  &.rejected {
+    &::before {
+      background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .card-icon {
+      color: #f5576c;
+    }
+
+    &.has-items {
+      border-color: #f5576c;
+    }
+  }
+
+  &.validate {
+    &::before {
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .card-icon {
+      color: #00a8cc;
+    }
+
+    &.has-items {
+      border-color: #00a8cc;
+    }
+  }
+
+  &.approve {
+    &::before {
+      background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .card-icon {
+      color: #00b894;
+    }
+
+    &.has-items {
+      border-color: #00b894;
+    }
+  }
+
+  mat-card-header {
+    padding: 20px 20px 12px;
+  }
+
+  mat-card-content {
+    padding: 0 20px 20px !important;
+  }
+
+  .card-header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+
+    .card-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+
+    .card-title {
+      flex: 1;
+
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      .card-subtitle {
+        font-size: 12px;
+        color: #718096;
+      }
+    }
+  }
+
+  .counter-display {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 16px 0;
+
+    .counter-number {
+      font-size: 48px;
+      font-weight: 700;
+      color: #2d3748;
+      line-height: 1;
+    }
+
+    .counter-label {
+      font-size: 14px;
+      color: #718096;
+      font-weight: 500;
+    }
+  }
+
+  .view-button {
+    width: 100%;
+    margin-top: 8px;
+    border-radius: 8px !important;
+    font-weight: 500;
+  }
+}
+
+// ==================== SUMMARY ====================
+
+.summary-section {
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #667eea;
+  }
+
+  .summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .summary-label {
+      font-size: 14px;
+      color: #718096;
+      font-weight: 500;
+    }
+
+    .summary-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+  }
+}
+
+// ==================== ACTIONS ====================
+
+.actions-section {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.action-button {
+  flex: 1;
+  min-width: 180px;
+  height: 48px;
+  border-radius: 24px !important;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &.primary-action {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      background: #e2e8f0;
+      color: #a0aec0;
+      box-shadow: none;
+    }
+  }
+
+  .button-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #f5576c;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .button-spinner {
+    display: inline-block;
+
+    ::ng-deep circle {
+      stroke: currentColor;
+    }
+  }
+}
+
+// ==================== EMPTY STATE ====================
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #718096;
+
+  mat-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: #cbd5e0;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #4a5568;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// ==================== RESPONSIVE ====================
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 16px 20px;
+
+    .header-content {
+      gap: 12px;
+
+      .header-icon {
+        width: 48px;
+        height: 48px;
+
+        mat-icon {
+          font-size: 28px;
+          width: 28px;
+          height: 28px;
+        }
+      }
+
+      .header-text h2 {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .dashboard-content {
+    padding: 20px;
+  }
+
+  .counters-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .actions-section {
+    flex-direction: column;
+
+    .action-button {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+}
+
+// ==================== SCROLLBAR ====================
+
+.dashboard-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+
+  &:hover {
+    background: #a0aec0;
+  }
+}

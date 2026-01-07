@@ -148,6 +148,7 @@ getPositionsList(username: string, password: string): Observable<Position[]> {
         // AGREGAR: Guardar permisos del usuario
         // Estos valores deberían venir en la respuesta del backend
         // o ser determinados por la posición/distrito del usuario
+        console.log('Logueo: '+ Object.entries(response));
         this.saveUserPermissions(response);
       }),
       catchError(error => {
@@ -162,8 +163,9 @@ getPositionsList(username: string, password: string): Observable<Position[]> {
   // Esto depende de cómo tu backend envíe los permisos
 
   // Opción 1: Si vienen en la respuesta
+  // console.log('permisos de usuario' + loginResponse.permissions)
   if (loginResponse.permissions) {
-    localStorage.setItem('allow', loginResponse.permissions);
+    // localStorage.setItem('allow', loginResponse.permissions);
   }
 
   // Opción 2: Si se determinan por posición (temporal)
@@ -180,7 +182,7 @@ getPositionsList(username: string, password: string): Observable<Position[]> {
     permissions = 'creacion';
   }
 
-  localStorage.setItem('allow', permissions);
+  // localStorage.setItem('allow', permissions);
   localStorage.setItem('canAdd', 'Y'); // O determinar basado en permisos
 
 

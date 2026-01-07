@@ -291,12 +291,13 @@
 
       <!-- Tab 2: Controles Blandos -->
       <mat-tab label="Controles Blandos">
-        <div class="tab-content">
-          <div class="empty-state">
-            <mat-icon>pending_actions</mat-icon>
-            <p>Gestión de controles blandos en desarrollo</p>
-          </div>
-        </div>
+         <ng-template matTabContent>
+      <app-rky-controles-blandos
+        #controlesBlandosTab
+        [ids]="nodeIds()"
+        [disabled]="isDisabled()"
+      />
+    </ng-template>
       </mat-tab>
 
       <!-- Tab 3: Controles Duros -->

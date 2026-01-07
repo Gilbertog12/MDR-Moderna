@@ -6,12 +6,10 @@
 // ============================================================================
 // BREADCRUMBS DE JERARQUÍA (7 NIVELES)
 // ============================================================================
-@import '../../../shared/styles/variables';
-@import '../../../shared/styles/mixins';
 .hierarchy-breadcrumb {
-  background-color: $text-white;
-  border-bottom: 1px solid $border-color;
-  padding: $spacing-sm 24px;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 24px;
 
   .breadcrumb-nav {
     .breadcrumb-list {
@@ -20,14 +18,14 @@
       list-style: none;
       margin: 0;
       padding: 0;
-      gap: $spacing-sm;
+      gap: 8px;
       flex-wrap: wrap;
 
       .breadcrumb-item {
         display: flex;
         align-items: center;
         gap: 6px;
-        color: $text-light;
+        color: #666;
         font-size: 14px;
 
         @media (max-width: 768px) {
@@ -39,12 +37,12 @@
           transition: color 0.2s ease;
 
           &:hover {
-            color: $color-primary;
+            color: #1976d2;
           }
         }
 
         &.current {
-          color: $color-primary;
+          color: #1976d2;
           font-weight: 500;
         }
 
@@ -62,7 +60,7 @@
       }
 
       .breadcrumb-separator {
-        color: $color-gray-ccc;
+        color: #ccc;
 
         mat-icon {
           font-size: 16px;
@@ -87,27 +85,27 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: $bg-gray-100;
+  background-color: #f5f5f5;
 }
 
 // ============================================================================
 // HEADER DEL RIESGO (Sección azul superior con degradado)
 // ============================================================================
 .area-header {
-  background: $gradient-header;
-  color: $text-white;
-  padding: $spacing-xl;
-  box-shadow: $shadow-sm;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: $spacing-lg;
+    gap: 20px;
 
     @media (max-width: 768px) {
       flex-direction: column;
-      gap: $spacing-md;
+      gap: 16px;
     }
 
     .header-left {
@@ -136,7 +134,7 @@
 
     .header-actions {
       display: flex;
-      gap: $spacing-sm;
+      gap: 12px;
 
       button {
         mat-icon {
@@ -153,21 +151,21 @@
 .info-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: $spacing-md;
-  padding: $spacing-lg;
+  gap: 16px;
+  padding: 20px;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    padding: $spacing-md;
+    padding: 16px;
   }
 
   .info-card {
     mat-card-content {
-      padding: $spacing-md;
+      padding: 16px;
 
       .card-label {
         font-size: 12px;
-        color: $text-light;
+        color: #666;
         margin-bottom: 8px;
         text-transform: uppercase;
         font-weight: 500;
@@ -176,29 +174,29 @@
       .card-value {
         font-size: 18px;
         font-weight: 600;
-        color: $color-gray-900;
+        color: #333;
 
         @media (max-width: 768px) {
           font-size: 16px;
         }
 
         &.risk-intolerable {
-          color: $risk-intolerable-bg;
+          color: #d32f2f;
         }
 
         &.risk-tolerable {
-          color: $color-warning;
+          color: #f57c00;
         }
 
         &.risk-insignificant {
-          color: $risk-insignificant-bg;
+          color: #388e3c;
         }
       }
 
       .status-badge {
         display: inline-block;
-        padding: $spacing-xs 12px;
-        border-radius: $border-radius-lg;
+        padding: 4px 12px;
+        border-radius: 12px;
         font-size: 12px;
         font-weight: 600;
 
@@ -206,27 +204,27 @@
         &.status-002,
         &.status-003,
         &.status-006 {
-          background-color: $bg-primary-light;
-          color: $color-primary;
+          background-color: #e3f2fd;
+          color: #1976d2;
         }
 
         &.status-004 {
-          background-color: $bg-warning-light;
-          color: $color-warning;
+          background-color: #fff3e0;
+          color: #f57c00;
         }
 
         &.status-007 {
-          background-color: $bg-purple-light;
-          color: $color-purple;
+          background-color: #f3e5f5;
+          color: #7b1fa2;
         }
 
         &.status-008 {
-          color: $risk-insignificant-bg;
+          color: #388e3c;
         }
 
         &.status-000 {
-          background-color: $bg-danger-light;
-          color: $risk-intolerable-bg;
+          background-color: #ffebee;
+          color: #c62828;
         }
       }
     }
@@ -237,10 +235,10 @@
 // SECCIÓN DE CONTENIDO (Sin tabs, solo tabla)
 // ============================================================================
 .content-section {
-  background-color: $text-white;
+  background-color: white;
   margin: 0 20px 20px 20px;
-  border-radius: $border-radius-md;
-  box-shadow: $shadow-sm;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   flex: 1;
   display: flex;
@@ -258,7 +256,7 @@
   overflow-x: auto;
   overflow-y: auto;
   max-height: calc(100vh - 520px);
-  padding: $spacing-lg;
+  padding: 20px;
 
   @media (max-width: 768px) {
     padding: 10px;
@@ -278,30 +276,30 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: $text-white;
+    background-color: white;
 
     .category-header {
       th {
-        background-color: $bg-gray-100;
-        padding: $spacing-sm 8px;
+        background-color: #f5f5f5;
+        padding: 12px 8px;
         font-weight: 600;
-        border: 1px solid $color-gray-ddd;
+        border: 1px solid #ddd;
         text-align: center;
         font-size: 12px;
         text-transform: uppercase;
 
         &.category-seguridad {
-          background-color: $bg-primary-light;
-          color: $color-primary-dark;
+          background-color: #e3f2fd;
+          color: #1565c0;
         }
 
         &.category-ambiente {
-          background-color: $bg-success-light;
-          color: $color-success-dark;
+          background-color: #e8f5e9;
+          color: #2e7d32;
         }
 
         &.category-operacional {
-          background-color: $bg-warning-light;
+          background-color: #fff3e0;
           color: #e65100;
         }
       }
@@ -309,14 +307,14 @@
 
     .subcategory-header {
       th {
-        background-color: $bg-gray-50;
+        background-color: #fafafa;
         padding: 10px 8px;
         font-weight: 600;
-        border: 1px solid $color-gray-ddd;
+        border: 1px solid #ddd;
         text-align: center;
         font-size: 11px;
         text-transform: uppercase;
-        color: $text-light;
+        color: #666;
       }
     }
   }
@@ -327,7 +325,7 @@
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: $bg-gray-f9;
+        background-color: #f9f9f9;
       }
 
       &.pending-delete {
@@ -338,16 +336,16 @@
 
     td {
       padding: 10px 8px;
-      border: 1px solid $border-color;
+      border: 1px solid #e0e0e0;
       text-align: center;
 
       &.id-cell {
         font-weight: 600;
-        background-color: $text-white;
+        background-color: white;
         cursor: pointer;
 
         .status-indicator {
-          color: $color-danger;
+          color: #f44336;
           font-size: 11px;
           margin-left: 4px;
         }
@@ -357,7 +355,7 @@
         text-align: left;
         min-width: 250px;
         max-width: 400px;
-        background-color: $text-white;
+        background-color: white;
       }
 
       &.risk-cell {
@@ -369,27 +367,27 @@
         letter-spacing: 0.5px;
 
         &.risk-intolerable {
-          background-color: $risk-intolerable-bg;
-          color: $text-white;
+          background-color: #e53935;
+          color: white;
           font-weight: 700;
         }
 
         &.risk-tolerable {
-          background-color: $color-info;
-          color: $color-gray-900;
+          background-color: #fdd835;
+          color: #333;
           font-weight: 700;
         }
 
         &.risk-insignificant {
-          background-color: $risk-insignificant-bg;
-          color: $text-white;
+          background-color: #43a047;
+          color: white;
           font-weight: 700;
         }
 
         // Celdas vacías
         &:empty,
         &:has(> :empty) {
-          background-color: $bg-gray-100;
+          background-color: #f5f5f5;
         }
       }
     }
@@ -400,7 +398,7 @@
     position: sticky;
     left: 0;
     z-index: 5;
-    background-color: $text-white;
+    background-color: white;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
   }
 
@@ -408,7 +406,7 @@
     position: sticky;
     left: 100px; // Ajustado para el ancho del ID en RKR
     z-index: 5;
-    background-color: $text-white;
+    background-color: white;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
   }
 }
@@ -423,7 +421,7 @@
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: $text-light;
+  color: #666;
 
   mat-icon {
     font-size: 48px;
@@ -444,7 +442,7 @@
 // ============================================================================
 .header-actions {
   display: flex;
-  gap: $spacing-sm;
+  gap: 12px;
   align-items: center;
 
   @media (max-width: 768px) {
@@ -454,7 +452,7 @@
 
   .approval-buttons {
     display: flex;
-    gap: $spacing-sm;
+    gap: 8px;
     margin-right: 16px;
     padding-right: 16px;
     border-right: 1px solid rgba(255, 255, 255, 0.3);
@@ -468,7 +466,7 @@
 
   .standard-buttons {
     display: flex;
-    gap: $spacing-sm;
+    gap: 12px;
   }
 
   button {
@@ -510,7 +508,7 @@
     thead {
       .category-header th {
         font-size: 10px;
-        padding: $spacing-sm 4px;
+        padding: 8px 4px;
       }
 
       .subcategory-header th {
@@ -520,7 +518,7 @@
     }
 
     tbody td {
-      padding: $spacing-sm 4px;
+      padding: 8px 4px;
 
       &.description-cell {
         min-width: 180px;
@@ -555,7 +553,7 @@
     .category-header th {
       font-weight: 700;
       letter-spacing: 0.5px;
-      border-bottom: 2px solid $color-gray-ddd;
+      border-bottom: 2px solid #ddd;
     }
   }
 

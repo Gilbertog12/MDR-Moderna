@@ -219,6 +219,7 @@ $z-index-tooltip: 1060;
 // BREAKPOINTS
 // ============================================
 
+$breakpoint-xs: 480px;
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
@@ -227,29 +228,110 @@ $breakpoint-xxl: 1400px;
 
 
 
-// ===================================================
-// = Variables DETAIL COMPONENT                      =
-// ===================================================
 
+// ============================================
+// GRADIENTES
+// ============================================
+
+// Gradiente principal de headers (azul)
+$gradient-header-start: #1e3c72;
+$gradient-header-end: #2a5298;
+$gradient-header: linear-gradient(135deg, $gradient-header-start 0%, $gradient-header-end 100%);
+
+// Gradiente secundario (verde - sidebar/header secundario)
+$gradient-secondary-start: #175641;
+$gradient-secondary-end: #1a6d4f;
+$gradient-secondary: linear-gradient(135deg, $gradient-secondary-start 0%, $gradient-secondary-end 100%);
+
+// ============================================
+// COLORES UI ADICIONALES
+// ============================================
+
+// Primary
 $color-primary: #1976d2;
+$color-primary-light: #2196f3;
+$color-primary-dark: #1565c0;
+
+// Success/Green
 $color-success: #4caf50;
+$color-success-light: #81c784;
+$color-success-dark: #388e3c;
+
+// Danger/Red
 $color-danger: #f44336;
-$color-background: #fafafa;
-$color-border: #e0e0e0;
-$color-text-primary: #212121;
-$color-text-secondary: #757575;
+$color-danger-light: #e57373;
+$color-danger-dark: #d32f2f;
 
-$spacing-xs: 4px;
-$spacing-sm: 8px;
-$spacing-md: 16px;
-$spacing-xl: 32px;
+// Warning/Orange
+$color-warning: #f57c00;
+$color-warning-light: #ff9800;
+$color-warning-dark: #e65100;
 
-$border-radius: 8px;
-$border-radius-sm: 4px;
+// Info/Yellow
+$color-info: #fdd835;
+$color-info-light: #ffeb3b;
+$color-info-dark: #fbc02d;
 
-$font-size-sm: 12px;
-$font-size-md: 14px;
-$font-size-xl: 24px;
+// Grays
+$color-gray-50: #fafafa;
+$color-gray-100: #f5f5f5;
+$color-gray-200: #eeeeee;
+$color-gray-300: #e0e0e0;
+$color-gray-400: #bdbdbd;
+$color-gray-500: #9e9e9e;
+$color-gray-600: #757575;
+$color-gray-700: #616161;
+$color-gray-800: #424242;
+$color-gray-900: #212121;
 
-$font-weight-semibold: 600;
-$font-weight-bold: 700;
+// ============================================
+// COLORES DE TEXTO ADICIONALES
+// ============================================
+$text-light: #666666;
+$text-disabled: #9e9e9e;
+
+// ============================================
+// BACKGROUNDS ADICIONALES
+// ============================================
+$bg-gray-50: $color-gray-50;
+$bg-gray-100: $color-gray-100;
+$bg-gray-200: $color-gray-200;
+$bg-hover: #f5f5f5;
+$bg-disabled: #e0e0e0;
+
+// ============================================
+// BORDERS ADICIONALES
+// ============================================
+$border-color: #e0e0e0;
+$border-gray: #dee2e6;
+
+// ============================================
+// LIGHT BACKGROUNDS (for badges/chips)
+// ============================================
+$bg-primary-light: #e3f2fd;
+$bg-warning-light: #fff3e0;
+$bg-danger-light: #ffebee;
+$bg-purple-light: #f3e5f5;
+
+// ============================================
+// ADDITIONAL UI COLORS
+// ============================================
+$color-purple: #7b1fa2;
+$color-purple-light: #9c27b0;
+$color-purple-dark: #6a1b9a;
+
+// ============================================
+// COLORES ADICIONALES (short hex)
+// ============================================
+$color-gray-ccc: #cccccc;  // Light gray for borders/text
+$color-gray-ddd: #dddddd;  // Very light gray for borders
+$color-gray-999: #999999;  // Medium gray for secondary text
+$bg-gray-f9: #f9f9f9;      // Very light background
+$bg-success-light: #e8f5e9; // Light green background
+
+// ============================================
+// GRISES ADICIONALES (para tree-sidebar y otros)
+// ============================================
+$color-gray-f1: #f1f1f1;  // Very light gray
+$color-gray-c1: #c1c1c1;  // Light gray
+$color-gray-a8: #a8a8a8;  // Medium-light gray
